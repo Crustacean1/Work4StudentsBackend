@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "9L8rvJALk9qzlPEdzdV5W/orYy4L5pPO5/uCDEh+ry4=",
+  "Source": "PostingService.Console",
+  "BasePath": "_content/PostingService.Console",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,14 @@
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.csproj.AssemblyReference.cache
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.AssemblyInfoInputs.cache
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.AssemblyInfo.cs
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.csproj.CoreCompileInputs.cache
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/bin/Debug/net7.0/PostingService.Persistence.deps.json
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/bin/Debug/net7.0/PostingService.Persistence.dll
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/bin/Debug/net7.0/PostingService.Persistence.pdb
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.dll
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/refint/PostingService.Persistence.dll
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.pdb
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/ref/PostingService.Persistence.dll
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/bin/Debug/net7.0/PostingService.Persistence.runtimeconfig.json
+/home/kamil/Projects/Work4StudentsBackend/PostingService/src/PostingService.Persistence/obj/Debug/net7.0/PostingService.Persistence.genruntimeconfig.cache
