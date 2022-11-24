@@ -1,4 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.Models
+﻿namespace W4SRegistrationMicroservice.API.Models
 {
     public class StudentDto
     {
