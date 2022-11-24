@@ -5,8 +5,6 @@ namespace W4SRegistrationMicroservice.Data.Entities
     public class Company
     {
         public string Id { get; set; }
-        public string Name { get; set; }
-
-        public List<Employer> Employers { get; set; }
+        public required string Name { get; set; }
     }
 }

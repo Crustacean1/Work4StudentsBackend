@@ -4,8 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4SRegistrationMicroservice.API", "W4SRegistrationMicroservice\W4SRegistrationMicroservice.API.csproj", "{1304C12A-7AE6-42B7-A28A-DC6DABFBD1FC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CEE24135-B2EA-464C-B301-0B43DC2FAA65} = {CEE24135-B2EA-464C-B301-0B43DC2FAA65}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4SRegistrationMicroservice.Data", "W4SRegistrationMicroservice.Data\W4SRegistrationMicroservice.Data.csproj", "{CEE24135-B2EA-464C-B301-0B43DC2FAA65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4SRegistrationMicroservice.Data", "W4SRegistrationMicroservice.Data\W4SRegistrationMicroservice.Data.csproj", "{CEE24135-B2EA-464C-B301-0B43DC2FAA65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
