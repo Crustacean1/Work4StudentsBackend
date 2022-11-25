@@ -1,5 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.Entities.Users
-{
+﻿namespace W4SRegistrationMicroservice.Data.Entities.Users {
     public class User
     {
         public long Id { get; set; }
