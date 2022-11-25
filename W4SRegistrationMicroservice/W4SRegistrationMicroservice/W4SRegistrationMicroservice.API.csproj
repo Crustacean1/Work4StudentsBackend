@@ -25,7 +25,7 @@
   </ItemGroup>
 	<ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="Exceptions\" />
+    <Folder Include="Models\Users\Signing\" />
   </ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\W4SRegistrationMicroservice.Data\W4SRegistrationMicroservice.Data.csproj" />

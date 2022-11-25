@@ -1,6 +1,6 @@
 ﻿using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;
-using W4SRegistrationMicroservice.API.Models.Users;
+using W4SRegistrationMicroservice.API.Models.Users.Creation;
 using W4SRegistrationMicroservice.Data.DbContexts;
 
 namespace W4SRegistrationMicroservice.API.Services
@@ -11,6 +11,11 @@ namespace W4SRegistrationMicroservice.API.Services
 
         public RegistrationService(W4SUserbaseDbContext dbContext) { 
             _dbContext = dbContext;
+        }
+
+        public void RegisterEmployer(EmployerCreationDto employerCreationDto)
+        {
+            throw new NotImplementedException();
         }
 
         public void RegisterStudent(StudentCreationDto studentCreationDto)
@@ -28,6 +33,11 @@ namespace W4SRegistrationMicroservice.API.Services
         private void ValidateUniversity()
         {
             throw new UniversityDomainNotInDatabaseException("The domain in the email address is not a valid university domain.");
+        }
+
+        private void ValidateNIPNumber()
+        {
+
         }
     }
 }
