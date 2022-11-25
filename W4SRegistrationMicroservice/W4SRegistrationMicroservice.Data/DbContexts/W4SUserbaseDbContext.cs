@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
-using W4SRegistrationMicroservice.Data.Settings;
 
 namespace W4SRegistrationMicroservice.Data.DbContexts
 {
@@ -17,11 +16,12 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
         public W4SUserbaseDbContext()
         {
+
         }
 
-        public W4SUserbaseDbContext(IOptions<W4SUserbaseSettings> options)
+        public W4SUserbaseDbContext(string connectionString)
         {
-            _connectionString = options.Value.ConnectionString;
+            _connectionString = connectionString;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
