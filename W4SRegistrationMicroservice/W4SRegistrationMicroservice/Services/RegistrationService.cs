@@ -6,11 +6,15 @@ using W4SRegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities.Users;
 using System.Security.Cryptography;
 using W4SRegistrationMicroservice.Data.Entities;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace W4SRegistrationMicroservice.API.Services
 {
     public class RegistrationService : IRegistrationService
     {
+        private const string REGEX_DOMAIN_PATTERN = @"@([\w\-]+)((\.(\w){2,3})+)$";
+
         private readonly W4SUserbaseDbContext _dbContext;
         private readonly ILogger _logger;
 
@@ -93,7 +97,12 @@ namespace W4SRegistrationMicroservice.API.Services
             }
             catch(UniversityDomainNotInDatabaseException e)
             {
-                _logger.LogError(e.Message);
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+            catch(FormatException e)
+            {
+                _logger.LogError(e.Message, e);
                 throw;
             }
 
@@ -101,7 +110,13 @@ namespace W4SRegistrationMicroservice.API.Services
 
             try
             {
-                //universityId = _dbContext.Universities.Select // need to add Domain entity to Db
+                var universityData = _dbContext.Universities
+                    .Select(e => new { e.EmailDomainId, e.Id })
+                    .First(e => e.Id == universityId);
+
+                universityId = universityData?.Id;
+
+
             }
             catch (Exception e)
             {
@@ -123,15 +138,38 @@ namespace W4SRegistrationMicroservice.API.Services
             _dbContext.SaveChanges();
         }
 
-        private void ValidateUniversity(string studentEmail)
+
+        // Checks if domain is present in the database, if yes -> return the id of it 
+        private long ValidateUniversity(string studentEmail)
         {
-            _logger.LogInformation($"{studentEmail} email temp validation.");
-            //throw new UniversityDomainNotInDatabaseException("The domain in the email address is not a valid university domain.");
+            try
+            {
+                MailAddress mail = new MailAddress(studentEmail);
+            }
+            catch (FormatException e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+
+            string domain = string.Empty;
+
+            try
+            {
+                domain = CheckDomain(studentEmail);
+
+                return _dbContext.UniversitiesDomains
+                    .First(x => x.EmailDomain.Equals(domain)).Id;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                throw new UniversityDomainNotInDatabaseException("The domain in the email address is not a valid university domain.");
+            }
         }
 
         private void ValidateNIPNumber(string nipNumber)
         {
-            _logger.LogInformation($"{nipNumber} NIP temp validation.");
             //throw new IncorrectNIPNumberException("The NIP number is incorrect.");
         }
 
@@ -148,6 +186,19 @@ namespace W4SRegistrationMicroservice.API.Services
                 }
             }
             return stringBuilder.ToString();
+        }
+
+        private string CheckDomain(string studentEmail)
+        {
+            var regex = new Regex(REGEX_DOMAIN_PATTERN);
+            
+            var match = regex.Match(studentEmail);
+
+            if (match.Success)
+            {
+                return match.Value;
+            }
+            throw new UniversityDomainNotInDatabaseException("This email has no valid domain.");
         }
     }
 }
