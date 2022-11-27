@@ -44,7 +44,6 @@ namespace W4SRegistrationMicroservice.API.Services
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                throw;
             }
 
             if(companyId == null)
@@ -56,6 +55,7 @@ namespace W4SRegistrationMicroservice.API.Services
                 };
 
                 _dbContext.Add(company);
+                _dbContext.SaveChanges();
 
                 try
                 {
@@ -97,6 +97,18 @@ namespace W4SRegistrationMicroservice.API.Services
                 throw;
             }
 
+            long? universityId = null;
+
+            try
+            {
+                //universityId = _dbContext.Universities.Select // need to add Domain entity to Db
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw;
+            }
+
             var student = new Student()
             {
                 Id = 0,
@@ -104,6 +116,7 @@ namespace W4SRegistrationMicroservice.API.Services
                 Name = studentCreationDto.FirstName,
                 Surname = studentCreationDto.Surname,
                 PasswordHash = HashPassword(studentCreationDto.Password)
+                //UniversityId = 
             };
 
             _dbContext.Students.Add(student);

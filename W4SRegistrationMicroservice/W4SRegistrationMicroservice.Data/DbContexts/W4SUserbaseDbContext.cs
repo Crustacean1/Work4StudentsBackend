@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
+using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
 
 namespace W4SRegistrationMicroservice.Data.DbContexts
@@ -13,6 +14,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
         public DbSet<Student> Students { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<University> Universities { get; set; }
+        public DbSet<Domain> UniversitiesDomains { get; set; }
 
         public W4SUserbaseDbContext()
         {
@@ -45,7 +47,9 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
             // University
             modelBuilder.Entity<University>().Property(e => e.Name).HasMaxLength(100);
-            modelBuilder.Entity<University>().Property(e => e.Domain).HasMaxLength(20);
+
+            // Domain
+            modelBuilder.Entity<Domain>().Property(e => e.EmailDomain).HasMaxLength(20);
 
             // Company
             modelBuilder.Entity<Company>().Property(e => e.Name).HasMaxLength(100);

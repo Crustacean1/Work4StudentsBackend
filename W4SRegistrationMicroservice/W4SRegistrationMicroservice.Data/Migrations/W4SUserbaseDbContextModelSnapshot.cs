@@ -44,7 +44,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                     b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.University", b =>
+            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Universities.Domain", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,10 +52,26 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Domain")
+                    b.Property<string>("EmailDomain")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UniversitiesDomains");
+                });
+
+            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Universities.University", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("EmailDomainId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -63,6 +79,8 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmailDomainId");
 
                     b.ToTable("Universities");
                 });
@@ -177,6 +195,17 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                     b.ToTable("Students");
                 });
 
+            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Universities.University", b =>
+                {
+                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Universities.Domain", "EmailDomain")
+                        .WithMany()
+                        .HasForeignKey("EmailDomainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmailDomain");
+                });
+
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Employer", b =>
                 {
                     b.HasOne("W4SRegistrationMicroservice.Data.Entities.Company", "Company")
@@ -190,7 +219,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Student", b =>
                 {
-                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.University", "University")
+                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Universities.University", "University")
                         .WithMany()
                         .HasForeignKey("UniversityId")
                         .OnDelete(DeleteBehavior.Cascade)
