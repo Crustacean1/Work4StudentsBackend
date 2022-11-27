@@ -6,5 +6,6 @@ namespace W4SRegistrationMicroservice.Data.Entities
     {
         public long Id { get; set; }
         public required string Name { get; set; }
+        public required string NIP { get; set; }
     }
 }

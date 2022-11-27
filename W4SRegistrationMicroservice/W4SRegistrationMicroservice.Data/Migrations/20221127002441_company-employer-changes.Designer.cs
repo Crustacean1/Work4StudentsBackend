@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using W4SRegistrationMicroservice.Data.DbContexts;
 
@@ -10,9 +11,11 @@ using W4SRegistrationMicroservice.Data.DbContexts;
 namespace W4SRegistrationMicroservice.Data.Migrations
 {
     [DbContext(typeof(W4SUserbaseDbContext))]
-    partial class W4SUserbaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221127002441_company-employer-changes")]
+    partial class companyemployerchanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,8 +34,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     b.Property<string>("NIP")
                         .IsRequired()
-                        .HasMaxLength(9)
-                        .HasColumnType("nvarchar(9)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()

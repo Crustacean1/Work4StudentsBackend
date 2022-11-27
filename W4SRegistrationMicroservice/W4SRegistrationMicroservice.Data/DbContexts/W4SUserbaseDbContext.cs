@@ -49,11 +49,12 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
             // Company
             modelBuilder.Entity<Company>().Property(e => e.Name).HasMaxLength(100);
+            modelBuilder.Entity<Company>().Property(e => e.NIP).HasMaxLength(9);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_connectionString);
+            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=W4SRegistrationUserbase;Trusted_Connection=True;");
         }
     }
 }
