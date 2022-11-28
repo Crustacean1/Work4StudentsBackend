@@ -5,7 +5,7 @@ namespace PostingService.Persistence.Entities
 {
     public class Applicant
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
 
         public string Name { get; set; }
 

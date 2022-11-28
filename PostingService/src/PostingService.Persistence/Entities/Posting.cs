@@ -5,7 +5,7 @@ namespace PostingService.Persistence.Entities
 {
     public class Posting
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
 
         public Poster Poster { get; set; }
 
