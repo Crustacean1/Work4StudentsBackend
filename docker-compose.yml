@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  posting:
+    build:
+      context: ./PostingService
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 81:5000
+    networks:
+      - internal
+    environment:
+      CONNECTION_STRING: Host=posting-db;User=root;Password=root;Port=5432
+  posting-db:
+    image: postgres
+    restart: always
+    volumes: 
+      - posting-persistent:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: posting
+    networks:
+      - internal
+
+volumes:
+  posting-persistent:
+
+networks:
+  internal:
