@@ -1,6 +1,6 @@
 namespace PostingService.Console.ServiceBus
 {
-    public interface IServiceBusClient
+    public interface IServiceBusSender
     {
         public void SendEvent<TEvent>(TEvent busEvent);
 

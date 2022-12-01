@@ -1,25 +1,32 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.Extensions.Hosting;
+using PostingService.Console.ServiceBus;
+using Microsoft.Extensions.Logging;
+using PostingService.Console.Controllers;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+namespace PostingService.Console
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    public class Program
+    {
+
+        public static async Task Main(string[] args)
+        {
+            await new HostBuilder()
+              .ConfigureLogging(builder =>
+              {
+                  builder.ClearProviders()
+                         .AddConsole();
+              })
+              .ConfigureServices(provider =>
+              {
+                  provider.AddServiceBus()
+                          .AddServiceBusClient("shitposting")
+                          .AddServiceBusHandler("shitposting");
+
+                  provider.AddHostedService<PostingHost>();
+              })
+            .RunConsoleAsync();
+        }
+    }
 }
 
-app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
