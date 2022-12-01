@@ -91,9 +91,11 @@ namespace W4SRegistrationMicroservice.API.Services
 
         public void RegisterStudent(StudentCreationDto studentCreationDto)
         {
+            long? emailDomainId = null;
+
             try
             {
-                ValidateUniversity(studentCreationDto.EmailAddress);
+                emailDomainId = ValidateUniversity(studentCreationDto.EmailAddress);
             }
             catch(UniversityDomainNotInDatabaseException e)
             {
@@ -110,13 +112,9 @@ namespace W4SRegistrationMicroservice.API.Services
 
             try
             {
-                var universityData = _dbContext.Universities
+                universityId = _dbContext.Universities
                     .Select(e => new { e.EmailDomainId, e.Id })
-                    .First(e => e.Id == universityId);
-
-                universityId = universityData?.Id;
-
-
+                    .First(e => e.EmailDomainId == emailDomainId).Id;
             }
             catch (Exception e)
             {
@@ -130,8 +128,8 @@ namespace W4SRegistrationMicroservice.API.Services
                 EmailAddress = studentCreationDto.EmailAddress,
                 Name = studentCreationDto.FirstName,
                 Surname = studentCreationDto.Surname,
-                PasswordHash = HashPassword(studentCreationDto.Password)
-                //UniversityId = 
+                PasswordHash = HashPassword(studentCreationDto.Password),
+                UniversityId = universityId.Value 
             };
 
             _dbContext.Students.Add(student);

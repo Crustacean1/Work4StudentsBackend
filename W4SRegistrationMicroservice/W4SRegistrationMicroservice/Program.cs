@@ -4,6 +4,8 @@ using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.API.Services;
 using W4SRegistrationMicroservice.Data.DbContexts;
 using Serilog;
+using W4SRegistrationMicroservice.Data.Seeders;
+using W4SRegistrationMicroservice.Data.Seeders.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 
+SeedUsersDatabase();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -50,10 +54,20 @@ void ConfigureLogger(ConfigureHostBuilder host)
 void ConfigureServices(IServiceCollection services)
 {
     services.TryAddScoped<IRegistrationService, RegistrationService>();
+    services.TryAddScoped<ISeeder, W4SUserbaseSeeder>();
 }
 
 void ConfigureUserbaseDbContext(IServiceCollection services, string connectionString)
 {
     services.AddDbContext<W4SUserbaseDbContext>(options =>
         options.UseSqlServer(connectionString));
+}
+
+void SeedUsersDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<ISeeder>();
+        dbInitializer.Seed();
+    }
 }
