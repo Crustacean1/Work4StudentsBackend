@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
@@ -16,14 +17,15 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
         public DbSet<University> Universities { get; set; }
         public DbSet<Domain> UniversitiesDomains { get; set; }
 
-        public W4SUserbaseDbContext()
-        {
+        //public W4SUserbaseDbContext(DbContextOptions<W4SUserbaseDbContext> options)
+        //    : base(options)
+        //{
 
-        }
+        //}
 
-        public W4SUserbaseDbContext(string connectionString)
+        public W4SUserbaseDbContext(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("W4SRegistrationUserbase");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -58,7 +60,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=W4SRegistrationUserbase;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(_connectionString);
         }
     }
 }
