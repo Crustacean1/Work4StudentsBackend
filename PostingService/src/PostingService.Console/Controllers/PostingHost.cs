@@ -1,25 +1,28 @@
-using RabbitMQ.Client;
+using ServiceBus.Rabbit;
 
 namespace PostingService.Console.Controllers
 {
     public class PostingHost : IHostedService
     {
         private readonly ILogger<PostingHost> logger;
+        private readonly IServiceBusSender sender;
 
-        public PostingHost(ILogger<PostingHost> logger)
+        public PostingHost(ILogger<PostingHost> logger,
+                           IServiceBusSender sender)
         {
             this.logger = logger;
+            this.sender = sender;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Starting host");
+          object test = new();
+          sender.SendEvent(test);
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Stopping host");
             return Task.CompletedTask;
         }
     }

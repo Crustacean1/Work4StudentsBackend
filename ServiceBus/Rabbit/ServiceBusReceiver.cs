@@ -1,23 +1,34 @@
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
-namespace PostingService.Console.ServiceBus
+namespace ServiceBus.Rabbit
 {
-    public class ServiceBusReceiver : ServiceBusBase, IHostedService, IServiceBusReceiver
+    public class ServiceBusReceiver : IHostedService, IServiceBusReceiver
     {
         private readonly ILogger logger;
+        private readonly IModel channel;
+        private readonly string topic;
 
-        public ServiceBusReceiver(IConnection connection, string topic, ILogger<ServiceBusReceiver> logger) : base(connection, topic)
+        public ServiceBusReceiver(ServiceBus serviceBus, string topic, ILogger<ServiceBusReceiver> logger)
         {
+            channel = serviceBus.Channel;
             this.logger = logger;
+            this.topic = topic;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            channel.QueueDeclare(queue: topic, durable: false, exclusive: false, autoDelete: false, arguments: null);
+
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += Consumer_OnEvent;
-            channel.BasicConsume(queue: "hello", autoAck: true, consumer: consumer);
+
+            channel.BasicConsume(queue: topic, autoAck: true, consumer: consumer);
+
+            logger.LogInformation("Started listening on topic: {Topic}", topic);
 
             return Task.CompletedTask;
         }

@@ -1,6 +1,6 @@
 using System;
 
-namespace PostingService.Console.ServiceBus
+namespace ServiceBus.Rabbit
 {
     [AttributeUsage(AttributeTargets.Method)]
 

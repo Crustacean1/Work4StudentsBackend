@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
-using PostingService.Console.ServiceBus;
 using Microsoft.Extensions.Logging;
 using PostingService.Console.Controllers;
+using ServiceBus.Rabbit;
 
 namespace PostingService.Console
 {
