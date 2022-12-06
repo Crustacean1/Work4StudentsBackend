@@ -8,6 +8,8 @@ namespace ServiceBus.Rabbit
     {
         private string eventName;
 
+        public string EventName => eventName;
+
         public ServiceBusEventHandlerAttribute(string eventName)
         {
             this.eventName = eventName;

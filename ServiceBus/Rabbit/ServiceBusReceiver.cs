@@ -2,52 +2,96 @@ using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ServiceBus.Rabbit
 {
-    public class ServiceBusReceiver : IHostedService, IServiceBusReceiver
+    public sealed class ServiceBusReceiver : IServiceBusReceiver
     {
+        private readonly ServiceBusConnection serviceBusConnection;
+        private readonly IServiceProvider provider;
         private readonly ILogger logger;
-        private readonly IModel channel;
+        private readonly Type handlerType;
         private readonly string topic;
 
-        public ServiceBusReceiver(ServiceBus serviceBus, string topic, ILogger<ServiceBusReceiver> logger)
+        private IModel? channel;
+
+        private bool disposed;
+        private readonly object disposeLock = new();
+
+        public ServiceBusReceiver(IServiceProvider provider, ILogger logger, Type handlerType, ServiceBusConnection serviceBusConnection, string topic)
         {
-            channel = serviceBus.Channel;
+            this.provider = provider;
             this.logger = logger;
+            this.handlerType = handlerType;
+            this.serviceBusConnection = serviceBusConnection;
             this.topic = topic;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public void StartAsync()
         {
-            channel.QueueDeclare(queue: topic, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            lock (disposeLock)
+            {
+                if (disposed) { throw new ObjectDisposedException("ServiceBusReceiver"); }
 
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += Consumer_OnEvent;
+                channel = serviceBusConnection.Connection.CreateModel();
 
-            channel.BasicConsume(queue: topic, autoAck: true, consumer: consumer);
+                channel.ExchangeDeclare(exchange: ServiceBusConnection.DefaultExchange, type: ExchangeType.Direct);
 
-            logger.LogInformation("Started listening on topic: {Topic}", topic);
+                var queueName = channel.QueueDeclare().QueueName;
+                channel.QueueBind(queue: queueName, exchange: ServiceBusConnection.DefaultExchange, routingKey: topic);
 
-            return Task.CompletedTask;
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += OnMessage;
+
+                _ = channel.BasicConsume(queue: topic, autoAck: true, consumer: consumer);
+            }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+
+        private void OnMessage(object? _, BasicDeliverEventArgs args)
         {
-            return Task.CompletedTask;
+            string? message;
+            string? messageTopic;
+
+            lock (disposeLock)
+            {
+                if (disposed) { throw new ObjectDisposedException("ServiceBusReceiver"); }
+
+                messageTopic = args.RoutingKey;
+                var body = args.Body.ToArray();
+                message = Encoding.UTF8.GetString(body);
+                logger.LogInformation("Received message with topic: {Topic}", args.RoutingKey);
+            }
+
+            using (var scope = provider.CreateScope())
+            {
+                var handler = scope.ServiceProvider.GetRequiredService(handlerType);
+
+                var method = handler.GetType()
+                    .GetMethods()
+                    .SingleOrDefault(method =>
+                            Attribute.GetCustomAttributes(method, typeof(ServiceBusEventHandlerAttribute))
+                            .Any(attr => attr is ServiceBusEventHandlerAttribute attribute && attribute.EventName == messageTopic));
+
+                if (method is not null)
+                {
+                    _ = method.Invoke(handler, new object[1]);
+                }
+
+            }
         }
 
-        public void RegisterEventHandler<T>(T handler)
+        public void Dispose()
         {
-            throw new NotImplementedException();
-        }
-
-        private void Consumer_OnEvent(object? model, BasicDeliverEventArgs args)
-        {
-            var body = args.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
-            logger.LogInformation("Received: {Message}", message);
+            lock (disposeLock)
+            {
+                if (!disposed)
+                {
+                    channel?.Dispose();
+                    disposed = true;
+                }
+            }
         }
     }
 }

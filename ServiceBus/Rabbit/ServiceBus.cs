@@ -4,36 +4,30 @@ using Microsoft.Extensions.Configuration;
 
 namespace ServiceBus.Rabbit
 {
-    public sealed class ServiceBus : IDisposable
+    public sealed class ServiceBusConnection : IDisposable
     {
         private const string DEFAULT_SERVICE_BUS_ADDRESS = "localhost";
-        private readonly ILogger<ServiceBus> logger;
+        private readonly ILogger<ServiceBusConnection> logger;
 
         private IConnection? connection;
         private string serviceBusAddress;
         private bool disposed;
 
-        private IModel? channel;
-
-        public IModel Channel
+        public IConnection Connection
         {
             get
             {
-                if (channel is null)
+                if (disposed)
                 {
-                    logger.LogInformation(
-                        "Connecting to RabbitMQ instance at {RabbitHost}",
-                        serviceBusAddress);
-
-                    var factory = new ConnectionFactory();
-                    connection = factory.CreateConnection();
-                    channel = connection.CreateModel();
+                    throw new ObjectDisposedException("ServiceBus is already disposed");
                 }
-                return channel;
+                return connection ?? new ConnectionFactory().CreateConnection();
             }
         }
 
-        public ServiceBus(IConfiguration configuration, ILogger<ServiceBus> logger)
+        public static string DefaultExchange => "events";
+
+        public ServiceBusConnection(IConfiguration configuration, ILogger<ServiceBusConnection> logger)
         {
             this.logger = logger;
             serviceBusAddress = configuration.GetValue<string>("serviceBusAddress") ?? DEFAULT_SERVICE_BUS_ADDRESS;
@@ -44,8 +38,6 @@ namespace ServiceBus.Rabbit
             if (!disposed)
             {
                 disposed = true;
-                channel?.Dispose();
-                channel = null;
                 connection?.Dispose();
                 connection = null;
             }

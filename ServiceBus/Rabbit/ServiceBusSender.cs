@@ -9,11 +9,11 @@ namespace ServiceBus.Rabbit
     {
         private readonly ILogger<ServiceBusSender> logger;
         private readonly string topic;
-        private readonly IModel channel;
+        private readonly ServiceBusConnection connection;
 
-        public ServiceBusSender(ServiceBus bus, string topic, ILogger<ServiceBusSender> logger)
+        public ServiceBusSender(ServiceBusConnection connection, string topic, ILogger<ServiceBusSender> logger)
         {
-            channel = bus.Channel;
+            this.connection = connection;
             this.topic = topic;
             this.logger = logger;
         }

@@ -5,27 +5,24 @@ namespace ServiceBus.Rabbit
 {
     public static class ServiceBusExtension
     {
-        public static IServiceCollection AddServiceBus(this IServiceCollection provider)
+        private static HandlerContainer handlerContainer = new();
+
+        public static IServiceCollection AddServiceBus(this IServiceCollection collection)
         {
-            return provider.AddSingleton<ServiceBus>();
+            return collection.AddSingleton<ServiceBusConnection>()
+                .AddSingleton<HandlerContainer>()
+              .AddHostedService<IServiceBusReceiver>();
         }
 
-        public static IServiceCollection AddServiceBusClient(this IServiceCollection provider, string topic)
+        public static IServiceCollection AddServiceBusClient(this IServiceCollection collection, string topic)
         {
-            return provider.AddSingleton<IServiceBusSender>(p => new ServiceBusSender(
-                  p.GetService<ServiceBus>()!,
-                  topic,
-                  p.GetService<ILogger<ServiceBusSender>>()
-                  ));
+            return collection.AddSingleton<IServiceBusSender>();
         }
 
-        public static IServiceCollection AddServiceBusHandler(this IServiceCollection provider, string topic)
+        public static IServiceCollection AddServiceBusHandler<THandler>(this IServiceCollection provider, string topic) where THandler : class
         {
-            return provider.AddHostedService<IServiceBusReceiver>(p => new ServiceBusReceiver(
-                  p.GetService<ServiceBus>()!,
-                  topic,
-                  p.GetService<ILogger<ServiceBusReceiver>>()
-                  ));
+            handlerContainer.AddHandler(new Handler { HandlerName = topic, HandlerType = typeof(THandler) });
+            return provider.AddTransient<THandler>();
         }
     }
 }

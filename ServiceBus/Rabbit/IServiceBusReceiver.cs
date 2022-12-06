@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client.Events;
+using RabbitMQ.Client;
 
 namespace ServiceBus.Rabbit
 {
-    public interface IServiceBusReceiver : IHostedService
+    public interface IServiceBusReceiver : IDisposable
     {
-        public void RegisterEventHandler<T>(T handler);
+        public void StartAsync();
     }
 }
