@@ -1,4 +1,4 @@
-namespace ServiceBus
+namespace ServiceBus.Package
 {
     public class HandlerContainer
     {

@@ -1,40 +1,68 @@
-using System;
 using System.Text;
 using RabbitMQ.Client;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace ServiceBus.Rabbit
 {
-    public class ServiceBusSender : IServiceBusSender
+    public sealed class ServiceBusSender : IServiceBusSender, IDisposable
     {
         private readonly ILogger<ServiceBusSender> logger;
-        private readonly string topic;
         private readonly ServiceBusConnection connection;
+        private IModel? channel;
 
-        public ServiceBusSender(ServiceBusConnection connection, string topic, ILogger<ServiceBusSender> logger)
+        private bool disposed;
+        private object disposeLock = new();
+
+        public ServiceBusSender(ServiceBusConnection connection, ILogger<ServiceBusSender> logger)
         {
             this.connection = connection;
-            this.topic = topic;
             this.logger = logger;
         }
 
-        public void SendEvent<T>(T busEvent) where T : class
+        public void SendEvent<T>(string topic, T busEvent) where T : class
         {
-            channel.QueueDeclare(queue: topic, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            lock (disposeLock)
+            {
+                if (disposed) { throw new ObjectDisposedException("ServiceBusSender"); }
 
-            string message = "Hello World";
-            var body = Encoding.UTF8.GetBytes(message);
-            logger.LogInformation("Send: {Message}", message);
+                LazyInitialize();
 
-            channel.BasicPublish(exchange: "",
-                routingKey: topic,
-                basicProperties: null,
-                body: body);
+                string message = JsonSerializer.Serialize(busEvent);
+                byte[] body = Encoding.UTF8.GetBytes(message);
+
+                logger.LogInformation("Send: {Message} with topic: {Topic}", message, topic);
+
+                channel.BasicPublish(exchange: ServiceBusConnection.DefaultExchange,
+                    routingKey: topic,
+                    basicProperties: null,
+                    body: body);
+            }
         }
 
-        public Task<TResult> SendRequest<TRequest, TResult>(TRequest request) where TResult : class, new()
+        public Task<TResult> SendRequest<TRequest, TResult>(string topic, TRequest request) where TResult : class, new()
         {
             throw new NotImplementedException("");
+        }
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                disposed = true;
+                channel?.Dispose();
+            }
+        }
+
+        private void LazyInitialize()
+        {
+            if (channel is null)
+            {
+                channel = connection.Connection.CreateModel();
+                channel.ExchangeDeclare(
+                    ServiceBusConnection.DefaultExchange,
+                    ServiceBusConnection.DefaultExchangeType);
+            }
         }
     }
 }

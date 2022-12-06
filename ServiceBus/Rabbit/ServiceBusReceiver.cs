@@ -3,6 +3,9 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceBus.Package;
+using System.Text.Json;
+using System.Reflection;
 
 namespace ServiceBus.Rabbit
 {
@@ -28,57 +31,13 @@ namespace ServiceBus.Rabbit
             this.topic = topic;
         }
 
-        public void StartAsync()
+        public void Start()
         {
             lock (disposeLock)
             {
                 if (disposed) { throw new ObjectDisposedException("ServiceBusReceiver"); }
 
-                channel = serviceBusConnection.Connection.CreateModel();
-
-                channel.ExchangeDeclare(exchange: ServiceBusConnection.DefaultExchange, type: ExchangeType.Direct);
-
-                var queueName = channel.QueueDeclare().QueueName;
-                channel.QueueBind(queue: queueName, exchange: ServiceBusConnection.DefaultExchange, routingKey: topic);
-
-                var consumer = new EventingBasicConsumer(channel);
-                consumer.Received += OnMessage;
-
-                _ = channel.BasicConsume(queue: topic, autoAck: true, consumer: consumer);
-            }
-        }
-
-
-        private void OnMessage(object? _, BasicDeliverEventArgs args)
-        {
-            string? message;
-            string? messageTopic;
-
-            lock (disposeLock)
-            {
-                if (disposed) { throw new ObjectDisposedException("ServiceBusReceiver"); }
-
-                messageTopic = args.RoutingKey;
-                var body = args.Body.ToArray();
-                message = Encoding.UTF8.GetString(body);
-                logger.LogInformation("Received message with topic: {Topic}", args.RoutingKey);
-            }
-
-            using (var scope = provider.CreateScope())
-            {
-                var handler = scope.ServiceProvider.GetRequiredService(handlerType);
-
-                var method = handler.GetType()
-                    .GetMethods()
-                    .SingleOrDefault(method =>
-                            Attribute.GetCustomAttributes(method, typeof(ServiceBusEventHandlerAttribute))
-                            .Any(attr => attr is ServiceBusEventHandlerAttribute attribute && attribute.EventName == messageTopic));
-
-                if (method is not null)
-                {
-                    _ = method.Invoke(handler, new object[1]);
-                }
-
+                StartConsumer();
             }
         }
 
@@ -92,6 +51,63 @@ namespace ServiceBus.Rabbit
                     disposed = true;
                 }
             }
+        }
+
+        private void OnMessage(object? _, BasicDeliverEventArgs args)
+        {
+
+            string messageTopic = args.RoutingKey;
+            byte[] body = args.Body.ToArray();
+            string message = Encoding.UTF8.GetString(body);
+
+            logger.LogInformation("Received message: {Message} with topic: {Topic}", message, messageTopic);
+
+            using (var scope = provider.CreateScope())
+            {
+                var handler = scope.ServiceProvider.GetRequiredService(handlerType);
+
+                MethodInfo? method = handler.GetType()
+                    .GetMethods()
+                    .SingleOrDefault(method =>
+                            Attribute.GetCustomAttributes(method, typeof(ServiceBusEventHandlerAttribute))
+                            .Any(attr => attr is ServiceBusEventHandlerAttribute attribute && attribute.EventName == messageTopic));
+
+                if (method is null)
+                {
+                    logger.LogInformation("No suitable method found for topic: {Topic}", messageTopic);
+                    return;
+                }
+
+                ParameterInfo? param = method.GetParameters().SingleOrDefault();
+
+                if (param is null)
+                {
+                    _ = method.Invoke(handler, Array.Empty<object>());
+                    return;
+                }
+
+                logger.LogInformation("Executing handler method {Name}", method.Name);
+                dynamic? eventInstance = JsonSerializer.Deserialize(message,
+                                                               param.ParameterType);
+                _ = method.Invoke(handler, new object[] { eventInstance });
+            }
+        }
+
+        private void StartConsumer()
+        {
+            channel = serviceBusConnection.Connection.CreateModel();
+
+            channel.ExchangeDeclare(
+                exchange: ServiceBusConnection.DefaultExchange,
+                type: ServiceBusConnection.DefaultExchangeType);
+
+            var queueName = channel.QueueDeclare().QueueName;
+            channel.QueueBind(queue: queueName, exchange: ServiceBusConnection.DefaultExchange, routingKey: topic);
+
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += OnMessage;
+
+            _ = channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
         }
     }
 }

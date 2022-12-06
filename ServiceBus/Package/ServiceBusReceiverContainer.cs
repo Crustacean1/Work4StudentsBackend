@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ServiceBus.Rabbit;
 
-namespace ServiceBus
+namespace ServiceBus.Package
 {
     public sealed class ServiceBusReceiverContainer : IHostedService, IDisposable
     {
@@ -12,7 +12,7 @@ namespace ServiceBus
         private readonly ServiceBusConnection serviceBusConnection;
 
         private bool disposed;
-        private List<IServiceBusReceiver> receivers;
+        private readonly List<IServiceBusReceiver> receivers;
 
         public ServiceBusReceiverContainer(
             IServiceProvider provider,
@@ -27,14 +27,17 @@ namespace ServiceBus
             receivers = new List<IServiceBusReceiver>();
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             foreach (var handler in handlerContainer.Handlers)
             {
-                receivers.Add(new ServiceBusReceiver(provider, logger, handler.HandlerType, serviceBusConnection, handler.HandlerName));
+                logger.LogInformation("Creating receiver for topic: {Topic}", handler.HandlerName);
+                var receiver = new ServiceBusReceiver(provider, logger, handler.HandlerType, serviceBusConnection, handler.HandlerName);
+                receivers.Add(receiver);
             }
 
-            return Task.CompletedTask;
+            var connectionTasks = receivers.Select(r => Task.Run(r.Start));
+            await Task.WhenAll(connectionTasks);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

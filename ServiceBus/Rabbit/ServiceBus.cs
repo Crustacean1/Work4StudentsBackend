@@ -10,7 +10,7 @@ namespace ServiceBus.Rabbit
         private readonly ILogger<ServiceBusConnection> logger;
 
         private IConnection? connection;
-        private string serviceBusAddress;
+        private readonly string serviceBusAddress;
         private bool disposed;
 
         public IConnection Connection
@@ -21,11 +21,12 @@ namespace ServiceBus.Rabbit
                 {
                     throw new ObjectDisposedException("ServiceBus is already disposed");
                 }
-                return connection ?? new ConnectionFactory().CreateConnection();
+                return connection ??= new ConnectionFactory() { HostName = serviceBusAddress }.CreateConnection();
             }
         }
 
         public static string DefaultExchange => "events";
+        public static string DefaultExchangeType => ExchangeType.Topic;
 
         public ServiceBusConnection(IConfiguration configuration, ILogger<ServiceBusConnection> logger)
         {

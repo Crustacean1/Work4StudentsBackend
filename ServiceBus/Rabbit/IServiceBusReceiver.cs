@@ -6,6 +6,6 @@ namespace ServiceBus.Rabbit
 {
     public interface IServiceBusReceiver : IDisposable
     {
-        public void StartAsync();
+        public void Start();
     }
 }
