@@ -78,19 +78,64 @@ namespace ServiceBus.Rabbit
                     return;
                 }
 
-                ParameterInfo? param = method.GetParameters().SingleOrDefault();
-
-                if (param is null)
-                {
-                    _ = method.Invoke(handler, Array.Empty<object>());
-                    return;
-                }
-
                 logger.LogInformation("Executing handler method {Name}", method.Name);
-                dynamic? eventInstance = JsonSerializer.Deserialize(message,
-                                                               param.ParameterType);
-                _ = method.Invoke(handler, new object[] { eventInstance });
+
+                if (InvokeMethod(handler, method, message, out var result))
+                {
+                    ReturnFromMethod(result, args.BasicProperties, args.DeliveryTag);
+                }
+                else
+                {
+                    channel!.BasicAck(args.DeliveryTag, multiple: false);
+                }
             }
+        }
+
+        private bool InvokeMethod(object? caller, MethodInfo method, string rawParameter, out object? result)
+        {
+            ParameterInfo? parameterType = method.GetParameters().SingleOrDefault();
+
+            object[] arguments;
+
+            if (parameterType is null)
+            {
+                arguments = Array.Empty<object>();
+            }
+            else
+            {
+                dynamic? eventInstance = JsonSerializer.Deserialize(rawParameter, parameterType.ParameterType);
+                if (eventInstance is null) { throw new InvalidOperationException("Couldn't deserialize empty event"); }
+                arguments = new object[] { eventInstance };
+            }
+
+            if (!method.ReturnType.Equals(typeof(void)))
+            {
+                result = method.Invoke(caller, arguments);
+                return false;
+            }
+            else
+            {
+                _ = method.Invoke(caller, arguments);
+                result = null;
+                return false;
+            }
+        }
+
+        private void ReturnFromMethod<T>(T result, IBasicProperties props, ulong deliveryTag)
+        {
+            var replyProps = channel!.CreateBasicProperties();
+            var serializedResult = JsonSerializer.Serialize(result);
+            byte[] serializedResultBuffer = Encoding.UTF8.GetBytes(serializedResult);
+
+            replyProps.CorrelationId = props.CorrelationId;
+
+            logger.LogInformation("Replying to message");
+
+            channel.BasicPublish(exchange: ServiceBusConnection.DefaultExchange,
+                routingKey: props.ReplyTo,
+                basicProperties: replyProps,
+                body: serializedResultBuffer);
+            channel.BasicAck(deliveryTag: deliveryTag, multiple: false);
         }
 
         private void StartConsumer()
@@ -107,7 +152,7 @@ namespace ServiceBus.Rabbit
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += OnMessage;
 
-            _ = channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
+            _ = channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
         }
     }
 }

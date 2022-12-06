@@ -24,7 +24,7 @@ namespace ServiceBus.Rabbit
         {
             lock (disposeLock)
             {
-                if (disposed) { throw new ObjectDisposedException("ServiceBusSender"); }
+                if (disposed) { throw new ObjectDisposedException("ServiceBusSender.SendEvent"); }
 
                 LazyInitialize();
 
@@ -42,7 +42,22 @@ namespace ServiceBus.Rabbit
 
         public Task<TResult> SendRequest<TRequest, TResult>(string topic, TRequest request) where TResult : class, new()
         {
-            throw new NotImplementedException("");
+            lock (disposeLock)
+            {
+                if (disposed) { throw new ObjectDisposedException("ServiceBusSender.SendRequest"); }
+
+                LazyInitialize();
+
+                string message = JsonSerializer.Serialize(busEvent);
+                byte[] body = Encoding.UTF8.GetBytes(message);
+
+                logger.LogInformation("Send: {Message} with topic: {Topic}", message, topic);
+
+                channel.BasicPublish(exchange: ServiceBusConnection.DefaultExchange,
+                    routingKey: topic,
+                    basicProperties: null,
+                    body: body);
+            }
         }
 
         public void Dispose()
