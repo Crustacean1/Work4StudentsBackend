@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
@@ -10,6 +11,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
     public class W4SUserbaseDbContext : DbContext
     {
         private readonly string _connectionString;
+        private ILogger<W4SUserbaseDbContext> _logger;
         public DbSet<Administrator> Administrators { get; set; }
         public DbSet<Employer> Employers { get; set; }
         public DbSet<Student> Students { get; set; }
@@ -17,15 +19,12 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
         public DbSet<University> Universities { get; set; }
         public DbSet<Domain> UniversitiesDomains { get; set; }
 
-        //public W4SUserbaseDbContext(DbContextOptions<W4SUserbaseDbContext> options)
-        //    : base(options)
-        //{
-
-        //}
-
-        public W4SUserbaseDbContext(IConfiguration configuration)
+        public W4SUserbaseDbContext(
+            IConfiguration configuration,
+            ILogger<W4SUserbaseDbContext> logger)
         {
             _connectionString = configuration.GetConnectionString("W4SRegistrationUserbase");
+            _logger = logger;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

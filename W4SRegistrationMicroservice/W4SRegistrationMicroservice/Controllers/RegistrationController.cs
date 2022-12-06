@@ -16,12 +16,12 @@ namespace W4SRegistrationMicroservice.API.Controllers
         }
 
         [HttpPost]
-        [Route("register/Student")]
-        public async Task<IActionResult> RegisterStudent([FromBody] StudentCreationDto dto)
+        [Route("Student")]
+        public async Task<IActionResult> RegisterStudent([FromBody] StudentRegistrationDto dto)
         {
             try
             {
-                await Task.Run(() => _registrationService.RegisterStudent(dto));
+                _registrationService.RegisterStudent(dto);
             }
             catch(Exception ex)
             {
@@ -32,12 +32,12 @@ namespace W4SRegistrationMicroservice.API.Controllers
         }
 
         [HttpPost]
-        [Route("register/Employer")]
-        public async Task<IActionResult> RegisterEmployer([FromBody] EmployerCreationDto dto)
+        [Route("Employer")]
+        public async Task<IActionResult> RegisterEmployer([FromBody] EmployerRegistrationDto dto)
         {
             try
             {
-                await Task.Run(() => _registrationService.RegisterEmployer(dto));
+                _registrationService.RegisterEmployer(dto);
             }
             catch (Exception ex)
             {

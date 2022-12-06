@@ -25,7 +25,7 @@ namespace W4SRegistrationMicroservice.API.Services
             _logger = logger;
         }
 
-        public void RegisterEmployer(EmployerCreationDto employerCreationDto)
+        public void RegisterEmployer(EmployerRegistrationDto employerCreationDto)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace W4SRegistrationMicroservice.API.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message);
+                _logger.LogInformation(e.Message);
             }
 
             if(companyId == null)
@@ -60,6 +60,7 @@ namespace W4SRegistrationMicroservice.API.Services
 
                 _dbContext.Add(company);
                 _dbContext.SaveChanges();
+
 
                 try
                 {
@@ -89,7 +90,7 @@ namespace W4SRegistrationMicroservice.API.Services
             _dbContext.SaveChanges();
         }
 
-        public void RegisterStudent(StudentCreationDto studentCreationDto)
+        public void RegisterStudent(StudentRegistrationDto studentCreationDto)
         {
             long? emailDomainId = null;
 

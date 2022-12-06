@@ -1,6 +1,6 @@
 ﻿namespace W4SRegistrationMicroservice.API.Models.Users.Creation
 {
-    public class StudentCreationDto
+    public class AdministratorRegistrationDto
     {
         public string EmailAddress { get; set; }
         public string Password { get; set; }
