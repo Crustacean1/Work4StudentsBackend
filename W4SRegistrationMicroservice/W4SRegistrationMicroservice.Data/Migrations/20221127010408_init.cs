@@ -32,7 +32,8 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    NIP = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -40,17 +41,16 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Universities",
+                name: "UniversitiesDomains",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Domain = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    EmailDomain = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Universities", x => x.Id);
+                    table.PrimaryKey("PK_UniversitiesDomains", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -73,6 +73,26 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                         name: "FK_Employers_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Universities",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    EmailDomainId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Universities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Universities_UniversitiesDomains_EmailDomainId",
+                        column: x => x.EmailDomainId,
+                        principalTable: "UniversitiesDomains",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -109,6 +129,11 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                 name: "IX_Students_UniversityId",
                 table: "Students",
                 column: "UniversityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Universities_EmailDomainId",
+                table: "Universities",
+                column: "EmailDomainId");
         }
 
         /// <inheritdoc />
@@ -128,6 +153,9 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Universities");
+
+            migrationBuilder.DropTable(
+                name: "UniversitiesDomains");
         }
     }
 }

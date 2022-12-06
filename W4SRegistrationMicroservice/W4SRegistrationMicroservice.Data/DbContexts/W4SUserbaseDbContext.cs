@@ -1,27 +1,30 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
+using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
-using W4SRegistrationMicroservice.Data.Settings;
 
 namespace W4SRegistrationMicroservice.Data.DbContexts
 {
     public class W4SUserbaseDbContext : DbContext
     {
         private readonly string _connectionString;
+        private ILogger<W4SUserbaseDbContext> _logger;
         public DbSet<Administrator> Administrators { get; set; }
         public DbSet<Employer> Employers { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<University> Universities { get; set; }
+        public DbSet<Domain> UniversitiesDomains { get; set; }
 
-        public W4SUserbaseDbContext()
+        public W4SUserbaseDbContext(
+            IConfiguration configuration,
+            ILogger<W4SUserbaseDbContext> logger)
         {
-        }
-
-        public W4SUserbaseDbContext(IOptions<W4SUserbaseSettings> options)
-        {
-            _connectionString = options.Value.ConnectionString;
+            _connectionString = configuration.GetConnectionString("W4SRegistrationUserbase");
+            _logger = logger;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,10 +48,13 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
             // University
             modelBuilder.Entity<University>().Property(e => e.Name).HasMaxLength(100);
-            modelBuilder.Entity<University>().Property(e => e.Domain).HasMaxLength(20);
+
+            // Domain
+            modelBuilder.Entity<Domain>().Property(e => e.EmailDomain).HasMaxLength(20);
 
             // Company
             modelBuilder.Entity<Company>().Property(e => e.Name).HasMaxLength(100);
+            modelBuilder.Entity<Company>().Property(e => e.NIP).HasMaxLength(9);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

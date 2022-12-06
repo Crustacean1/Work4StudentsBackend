@@ -1,4 +1,6 @@
-﻿namespace W4SRegistrationMicroservice.Data.Entities.Users
+﻿using W4SRegistrationMicroservice.Data.Entities.Universities;
+
+namespace W4SRegistrationMicroservice.Data.Entities.Users
 {
     public class Student : User
     {
