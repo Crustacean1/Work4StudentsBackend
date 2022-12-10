@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using W4SRegistrationMicroservice.Data.Entities;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
-using W4SRegistrationMicroservice.API.Interfaces.Common;
+using W4SRegistrationMicroservice.CommonServices.Interfaces;
 
 namespace W4SRegistrationMicroservice.API.Services
 {

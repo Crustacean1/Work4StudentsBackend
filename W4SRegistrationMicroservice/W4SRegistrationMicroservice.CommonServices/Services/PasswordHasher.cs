@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using W4SRegistrationMicroservice.API.Interfaces.Common;
+using W4SRegistrationMicroservice.CommonServices.Interfaces;
 
-namespace W4SRegistrationMicroservice.API.Services.Common
+namespace W4SRegistrationMicroservice.CommonServices.Services
 {
     public class PasswordHasher : IHasher
     {

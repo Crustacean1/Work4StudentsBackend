@@ -6,8 +6,8 @@ using W4SRegistrationMicroservice.Data.DbContexts;
 using Serilog;
 using W4SRegistrationMicroservice.Data.Seeders;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;
-using W4SRegistrationMicroservice.API.Interfaces.Common;
-using W4SRegistrationMicroservice.API.Services.Common;
+using W4SRegistrationMicroservice.CommonServices.Interfaces;
+using W4SRegistrationMicroservice.CommonServices.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,9 +55,10 @@ void ConfigureLogger(ConfigureHostBuilder host)
 
 void ConfigureServices(IServiceCollection services)
 {
-    services.TryAddScoped<ISeeder, W4SUserbaseSeeder>();
     services.TryAddScoped<IHasher, PasswordHasher>();
+    services.TryAddScoped<ISeeder, W4SUserbaseSeeder>();
     services.TryAddScoped<IRegistrationService, RegistrationService>();
+    services.TryAddScoped<ISigningInService, SigningInService>();
 }
 
 void ConfigureUserbaseDbContext(IServiceCollection services, string connectionString)

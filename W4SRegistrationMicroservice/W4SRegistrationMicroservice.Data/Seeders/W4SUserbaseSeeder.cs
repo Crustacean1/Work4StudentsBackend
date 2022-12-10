@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4SRegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
@@ -15,10 +16,14 @@ namespace W4SRegistrationMicroservice.Data.Seeders
     public class W4SUserbaseSeeder : ISeeder
     {
         private readonly W4SUserbaseDbContext _dbContext;
+        private readonly IHasher _passwordHasher;
 
-        public W4SUserbaseSeeder(W4SUserbaseDbContext dbContext)
+        public W4SUserbaseSeeder(
+            W4SUserbaseDbContext dbContext,
+            IHasher hasher)
         {
             _dbContext = dbContext;
+            _passwordHasher = hasher;
         }
 
         public void Seed()
@@ -78,7 +83,7 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     var student = new Student()
                     {
                         EmailAddress = "janek.tumanek@polsl.pl",
-                        PasswordHash = "NOTHASHED:DDD",
+                        PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         Name = "Jan",
                         Surname = "Tuman",
                         UniversityId = university.Id,
@@ -110,7 +115,7 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                         EmailAddress = "someEmployer@gmail.com",
                         Name = "Adam",
                         Surname = "Małysz",
-                        PasswordHash = "NOTHASHED:DDD",
+                        PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         PositionName = "Majster HR",
                         CompanyId = company.Id,
                         RoleId = _dbContext.Roles.First(s => s.Role.Equals("Employer")).Id
@@ -125,7 +130,7 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     var admin = new Administrator()
                     {
                         EmailAddress = "JoeMama@gmail.com",
-                        PasswordHash = "U wish u knew.",
+                        PasswordHash = _passwordHasher.HashText("U wish u knew."),
                         Name = "Admin",
                         Surname = "Joe",
                         RoleId = _dbContext.Roles.First(s => s.Role.Equals("Administrator")).Id

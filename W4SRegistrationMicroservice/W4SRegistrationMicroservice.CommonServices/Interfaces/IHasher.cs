@@ -1,4 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.API.Interfaces.Common
+﻿namespace W4SRegistrationMicroservice.CommonServices.Interfaces
 {
     public interface IHasher
     {

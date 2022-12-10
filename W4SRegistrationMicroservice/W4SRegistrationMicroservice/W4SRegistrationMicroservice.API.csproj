@@ -27,6 +27,7 @@
     <Folder Include="Models\Users\Signing\" />
   </ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\W4SRegistrationMicroservice.CommonServices\W4SRegistrationMicroservice.CommonServices.csproj" />
 	  <ProjectReference Include="..\W4SRegistrationMicroservice.Data\W4SRegistrationMicroservice.Data.csproj" />
 	</ItemGroup>
 
