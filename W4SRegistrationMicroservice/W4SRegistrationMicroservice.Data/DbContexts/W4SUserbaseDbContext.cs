@@ -59,7 +59,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
             // Company
             modelBuilder.Entity<Company>().Property(e => e.Name).HasMaxLength(100);
-            modelBuilder.Entity<Company>().Property(e => e.NIP).HasMaxLength(9);
+            modelBuilder.Entity<Company>().Property(e => e.NIP).HasMaxLength(10);
 
             // Roles
             modelBuilder.Entity<Roles>().Property(e => e.Role).IsRequired();
