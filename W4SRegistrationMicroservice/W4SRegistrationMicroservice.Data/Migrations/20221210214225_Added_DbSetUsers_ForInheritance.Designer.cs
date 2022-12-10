@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using W4SRegistrationMicroservice.Data.DbContexts;
 
@@ -10,9 +11,11 @@ using W4SRegistrationMicroservice.Data.DbContexts;
 namespace W4SRegistrationMicroservice.Data.Migrations
 {
     [DbContext(typeof(W4SUserbaseDbContext))]
-    partial class W4SUserbaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221210214225_Added_DbSetUsers_ForInheritance")]
+    partial class AddedDbSetUsersForInheritance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,6 +96,10 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -121,7 +128,9 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     b.ToTable("Users");
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.User_Settings.Roles", b =>
@@ -145,7 +154,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                 {
                     b.HasBaseType("W4SRegistrationMicroservice.Data.Entities.Users.User");
 
-                    b.ToTable("Administrators");
+                    b.HasDiscriminator().HasValue("Administrator");
                 });
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Employer", b =>
@@ -161,7 +170,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Employers");
+                    b.HasDiscriminator().HasValue("Employer");
                 });
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Student", b =>
@@ -173,7 +182,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     b.HasIndex("UniversityId");
 
-                    b.ToTable("Students");
+                    b.HasDiscriminator().HasValue("Student");
                 });
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Universities.University", b =>
@@ -198,15 +207,6 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Administrator", b =>
-                {
-                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("W4SRegistrationMicroservice.Data.Entities.Users.Administrator", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Employer", b =>
                 {
                     b.HasOne("W4SRegistrationMicroservice.Data.Entities.Company", "Company")
@@ -215,23 +215,11 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("W4SRegistrationMicroservice.Data.Entities.Users.Employer", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Company");
                 });
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Student", b =>
                 {
-                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("W4SRegistrationMicroservice.Data.Entities.Users.Student", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("W4SRegistrationMicroservice.Data.Entities.Universities.University", "University")
                         .WithMany()
                         .HasForeignKey("UniversityId")

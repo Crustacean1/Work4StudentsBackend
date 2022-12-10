@@ -13,6 +13,8 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
     {
         private readonly string _connectionString;
         private ILogger<W4SUserbaseDbContext> _logger;
+
+        public DbSet<User> Users { get; set; }
         public DbSet<Administrator> Administrators { get; set; }
         public DbSet<Employer> Employers { get; set; }
         public DbSet<Student> Students { get; set; }
