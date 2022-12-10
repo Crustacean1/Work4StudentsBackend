@@ -70,9 +70,14 @@ namespace W4SRegistrationMicroservice.API.Services
         {
             try
             {
-                dbSet
+                var emailAndPassword = dbSet
                     .Select(x => new { x.EmailAddress, x.PasswordHash })
-                    .First(x => x.EmailAddress == email && x.PasswordHash == _passwordHasher.HashText(password));
+                    .First(x => x.EmailAddress == email);
+
+                if(!emailAndPassword.PasswordHash.Equals(_passwordHasher.HashText(password)))
+                {
+                    throw new Exception();
+                }
             }
             catch
             {
