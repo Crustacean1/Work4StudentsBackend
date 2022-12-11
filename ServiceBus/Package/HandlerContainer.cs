@@ -2,18 +2,18 @@ namespace ServiceBus.Package
 {
     public class HandlerContainer
     {
-        private readonly List<Handler> handlers;
+        private readonly List<HandlerDefinition> handlers;
 
         public HandlerContainer()
         {
-            handlers = new List<Handler>();
+            handlers = new List<HandlerDefinition>();
         }
 
-        public void AddHandler(Handler handler)
+        public void AddHandler(HandlerDefinition handler)
         {
             handlers.Add(handler);
         }
 
-        public IEnumerable<Handler> Handlers => handlers;
+        public IEnumerable<HandlerDefinition> Handlers => handlers;
     }
 }

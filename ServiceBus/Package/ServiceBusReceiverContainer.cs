@@ -1,43 +1,44 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ServiceBus.Rabbit;
+using ServiceBus.Abstractions;
+using ServiceBus.Attributes;
+using System.Reflection;
 
 namespace ServiceBus.Package
 {
     public sealed class ServiceBusReceiverContainer : IHostedService, IDisposable
     {
         private readonly IServiceProvider provider;
+        private readonly ILoggerFactory loggerFactory;
         private readonly ILogger<ServiceBusReceiverContainer> logger;
-        private readonly HandlerContainer handlerContainer;
-        private readonly ServiceBusConnection serviceBusConnection;
+        private readonly IServiceBusFactory serviceBusFactory;
 
         private bool disposed;
-        private readonly List<IServiceBusReceiver> receivers;
+        private readonly List<HandlerExecutor> receivers;
 
         public ServiceBusReceiverContainer(
             IServiceProvider provider,
             ILogger<ServiceBusReceiverContainer> logger,
-            HandlerContainer handlerContainer,
-            ServiceBusConnection serviceBusConnection)
+            ILoggerFactory loggerFactory,
+            IServiceBusFactory serviceBusFactory)
         {
             this.provider = provider;
             this.logger = logger;
-            this.handlerContainer = handlerContainer;
-            this.serviceBusConnection = serviceBusConnection;
-            receivers = new List<IServiceBusReceiver>();
+            this.loggerFactory = loggerFactory;
+            this.serviceBusFactory = serviceBusFactory;
+            receivers = new List<HandlerExecutor>();
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            foreach (var handler in handlerContainer.Handlers)
+            var handlers = FindAllHandlers();
+            foreach (var handlerType in handlers)
             {
-                logger.LogInformation("Creating receiver for topic: {Topic}", handler.HandlerName);
-                var receiver = new ServiceBusReceiver(provider, logger, handler.HandlerType, serviceBusConnection, handler.HandlerName);
+                var receiver = new HandlerExecutor(provider, loggerFactory.CreateLogger<HandlerExecutor>(), handlerType, serviceBusFactory);
                 receivers.Add(receiver);
+                receiver.Start();
             }
-
-            var connectionTasks = receivers.Select(r => Task.Run(r.Start));
-            await Task.WhenAll(connectionTasks);
+            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -55,6 +56,21 @@ namespace ServiceBus.Package
                     receiver?.Dispose();
                 }
             }
+        }
+
+        public IEnumerable<Type> FindAllHandlers()
+        {
+            var currentAssembly = Assembly.GetEntryAssembly();
+            if (currentAssembly is null) { throw new InvalidOperationException("What the fuck are You doing with this library?!"); }
+            var handlerTypes = new List<Type>();
+            foreach (var type in currentAssembly.GetTypes())
+            {
+                if (Attribute.GetCustomAttributes(type, typeof(ServiceBusHandlerAttribute)).SingleOrDefault() is not null)
+                {
+                    handlerTypes.Add(type);
+                }
+            }
+            return handlerTypes;
         }
     }
 }
