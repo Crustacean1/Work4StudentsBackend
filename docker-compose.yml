@@ -27,10 +27,11 @@ services:
       - internal
 
   servicebus:
-    image: rabbitmq
+    build: ./RabbitMq
     restart: always
     ports:
       - 5672:5672
+      - 15672:15672
     volumes:
       - servicebus-data:/var/lib/rabbitmq
 

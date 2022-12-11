@@ -1,7 +1,6 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using PostingService.Console.Controllers;
-using ServiceBus.Rabbit;
+using PostingService.Console.Handlers;
+using PostingService.Console.Hosts;
+using ServiceBus.Extensions;
 
 namespace PostingService.Console
 {
@@ -13,16 +12,14 @@ namespace PostingService.Console
             await new HostBuilder()
               .ConfigureLogging(builder =>
               {
-                  builder.ClearProviders()
+                  _ = builder.ClearProviders()
                          .AddConsole();
               })
               .ConfigureServices(provider =>
               {
-                  provider.AddServiceBus()
-                          .AddServiceBusClient("shitposting")
-                          .AddServiceBusHandler("shitposting");
-
-                  provider.AddHostedService<PostingHost>();
+                  provider.AddScoped<UserCreationHandler>()
+                  .AddServiceBus()
+                  .AddHostedService<PostingHost>();
               })
             .RunConsoleAsync();
         }
