@@ -2,15 +2,16 @@ using PostingService.Persistence.Entities;
 
 namespace PostingService.Persistence
 {
-    public interface IPostingRepository
+    public interface IJobOfferRepository
     {
-        public IEnumerable<Applicant> GetAllApplicants(uint page, uint itemsPerPage);
+        public void AddJobOffer(JobOffer jobOffer);
 
-        public IEnumerable<Posting> GetPostings(uint page, uint itemsPerPage);
+        public void UpdateJobOffer(JobOffer jobOffer);
 
-        public IEnumerable<Poster> GetPosters(uint page, uint itemsPerPage);
+        public void DeleteJobOffer(Guid id);
 
-        public IEnumerable<Application> GetApplications(Posting posting, uint page, uint itemsPerPage);
+        public JobOffer GetJobOffer(Guid Id);
+
+        public IEnumerable<JobOffer> GetJobOffers(Func<JobOffer, bool> selector);
     }
-
 }
