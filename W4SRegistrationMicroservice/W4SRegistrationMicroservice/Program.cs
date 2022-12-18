@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
 using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.API.Services;
 using W4SRegistrationMicroservice.Data.DbContexts;
@@ -8,6 +9,8 @@ using W4SRegistrationMicroservice.Data.Seeders;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4SRegistrationMicroservice.CommonServices.Services;
+using W4SRegistrationMicroservice.API.Validations.UserAuthentication;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +27,11 @@ ConfigureUserbaseDbContext(builder.Services, builder.Configuration.GetConnection
 
 ConfigureServices(builder.Services);
 
+ConfigureValidators(builder.Services, builder.Configuration);
+
 var app = builder.Build();
+
+app.UseAuthentication();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -51,6 +58,34 @@ void ConfigureLogger(ConfigureHostBuilder host)
     builder.Host.UseSerilog((ctx, lc) => lc
         .WriteTo.Console()
         .ReadFrom.Configuration(ctx.Configuration));
+}
+
+void ConfigureValidators(IServiceCollection services, IConfiguration configuration)
+{
+    ConfigureJwt(services, configuration);
+}
+
+void ConfigureJwt(IServiceCollection services, IConfiguration configuration)
+{
+    var authentiactionSettings = new AuthenticationSettings();
+    configuration.GetSection(nameof(AuthenticationSettings)).Bind(authentiactionSettings);
+
+    services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = "Bearer";
+        options.DefaultScheme = "Bearer";
+        options.DefaultChallengeScheme = "Bearer";
+    }).AddJwtBearer(cfg =>
+    {
+        cfg.RequireHttpsMetadata = false;
+        cfg.SaveToken = true;
+        cfg.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = authentiactionSettings.JwtIssuer,
+            ValidAudience = authentiactionSettings.JwtIssuer,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authentiactionSettings.JwtKey))
+        };
+    });
 }
 
 void ConfigureServices(IServiceCollection services)

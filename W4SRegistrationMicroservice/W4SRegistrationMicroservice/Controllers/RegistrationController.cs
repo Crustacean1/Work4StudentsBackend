@@ -17,7 +17,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
 
         [HttpPost]
         [Route("Student")]
-        public async Task<IActionResult> RegisterStudent([FromBody] StudentRegistrationDto dto)
+        public IActionResult RegisterStudent([FromBody] StudentRegistrationDto dto)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
 
         [HttpPost]
         [Route("Employer")]
-        public async Task<IActionResult> RegisterEmployer([FromBody] EmployerRegistrationDto dto)
+        public IActionResult RegisterEmployer([FromBody] EmployerRegistrationDto dto)
         {
             try
             {

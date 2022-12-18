@@ -7,6 +7,7 @@ using W4SRegistrationMicroservice.API.Models.Users.Enums;
 using W4SRegistrationMicroservice.API.Models.Users.Signing;
 using W4SRegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities.Users;
+using System.Security.Claims;
 
 namespace W4SRegistrationMicroservice.API.Services
 {
@@ -83,6 +84,20 @@ namespace W4SRegistrationMicroservice.API.Services
             {
                 throw new UserNotFoundException("Given credentials could not be verified.");
             }
+        }
+
+        private string GenerateJwt(UserCredentialsDto userCredentialsDto)
+        {
+            var user = _dbContext.Users
+                .Select(x => new { x.Id, x.EmailAddress, x.Role })
+                .First();
+
+            var claim = new List<Claim>() {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, $"{user.EmailAddress}"),
+                new Claim(ClaimTypes.Role, $"{user.Role.Role}")
+            };
+            return string.Empty; // placeholder
         }
     }
 }
