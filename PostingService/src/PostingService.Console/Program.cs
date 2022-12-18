@@ -1,5 +1,4 @@
 using PostingService.Console.Handlers;
-using PostingService.Console.Hosts;
 using ServiceBus.Extensions;
 
 namespace PostingService.Console
@@ -17,9 +16,9 @@ namespace PostingService.Console
               })
               .ConfigureServices(provider =>
               {
-                  provider.AddScoped<UserCreationHandler>()
-                  .AddServiceBus()
-                  .AddHostedService<PostingHost>();
+                  provider.AddScoped<UserCreationHandler>();
+                  provider.AddScoped<JobOfferHandler>();
+                  provider.AddServiceBus();
               })
             .RunConsoleAsync();
         }

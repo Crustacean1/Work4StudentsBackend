@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using ServiceBus.Abstractions;
 
@@ -20,7 +19,8 @@ namespace Gateway.Console.Controllers
         public async Task<ActionResult<Guid>> CreateJobOffer([FromBody] CreateJobOfferDto jobOffer, CancellationToken cancellationToken)
         {
             logger.LogInformation("Request: Create job posting");
-            var response = await busClient.SendRequest<CreateJobOfferResponse, CreateJobOfferDto>("posting.createOffer", jobOffer, cancellationToken);
+            CreateJobOfferResponse response =
+                await busClient.SendRequest<CreateJobOfferResponse, CreateJobOfferDto>("offers.create", jobOffer, cancellationToken);
             return response.Id;
         }
     }
