@@ -1,5 +1,3 @@
-using System;
-
 namespace PostingService.Persistence.Entities
 {
     public class Application
