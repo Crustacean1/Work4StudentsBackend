@@ -61,7 +61,7 @@ namespace ServiceBus.Package
         public IEnumerable<Type> FindAllHandlers()
         {
             var currentAssembly = Assembly.GetEntryAssembly();
-            if (currentAssembly is null) { throw new InvalidOperationException("What the fuck are You doing with this library?!"); }
+            if (currentAssembly is null) { throw new InvalidOperationException("Can it be, perchance, thee hath not runneth this wrapper as executable?"); }
             var handlerTypes = new List<Type>();
             foreach (var type in currentAssembly.GetTypes())
             {
