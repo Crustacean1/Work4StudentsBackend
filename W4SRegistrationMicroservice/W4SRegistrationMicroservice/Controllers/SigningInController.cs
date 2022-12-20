@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ServiceBus.Attributes;
 using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;
+using W4SRegistrationMicroservice.API.Models.ServiceBusResponses.Users.Signing;
 using W4SRegistrationMicroservice.API.Models.Users.Signing;
 
 namespace W4SRegistrationMicroservice.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class SigningInController : ControllerBase
+    [ServiceBusHandler("signing")]
+    public class SigningInController
     {
         private readonly ISigningInService _signingInService;
         private readonly ILogger<SigningInController> _logger;
@@ -21,18 +22,23 @@ namespace W4SRegistrationMicroservice.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
-        public IActionResult SignIn(UserCredentialsDto credentialsDto)
+        [ServiceBusMethod("signin")]
+        public UserSigningResponse SignIn(UserCredentialsDto credentialsDto)
         {
+            var response = new UserSigningResponse();
+
             try
             {
-                return Ok(_signingInService.SignIn(credentialsDto));
+                response.JwtTokenValue = _signingInService.SignIn(credentialsDto);
+                response.UserEmail = credentialsDto.EmailAddress;
             }
             catch(UserNotFoundException ex)
             {
                 _logger.LogError(ex.Message, ex);
-                return BadRequest(ex.Message);
+                response.ExceptionMessage = ex.Message;
             }
+
+            return response;
         }
     }
 }

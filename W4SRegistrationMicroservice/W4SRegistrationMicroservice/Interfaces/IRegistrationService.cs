@@ -4,7 +4,7 @@ namespace W4SRegistrationMicroservice.API.Interfaces
 {
     public interface IRegistrationService
     {
-        void RegisterStudent(StudentRegistrationDto studentCreationDto);
-        void RegisterEmployer(EmployerRegistrationDto employerCreationDto);
+        long RegisterStudent(StudentRegistrationDto studentCreationDto);
+        long RegisterEmployer(EmployerRegistrationDto employerCreationDto);
     }
 }
