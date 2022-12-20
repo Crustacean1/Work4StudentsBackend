@@ -24,10 +24,9 @@ builder.Services.AddSwaggerGen();
 ConfigureLogger(builder.Host);
 
 ConfigureUserbaseDbContext(builder.Services, builder.Configuration.GetConnectionString("W4SRegistrationUserbase"));
+ConfigureValidators(builder.Services, builder.Configuration);
 
 ConfigureServices(builder.Services);
-
-ConfigureValidators(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
@@ -67,6 +66,8 @@ void ConfigureValidators(IServiceCollection services, IConfiguration configurati
 
 void ConfigureJwt(IServiceCollection services, IConfiguration configuration)
 {
+    services.Configure<AuthenticationSettings>(options => configuration.GetSection(nameof(AuthenticationSettings)).Bind(options));
+
     var authentiactionSettings = new AuthenticationSettings();
     configuration.GetSection(nameof(AuthenticationSettings)).Bind(authentiactionSettings);
 
