@@ -3,13 +3,13 @@ using System;
 
 namespace PostingService.Persistence.Entities
 {
-    public class Posting
+    public class JobOffer
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
 
-        public Poster Poster { get; set; }
+        public Recruiter Poster { get; set; }
 
-        public IEnumerable<Applicant> Applicants { get; set; }
+        public IEnumerable<Application> Applications { get; set; }
 
         public string Title { get; set; }
 
@@ -17,9 +17,9 @@ namespace PostingService.Persistence.Entities
 
         public string Position { get; set; }
 
-        public string MinSalary { get; set; }
+        public decimal MinSalary { get; set; }
 
-        public string MaxSalary { get; set; }
+        public decimal MaxSalary { get; set; }
 
         public string Location { get; set; }
 
