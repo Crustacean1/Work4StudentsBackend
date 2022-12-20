@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ServiceBus.Attributes;
 using W4SRegistrationMicroservice.API.Interfaces;
+using W4SRegistrationMicroservice.API.Models.ServiceBusResponses.Users.Registration;
 using W4SRegistrationMicroservice.API.Models.Users.Creation;
 
 namespace W4SRegistrationMicroservice.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RegistrationController : ControllerBase
+    [ServiceBusHandler("registration")]
+    public class RegistrationController
     {
         private readonly IRegistrationService _registrationService;
         public RegistrationController(IRegistrationService registrationService) 
@@ -15,36 +16,38 @@ namespace W4SRegistrationMicroservice.API.Controllers
             _registrationService = registrationService;
         }
 
-        [HttpPost]
-        [Route("Student")]
-        public IActionResult RegisterStudent([FromBody] StudentRegistrationDto dto)
+        [ServiceBusMethod("student")]
+        public StudentRegisteredResponse RegisterStudent([FromBody] StudentRegistrationDto dto)
         {
+            var response = new StudentRegisteredResponse();
+
             try
             {
-                _registrationService.RegisterStudent(dto);
+                response.Id = _registrationService.RegisterStudent(dto);
             }
             catch(Exception ex)
             {
-                return StatusCode(400, ex.Message);
+                response.ExceptionMessage = ex.Message;
             }
 
-            return Ok();
+            return response;
         }
 
-        [HttpPost]
-        [Route("Employer")]
-        public IActionResult RegisterEmployer([FromBody] EmployerRegistrationDto dto)
+        [ServiceBusMethod("employer")]
+        public EmployerRegisteredResponse RegisterEmployer([FromBody] EmployerRegistrationDto dto)
         {
+            var response = new EmployerRegisteredResponse();
+
             try
             {
-                _registrationService.RegisterEmployer(dto);
+                 response.Id = _registrationService.RegisterEmployer(dto);
             }
             catch (Exception ex)
             {
-                return StatusCode(400, ex.Message);
+                response.ExceptionMessage = ex.Message;
             }
 
-            return Ok();
+            return response;
         }
     }
 }

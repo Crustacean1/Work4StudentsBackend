@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
-using W4SRegistrationMicroservice.API.Models.Users.Enums;
 using W4SRegistrationMicroservice.API.Models.Users.Signing;
 using W4SRegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities.Users;

@@ -30,7 +30,7 @@ namespace W4SRegistrationMicroservice.API.Services
             _logger = logger;
         }
 
-        public void RegisterEmployer(EmployerRegistrationDto employerCreationDto)
+        public long RegisterEmployer(EmployerRegistrationDto employerCreationDto)
         {
             try
             {
@@ -94,9 +94,14 @@ namespace W4SRegistrationMicroservice.API.Services
 
             _dbContext.Employers.Add(employer);
             _dbContext.SaveChanges();
+
+            return _dbContext.Employers
+                .Select(x => new { x.Id, x.EmailAddress })
+                .Where(x => x.EmailAddress.Equals(employerCreationDto.EmailAddress))
+                .First().Id;
         }
 
-        public void RegisterStudent(StudentRegistrationDto studentCreationDto)
+        public long RegisterStudent(StudentRegistrationDto studentCreationDto)
         {
             long? emailDomainId = null;
 
@@ -142,6 +147,11 @@ namespace W4SRegistrationMicroservice.API.Services
 
             _dbContext.Students.Add(student);
             _dbContext.SaveChanges();
+
+            return _dbContext.Students
+                .Select(x => new { x.Id, x.EmailAddress })
+                .Where(x => x.EmailAddress.Equals(studentCreationDto.EmailAddress))
+                .First().Id;
         }
 
 
