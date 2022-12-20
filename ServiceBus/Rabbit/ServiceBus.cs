@@ -1,6 +1,5 @@
 using RabbitMQ.Client;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 
 namespace ServiceBus.Rabbit
 {
@@ -21,6 +20,7 @@ namespace ServiceBus.Rabbit
                 {
                     throw new ObjectDisposedException("ServiceBus is already disposed");
                 }
+                logger.LogInformation("Connecting to host: {HostName}", serviceBusAddress);
                 return connection ??= new ConnectionFactory() { HostName = serviceBusAddress }.CreateConnection();
             }
         }
@@ -28,10 +28,10 @@ namespace ServiceBus.Rabbit
         public static string DefaultExchange => "events";
         public static string DefaultExchangeType => ExchangeType.Topic;
 
-        public ServiceBusConnection(IConfiguration configuration, ILogger<ServiceBusConnection> logger)
+        public ServiceBusConnection(ILogger<ServiceBusConnection> logger)
         {
             this.logger = logger;
-            serviceBusAddress = configuration.GetValue<string>("serviceBusAddress") ?? DEFAULT_SERVICE_BUS_ADDRESS;
+            serviceBusAddress = Environment.GetEnvironmentVariable("SERVICE_BUS_ADDRESS") ?? DEFAULT_SERVICE_BUS_ADDRESS;
         }
 
         public void Dispose()

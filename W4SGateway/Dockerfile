@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS builder
 RUN dotnet nuget add source /NugetPackages --name internal
-WORKDIR /PostingService
+WORKDIR /Gateway
 COPY ./ ./
-WORKDIR /PostingService/src/PostingService.Console
+WORKDIR /Gateway/src/Gateway.Console
 ENTRYPOINT ["dotnet", "run"]

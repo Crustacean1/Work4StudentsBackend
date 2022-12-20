@@ -1,6 +1,6 @@
 namespace PostingService.Persistence.Entities
 {
-    public class Company
+    public class CompanyEntity
     {
         public Guid Id { get; set; }
 

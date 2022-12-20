@@ -1,19 +1,14 @@
-using System.Collections.Generic;
-using System;
-
-namespace PostingService.Persistence.Entities
+namespace PostingService.Domain.Models
 {
     public class JobOffer
     {
-        public Guid Id { get; set; }
+        public uint Id { get; set; }
 
-        public Recruiter Poster { get; set; }
-
-        public IEnumerable<Application> Applications { get; set; }
+        public uint RecruiterId { get; set; }
 
         public string Title { get; set; }
 
-        public string Description { get; set; }
+        public string Content { get; set; }
 
         public string Position { get; set; }
 
@@ -23,6 +18,12 @@ namespace PostingService.Persistence.Entities
 
         public string Location { get; set; }
 
+        public DateTime Starts { get; set; }
+
+        public DateTime Ends { get; set; }
+
         public IEnumerable<TimeSpan> Schedule { get; set; }
+
+        public IEnumerable<JobApplication> Applications { get; set; }
     }
 }

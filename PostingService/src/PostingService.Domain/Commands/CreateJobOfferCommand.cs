@@ -1,6 +1,8 @@
-using PostingService.Persistence;
+using PostingService.Domain.Models;
+using Microsoft.Extensions.Logging;
+using PostingService.Domain.Repositories;
 
-namespace PostingService.Console.Commands
+namespace PostingService.Domain.Commands
 {
     public class CreateJobOfferCommand
     {
@@ -11,6 +13,13 @@ namespace PostingService.Console.Commands
         {
             this.logger = logger;
             this.repository = repository;
+        }
+
+        public Guid CreateJobOffer(JobOffer offer)
+        {
+            logger.LogInformation("Creating new job offer");
+            repository.AddJobOffer(offer);
+            return Guid.Empty;
         }
     }
 }

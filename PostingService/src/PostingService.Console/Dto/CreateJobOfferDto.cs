@@ -1,4 +1,4 @@
-namespace PostingService.Console.Models
+namespace PostingService.Console.Dto
 {
     public class CreateJobOfferDto
     {

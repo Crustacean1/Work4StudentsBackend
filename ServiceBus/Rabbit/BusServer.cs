@@ -57,6 +57,7 @@ namespace ServiceBus.Rabbit
 
         private void OnMessage(object? _, BasicDeliverEventArgs args)
         {
+            logger.LogInformation("Received message: {Topic}", args.RoutingKey);
             if (string.IsNullOrEmpty(args.BasicProperties.ReplyTo))
             {
                 EventReceived?.Invoke(this, new EventReceivedArgs

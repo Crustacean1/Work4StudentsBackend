@@ -1,22 +1,21 @@
-using System.Collections.Generic;
 using System;
 
 namespace PostingService.Persistence.Entities
 {
-    public class Applicant
+    public class RecruiterEntity
     {
         public Guid Id { get; set; }
+
+        public CompanyEntity Company { get; set; }
 
         public string Name { get; set; }
 
         public string Surname { get; set; }
 
-        public string PhoneNumber { get; set; }
-
         public string Email { get; set; }
 
-        public string Location { get; set; }
+        public string PhoneNumber { get; set; }
 
-        public IEnumerable<TimeSpan> Schedule { get; set; }
+        public decimal Rating { get; set; }
     }
 }

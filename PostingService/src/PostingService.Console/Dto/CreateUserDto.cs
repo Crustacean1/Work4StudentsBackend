@@ -1,4 +1,4 @@
-namespace PostingService.Console.Models
+namespace PostingService.Console.Dto
 {
     /* Test class for testing of rabbit wrapper */
     public class CreateUserDto

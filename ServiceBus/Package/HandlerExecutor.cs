@@ -63,47 +63,57 @@ namespace ServiceBus.Package
 
         private object? InvokeHandler(string topic, string body)
         {
-            using (var scope = provider.CreateScope())
+            try
             {
-                var handler = scope.ServiceProvider.GetRequiredService(handlerType);
-
-                var methods = handler.GetType().GetMethods();
-
-                var methodToCall = methods
-                    .SingleOrDefault(m => Attribute
-                            .GetCustomAttributes(m, typeof(ServiceBusMethodAttribute))
-                                .Any(a => a is ServiceBusMethodAttribute attribute && $"{baseTopic}.{attribute.EndpointName}" == topic));
-
-                if (methodToCall is MethodInfo method && method.GetParameters().SingleOrDefault() is ParameterInfo parameter)
+                using (var scope = provider.CreateScope())
                 {
-                    dynamic? eventBody = JsonSerializer.Deserialize(body, parameter.ParameterType);
+                    var handler = scope.ServiceProvider.GetRequiredService(handlerType);
 
-                    if (eventBody is not null)
+                    var methods = handler.GetType().GetMethods();
+
+                    var methodToCall = methods
+                        .SingleOrDefault(m => Attribute
+                                .GetCustomAttributes(m, typeof(ServiceBusMethodAttribute))
+                                    .Any(a => a is ServiceBusMethodAttribute attribute && $"{baseTopic}.{attribute.EndpointName}" == topic));
+
+                    if (methodToCall is MethodInfo method && method.GetParameters().SingleOrDefault() is ParameterInfo parameter)
                     {
-                        logger.LogInformation("Executing handler method {Name}", methodToCall.Name);
-                        return method.Invoke(handler, new object[] { eventBody });
+                        dynamic? eventBody = JsonSerializer.Deserialize(body, parameter.ParameterType);
+
+                        if (eventBody is not null)
+                        {
+                            logger.LogInformation("Executing handler method {Name}", methodToCall.Name);
+                            return method.Invoke(handler, new object[] { eventBody });
+                        }
+                        else
+                        {
+                            logger.LogWarning("Couldn't deserialize event body for event: {Topic}", topic);
+                            return null;
+                        }
                     }
                     else
                     {
-                        logger.LogWarning("Couldn't deserialize event body for event: {Topic}", topic);
+                        logger.LogWarning("No suitable method found for topic: {Topic}", topic);
                         return null;
                     }
                 }
-                else
-                {
-                    logger.LogWarning("No suitable method found for topic: {Topic}", topic);
-                    return null;
-                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e.Message);
+                return null;
             }
         }
 
         private void OnEvent(object? _, EventReceivedArgs args)
         {
+            logger.LogInformation("Event received");
             _ = InvokeHandler(args.Topic, args.EventBody);
         }
 
         private void OnRequest(object? _, RequestReceivedArgs args)
         {
+            logger.LogInformation("Request received");
             var result = InvokeHandler(args.Topic, args.RequestBody);
             var responseBody = JsonSerializer.Serialize(result);
             busClient?.SendResponse(args.ReplyTopic, args.RequestId, responseBody);

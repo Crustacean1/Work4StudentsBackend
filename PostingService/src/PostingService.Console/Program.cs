@@ -1,4 +1,8 @@
 using PostingService.Console.Handlers;
+using PostingService.Domain.Commands;
+using PostingService.Domain.Repositories;
+using PostingService.Persistence.Repositories;
+using PostingService.Persistence;
 using ServiceBus.Extensions;
 
 namespace PostingService.Console
@@ -16,7 +20,9 @@ namespace PostingService.Console
               })
               .ConfigureServices(provider =>
               {
-                  provider.AddScoped<UserCreationHandler>();
+                  provider.AddScoped<CreateJobOfferCommand>();
+                  provider.AddScoped<PostingContext>();
+                  provider.AddScoped<IJobOfferRepository, JobOfferRepository>();
                   provider.AddScoped<JobOfferHandler>();
                   provider.AddServiceBus();
               })

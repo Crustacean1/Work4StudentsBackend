@@ -1,12 +1,12 @@
 namespace PostingService.Persistence.Entities
 {
-    public class Application
+    public class ApplicationEntity
     {
         public Guid Id { get; set; }
 
-        public Applicant JobApplicant { get; set; }
+        public ApplicantEntity JobApplicant { get; set; }
 
-        public JobOffer JobOffer { get; set; }
+        public JobOfferEntity JobOffer { get; set; }
 
         public DateTime DateOfApplication { get; set; }
 
