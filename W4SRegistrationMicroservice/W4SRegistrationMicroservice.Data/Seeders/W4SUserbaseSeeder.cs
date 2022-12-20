@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4SRegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
+using W4SRegistrationMicroservice.Data.Entities.Users.User_Settings;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;
 
 namespace W4SRegistrationMicroservice.Data.Seeders
@@ -14,16 +16,41 @@ namespace W4SRegistrationMicroservice.Data.Seeders
     public class W4SUserbaseSeeder : ISeeder
     {
         private readonly W4SUserbaseDbContext _dbContext;
+        private readonly IHasher _passwordHasher;
 
-        public W4SUserbaseSeeder(W4SUserbaseDbContext dbContext)
+        public W4SUserbaseSeeder(
+            W4SUserbaseDbContext dbContext,
+            IHasher hasher)
         {
             _dbContext = dbContext;
+            _passwordHasher = hasher;
         }
 
         public void Seed()
         {
             if (_dbContext.Database.CanConnect())
             {
+                if(!_dbContext.Roles.Any())
+                {
+                    List<Roles> roles = new List<Roles>() {
+                        new Roles()
+                        {
+                            Role = "Administrator"
+                        },
+                        new Roles()
+                        {
+                            Role = "Student"
+                        },
+                        new Roles()
+                        {
+                            Role = "Employer"
+                        }
+                    };
+
+                    _dbContext.Roles.AddRange(roles);
+                    _dbContext.SaveChanges();
+                }
+
                 if (!_dbContext.UniversitiesDomains.Any())
                 {
                     var domain = new Domain()
@@ -56,10 +83,11 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     var student = new Student()
                     {
                         EmailAddress = "janek.tumanek@polsl.pl",
-                        PasswordHash = "NOTHASHED:DDD",
+                        PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         Name = "Jan",
                         Surname = "Tuman",
-                        UniversityId = university.Id
+                        UniversityId = university.Id,
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id
                     };
 
                     _dbContext.Students.Add(student);
@@ -70,7 +98,7 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                 {
                     var company = new Company()
                     {
-                        NIP = "3563648589",
+                        NIP = "5283121250",
                         Name = "Empty firm in Poland"
                     };
 
@@ -80,16 +108,17 @@ namespace W4SRegistrationMicroservice.Data.Seeders
 
                 if (!_dbContext.Employers.Any())
                 {
-                    var company = _dbContext.Companies.FirstOrDefault(x => x.NIP.Equals("3563648589"));
+                    var company = _dbContext.Companies.FirstOrDefault(x => x.NIP.Equals("5283121250"));
 
                     var employer = new Employer()
                     {
                         EmailAddress = "someEmployer@gmail.com",
                         Name = "Adam",
                         Surname = "Małysz",
-                        PasswordHash = "NOTHASHED:DDD",
+                        PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         PositionName = "Majster HR",
-                        CompanyId = company.Id
+                        CompanyId = company.Id,
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Employer")).Id
                     };
 
                     _dbContext.Employers.Add(employer);
@@ -101,9 +130,10 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     var admin = new Administrator()
                     {
                         EmailAddress = "JoeMama@gmail.com",
-                        PasswordHash = "U wish u knew.",
+                        PasswordHash = _passwordHasher.HashText("U wish u knew."),
                         Name = "Admin",
                         Surname = "Joe",
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Administrator")).Id
                     };
 
                     _dbContext.Administrators.Add(admin);

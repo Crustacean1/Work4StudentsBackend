@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using W4SRegistrationMicroservice.Data.DbContexts;
 
@@ -10,9 +11,11 @@ using W4SRegistrationMicroservice.Data.DbContexts;
 namespace W4SRegistrationMicroservice.Data.Migrations
 {
     [DbContext(typeof(W4SUserbaseDbContext))]
-    partial class W4SUserbaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221210163159_addedRoles_forIdentification")]
+    partial class addedRolesforIdentification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,8 +34,8 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     b.Property<string>("NIP")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -85,7 +88,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                     b.ToTable("Universities");
                 });
 
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.User", b =>
+            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Administrator", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,9 +122,95 @@ namespace W4SRegistrationMicroservice.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Administrators");
+                });
 
-                    b.UseTptMappingStrategy();
+            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Employer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PositionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Employers");
+                });
+
+            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Student", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<long>("UniversityId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UniversityId");
+
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.User_Settings.Roles", b =>
@@ -141,41 +230,6 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Administrator", b =>
-                {
-                    b.HasBaseType("W4SRegistrationMicroservice.Data.Entities.Users.User");
-
-                    b.ToTable("Administrators");
-                });
-
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Employer", b =>
-                {
-                    b.HasBaseType("W4SRegistrationMicroservice.Data.Entities.Users.User");
-
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("PositionName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasIndex("CompanyId");
-
-                    b.ToTable("Employers");
-                });
-
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Student", b =>
-                {
-                    b.HasBaseType("W4SRegistrationMicroservice.Data.Entities.Users.User");
-
-                    b.Property<long>("UniversityId")
-                        .HasColumnType("bigint");
-
-                    b.HasIndex("UniversityId");
-
-                    b.ToTable("Students");
-                });
-
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Universities.University", b =>
                 {
                     b.HasOne("W4SRegistrationMicroservice.Data.Entities.Universities.Domain", "EmailDomain")
@@ -187,7 +241,7 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                     b.Navigation("EmailDomain");
                 });
 
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.User", b =>
+            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Administrator", b =>
                 {
                     b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User_Settings.Roles", "Role")
                         .WithMany()
@@ -198,15 +252,6 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Administrator", b =>
-                {
-                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("W4SRegistrationMicroservice.Data.Entities.Users.Administrator", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Employer", b =>
                 {
                     b.HasOne("W4SRegistrationMicroservice.Data.Entities.Company", "Company")
@@ -215,20 +260,22 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("W4SRegistrationMicroservice.Data.Entities.Users.Employer", "Id")
+                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User_Settings.Roles", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Company");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("W4SRegistrationMicroservice.Data.Entities.Users.Student", b =>
                 {
-                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User", null)
-                        .WithOne()
-                        .HasForeignKey("W4SRegistrationMicroservice.Data.Entities.Users.Student", "Id")
+                    b.HasOne("W4SRegistrationMicroservice.Data.Entities.Users.User_Settings.Roles", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -237,6 +284,8 @@ namespace W4SRegistrationMicroservice.Data.Migrations
                         .HasForeignKey("UniversityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Role");
 
                     b.Navigation("University");
                 });

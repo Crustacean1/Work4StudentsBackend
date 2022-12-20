@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using W4SRegistrationMicroservice.Data.Entities;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using W4SRegistrationMicroservice.CommonServices.Interfaces;
 
 namespace W4SRegistrationMicroservice.API.Services
 {
@@ -15,12 +16,16 @@ namespace W4SRegistrationMicroservice.API.Services
     {
         private const string REGEX_DOMAIN_PATTERN = @"@([\w\-]+)((\.(\w){2,3})+)$";
 
+        private readonly IHasher _passwordHasher;
+
         private readonly W4SUserbaseDbContext _dbContext;
         private readonly ILogger _logger;
 
         public RegistrationService(
+            IHasher passwordHasher,
             W4SUserbaseDbContext dbContext,
-            ILogger<RegistrationService> logger) { 
+            ILogger<RegistrationService> logger) {
+            _passwordHasher = passwordHasher;
             _dbContext = dbContext;
             _logger = logger;
         }
@@ -79,11 +84,12 @@ namespace W4SRegistrationMicroservice.API.Services
             {
                 Id = 0,
                 EmailAddress = employerCreationDto.EmailAddress,
-                PasswordHash = HashPassword(employerCreationDto.Password),
+                PasswordHash = _passwordHasher.HashText(employerCreationDto.Password),
                 Name = employerCreationDto.FirstName,
                 Surname = employerCreationDto.Surname,
                 PositionName = employerCreationDto.PositionName,
-                CompanyId = companyId.Value
+                CompanyId = companyId.Value,
+                RoleId = _dbContext.Roles.First(s => s.Role.Equals("Employer")).Id
             };
 
             _dbContext.Employers.Add(employer);
@@ -129,8 +135,9 @@ namespace W4SRegistrationMicroservice.API.Services
                 EmailAddress = studentCreationDto.EmailAddress,
                 Name = studentCreationDto.FirstName,
                 Surname = studentCreationDto.Surname,
-                PasswordHash = HashPassword(studentCreationDto.Password),
-                UniversityId = universityId.Value 
+                PasswordHash = _passwordHasher.HashText(studentCreationDto.Password),
+                UniversityId = universityId.Value,
+                RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id
             };
 
             _dbContext.Students.Add(student);
@@ -170,21 +177,6 @@ namespace W4SRegistrationMicroservice.API.Services
         private void ValidateNIPNumber(string nipNumber)
         {
             //throw new IncorrectNIPNumberException("The NIP number is incorrect.");
-        }
-
-        private string HashPassword(string password)
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes(password);
-            StringBuilder stringBuilder = new StringBuilder();
-            using (SHA256 hashstring = SHA256.Create())
-            {
-                byte[] hash = hashstring.ComputeHash(bytes);
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    stringBuilder.Append(bytes[i].ToString("x2"));
-                }
-            }
-            return stringBuilder.ToString();
         }
 
         private string CheckDomain(string studentEmail)

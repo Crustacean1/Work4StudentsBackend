@@ -14,4 +14,8 @@
     </PackageReference>
     <PackageReference Include="Serilog" Version="2.12.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\W4SRegistrationMicroservice.CommonServices\W4SRegistrationMicroservice.CommonServices.csproj" />
+  </ItemGroup>
 </Project>
