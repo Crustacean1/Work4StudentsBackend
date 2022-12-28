@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiceBus.Abstractions;
 
-namespace Gateway.Console.Controllers
+namespace Gateway.Console.Microservices.JobOffer
 {
     [Route("joboffers")]
     public class JobOfferController : ControllerBase
