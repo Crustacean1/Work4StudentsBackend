@@ -1,4 +1,4 @@
-namespace Gateway.Console.Controllers
+namespace Gateway.Console.Microservices.JobOffer
 {
     public class CreateJobOfferResponse
     {
