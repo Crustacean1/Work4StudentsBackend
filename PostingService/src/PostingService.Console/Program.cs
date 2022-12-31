@@ -24,6 +24,7 @@ namespace PostingService.Console
                   provider.AddScoped<PostingContext>();
                   provider.AddScoped<IJobOfferRepository, JobOfferRepository>();
                   provider.AddScoped<JobOfferHandler>();
+                  provider.AddScoped<UserIntegrationHandler>();
                   provider.AddServiceBus();
               })
             .RunConsoleAsync();

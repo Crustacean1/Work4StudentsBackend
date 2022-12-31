@@ -5,7 +5,7 @@ namespace ServiceBus.Package
     public sealed class PendingResponse : IDisposable
     {
         private readonly SemaphoreSlim semaphore;
-        private string? responseBody;
+        private string responseBody = string.Empty;
         private bool disposed;
 
         public PendingResponse()
@@ -20,10 +20,10 @@ namespace ServiceBus.Package
             return responseBody!;
         }
 
-        public void Set(string responseBody)
+        public void Set(ReadOnlySpan<byte> responseBody)
         {
             if (disposed) { throw new ObjectDisposedException("Response.Set()"); }
-            this.responseBody = responseBody;
+            this.responseBody = responseBody.ToString();
             _ = semaphore.Release();
         }
 

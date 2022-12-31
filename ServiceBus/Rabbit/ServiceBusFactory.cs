@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using ServiceBus.Abstractions;
 
 namespace ServiceBus.Rabbit
@@ -8,7 +9,7 @@ namespace ServiceBus.Rabbit
         private readonly ServiceBusConnection connection;
         private readonly ILoggerFactory loggerFactory;
 
-        private IBusClient? busClient;
+        public string ServiceName => connection.ServiceName;
 
         public ServiceBusFactory(ServiceBusConnection connection, ILoggerFactory loggerFactory)
         {
@@ -16,15 +17,41 @@ namespace ServiceBus.Rabbit
             this.loggerFactory = loggerFactory;
         }
 
-        public IBusClient GetClient()
+        public IBusProducer CreateProducer()
         {
-            busClient ??= new BusClient(connection, loggerFactory.CreateLogger<BusClient>()).Start();
-            return busClient;
+            return new BusProducer(connection,
+                                   DeclareEventExchange,
+                                   loggerFactory.CreateLogger<BusProducer>());
         }
 
-        public IBusServer CreateServer()
+        public IBusConsumer CreateEventConsumer(string topic)
         {
-            return new BusServer(connection, loggerFactory.CreateLogger<BusServer>());
+            return new BusConsumer(connection,
+                                   DeclareRequestExchange,
+                                   $"{connection.ServiceName}.{topic}",
+                                   topic,
+                                   ServiceBusConnection.EventExchange,
+                                   loggerFactory.CreateLogger<BusConsumer>());
+        }
+
+        public IBusConsumer CreateRequestConsumer(string topic)
+        {
+            return new BusConsumer(connection,
+                                   DeclareRequestExchange,
+                                   $"{connection.ServiceName}.{topic}",
+                                   topic,
+                                   ServiceBusConnection.RequestExchange,
+                                   loggerFactory.CreateLogger<BusConsumer>());
+        }
+
+        private static void DeclareEventExchange(IModel channel)
+        {
+            channel.ExchangeDeclare(exchange: ServiceBusConnection.EventExchange, type: ExchangeType.Topic);
+        }
+
+        private static void DeclareRequestExchange(IModel channel)
+        {
+            channel.ExchangeDeclare(exchange: ServiceBusConnection.RequestExchange, type: ExchangeType.Direct);
         }
     }
 }

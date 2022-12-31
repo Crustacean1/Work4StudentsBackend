@@ -2,7 +2,12 @@ namespace ServiceBus.Abstractions
 {
     public interface IServiceBusFactory
     {
-        public IBusClient GetClient();
-        public IBusServer CreateServer();
+        public string ServiceName { get; }
+
+        public IBusProducer CreateProducer();
+
+        public IBusConsumer CreateEventConsumer(string topic);
+
+        public IBusConsumer CreateRequestConsumer(string topic);
     }
 }

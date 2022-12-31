@@ -1,8 +1,17 @@
+using RabbitMQ.Client.Events;
+
 namespace ServiceBus.Events
 {
-    public class EventReceivedArgs
+    public class EventReceivedEventArgs : EventArgs
     {
-        public string Topic { get; set; } = "";
-        public string EventBody { get; set; } = "";
+        private readonly BasicDeliverEventArgs args;
+
+        public EventReceivedEventArgs(BasicDeliverEventArgs args)
+        {
+            this.args = args;
+        }
+
+        public string Topic => args.RoutingKey;
+        public ReadOnlySpan<byte> EventBody => args.Body.Span;
     }
 }

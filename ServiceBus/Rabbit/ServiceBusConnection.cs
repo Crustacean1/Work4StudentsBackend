@@ -9,7 +9,7 @@ namespace ServiceBus.Rabbit
         private readonly ILogger<ServiceBusConnection> logger;
 
         private IConnection? connection;
-        private readonly string serviceBusAddress;
+        private readonly string brokerAddress;
         private bool disposed;
 
         public IConnection Connection
@@ -20,18 +20,21 @@ namespace ServiceBus.Rabbit
                 {
                     throw new ObjectDisposedException("ServiceBus is already disposed");
                 }
-                logger.LogInformation("Connecting to host: {HostName}", serviceBusAddress);
-                return connection ??= new ConnectionFactory() { HostName = serviceBusAddress }.CreateConnection();
+                logger.LogInformation("Connecting to host: {HostName}", brokerAddress);
+                return connection ??= new ConnectionFactory() { HostName = brokerAddress }.CreateConnection();
             }
         }
 
-        public static string DefaultExchange => "events";
-        public static string DefaultExchangeType => ExchangeType.Topic;
+        public static string EventExchange => "ServiceBus.Event";
+        public static string RequestExchange => "ServiceBus.Request";
+        public string ServiceName { get; }
 
         public ServiceBusConnection(ILogger<ServiceBusConnection> logger)
         {
             this.logger = logger;
-            serviceBusAddress = Environment.GetEnvironmentVariable("SERVICE_BUS_ADDRESS") ?? DEFAULT_SERVICE_BUS_ADDRESS;
+            brokerAddress = Environment.GetEnvironmentVariable("BUS_BROKER_ADDRESS") ?? DEFAULT_SERVICE_BUS_ADDRESS;
+            ServiceName = Environment.GetEnvironmentVariable("SERVICE_NAME")
+                ?? throw new InvalidDataException("Environment variable 'SERVICE_NAME' is not specified!");
         }
 
         public void Dispose()

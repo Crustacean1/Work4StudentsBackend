@@ -1,11 +1,11 @@
-using ServiceBus.Attributes;
 using PostingService.Console.Dto;
 using PostingService.Domain.Commands;
 using PostingService.Domain.Models;
+using ServiceBus.Attributes;
 
 namespace PostingService.Console.Handlers
 {
-    [ServiceBusHandler("offers")]
+    [BusService("offer")]
     public class JobOfferHandler
     {
         ILogger<JobOfferHandler> logger;
@@ -18,7 +18,7 @@ namespace PostingService.Console.Handlers
             this.jobOfferCommand = jobOfferCommand;
         }
 
-        [ServiceBusMethod("create")]
+        [BusRequestHandler("create")]
         public JobOfferCreatedDto OnCreateJobOffer(CreateJobOfferDto offer)
         {
             logger.LogInformation("Received job creation request");
@@ -27,7 +27,7 @@ namespace PostingService.Console.Handlers
                 Title = offer.Title,
                 Content = offer.Content
             };
-            return new JobOfferCreatedDto {Id = Guid.Empty};
+            return new JobOfferCreatedDto { Id = Guid.Empty };
         }
     }
 

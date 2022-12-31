@@ -14,7 +14,7 @@ namespace ServiceBus.Package
         private readonly IServiceBusFactory serviceBusFactory;
 
         private bool disposed;
-        private readonly List<HandlerExecutor> receivers;
+        private readonly List<ExecutorBase> handlers = new();
 
         public ServiceBusReceiverContainer(
             IServiceProvider provider,
@@ -26,18 +26,33 @@ namespace ServiceBus.Package
             this.logger = logger;
             this.loggerFactory = loggerFactory;
             this.serviceBusFactory = serviceBusFactory;
-            receivers = new List<HandlerExecutor>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var handlers = FindAllHandlers();
-            foreach (var handlerType in handlers)
+            var (requestHandlers, eventHandlers) = FindAllHandlers();
+
+            foreach (var requestHandler in requestHandlers)
             {
-                var receiver = new HandlerExecutor(provider, loggerFactory.CreateLogger<HandlerExecutor>(), handlerType, serviceBusFactory);
-                receivers.Add(receiver);
-                receiver.Start();
+                var handler = new RequestExecutor(provider,
+                                                   requestHandler.Value,
+                                                   serviceBusFactory.CreateRequestConsumer(requestHandler.Key),
+                                                   serviceBusFactory.CreateProducer(),
+                                                   loggerFactory.CreateLogger<RequestExecutor>());
+                handlers.Add(handler);
+                handler.Start();
             }
+
+            foreach (var eventHandler in eventHandlers)
+            {
+                var handler = new EventExecutor(provider,
+                                                   eventHandler.Value,
+                                                   serviceBusFactory.CreateRequestConsumer(eventHandler.Key),
+                                                   loggerFactory.CreateLogger<EventExecutor>());
+                handlers.Add(handler);
+                handler.Start();
+            }
+
             return Task.CompletedTask;
         }
 
@@ -51,26 +66,40 @@ namespace ServiceBus.Package
             if (!disposed)
             {
                 disposed = true;
-                foreach (var receiver in receivers)
-                {
-                    receiver?.Dispose();
-                }
+                /* TODO: dispose of all executors here */
             }
         }
 
-        public IEnumerable<Type> FindAllHandlers()
+        private (IDictionary<string, MethodInfo> requestHandlers, IDictionary<string, MethodInfo> eventHandlers) FindAllHandlers()
         {
             var currentAssembly = Assembly.GetEntryAssembly();
             if (currentAssembly is null) { throw new InvalidOperationException("Can it be, perchance, thee hath not runneth this wrapper as executable?"); }
-            var handlerTypes = new List<Type>();
+
+            var eventHandlers = new Dictionary<string, MethodInfo>();
+            var requestHandlers = new Dictionary<string, MethodInfo>();
+
             foreach (var type in currentAssembly.GetTypes())
             {
-                if (Attribute.GetCustomAttributes(type, typeof(ServiceBusHandlerAttribute)).SingleOrDefault() is not null)
+                if (Attribute.GetCustomAttributes(type, typeof(BusServiceAttribute)).SingleOrDefault() is BusServiceAttribute classAttribute)
                 {
-                    handlerTypes.Add(type);
+                    var methods = type.GetMethods();
+
+                    foreach (var method in methods)
+                    {
+                        if (method.GetParameters().Count() != 1) { continue; }
+
+                        if (method.GetCustomAttribute<BusRequestHandlerAttribute>() is BusRequestHandlerAttribute requestHandler)
+                        {
+                            requestHandlers.Add($"{classAttribute.Name}.{requestHandler.Name}", method);
+                        }
+                        else if (method.GetCustomAttribute<BusEventHandlerAttribute>() is BusEventHandlerAttribute eventHandler)
+                        {
+                            eventHandlers.Add($"{classAttribute.Name}.{eventHandler.Name}", method);
+                        }
+                    }
                 }
             }
-            return handlerTypes;
+            return (requestHandlers, eventHandlers);
         }
     }
 }
