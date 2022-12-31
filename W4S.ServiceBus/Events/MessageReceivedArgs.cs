@@ -1,6 +1,6 @@
 using RabbitMQ.Client.Events;
 
-namespace ServiceBus.Events
+namespace W4S.ServiceBus.Events
 {
     public class MessageReceivedEventArgs : EventArgs
     {

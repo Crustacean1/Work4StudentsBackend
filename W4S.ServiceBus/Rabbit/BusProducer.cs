@@ -1,8 +1,8 @@
 using RabbitMQ.Client;
 using Microsoft.Extensions.Logging;
-using ServiceBus.Abstractions;
+using W4S.ServiceBus.Abstractions;
 
-namespace ServiceBus.Rabbit
+namespace W4S.ServiceBus.Rabbit
 {
     public sealed class BusProducer : IBusProducer, IDisposable
     {
@@ -52,7 +52,7 @@ namespace ServiceBus.Rabbit
         {
             if (disposed) { throw new ObjectDisposedException("ServiceBusSender.SendRequest"); }
 
-            logger.LogInformation("Sending message to {topic}", topic);
+            logger.LogInformation("Sending message to {Topic}", topic);
 
             var props = channel!.CreateBasicProperties();
             props.ContentType = "application/json";

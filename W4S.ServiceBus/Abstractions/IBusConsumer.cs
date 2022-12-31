@@ -1,6 +1,6 @@
-using ServiceBus.Events;
+using W4S.ServiceBus.Events;
 
-namespace ServiceBus.Abstractions
+namespace W4S.ServiceBus.Abstractions
 {
     public interface IBusConsumer : IDisposable
     {

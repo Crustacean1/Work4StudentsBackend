@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ServiceBus.Abstractions;
-using ServiceBus.Attributes;
+using W4S.ServiceBus.Abstractions;
+using W4S.ServiceBus.Attributes;
 using System.Reflection;
 
-namespace ServiceBus.Package
+namespace W4S.ServiceBus.Package
 {
     public sealed class ServiceBusReceiverContainer : IHostedService, IDisposable
     {
@@ -36,7 +36,7 @@ namespace ServiceBus.Package
             {
                 var handler = new RequestExecutor(provider,
                                                    requestHandler.Value,
-                                                   serviceBusFactory.CreateRequestConsumer(requestHandler.Key),
+                                                   serviceBusFactory.CreateUnicastConsumer(requestHandler.Key),
                                                    serviceBusFactory.CreateProducer(),
                                                    loggerFactory.CreateLogger<RequestExecutor>());
                 handlers.Add(handler);
@@ -47,7 +47,7 @@ namespace ServiceBus.Package
             {
                 var handler = new EventExecutor(provider,
                                                    eventHandler.Value,
-                                                   serviceBusFactory.CreateRequestConsumer(eventHandler.Key),
+                                                   serviceBusFactory.CreateMulticastConsumer(eventHandler.Key),
                                                    loggerFactory.CreateLogger<EventExecutor>());
                 handlers.Add(handler);
                 handler.Start();

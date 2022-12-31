@@ -1,4 +1,4 @@
-using ServiceBus.Extensions;
+using W4S.ServiceBus.Extensions;
 
 namespace Gateway.Console
 {
@@ -22,9 +22,9 @@ namespace Gateway.Console
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             //app.UseAuthorization();
 

@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using ServiceBus.Abstractions;
-using ServiceBus.Events;
+using W4S.ServiceBus.Abstractions;
+using W4S.ServiceBus.Events;
 
-namespace ServiceBus.Package
+namespace W4S.ServiceBus.Package
 {
     public class Client : IClient
     {
@@ -21,7 +21,7 @@ namespace ServiceBus.Package
         public Client(IServiceBusFactory busFactory, ILogger<Client> logger)
         {
             replyQueue = $"{busFactory.ServiceName}.responses";
-            busConsumer = busFactory.CreateRequestConsumer(replyQueue);
+            busConsumer = busFactory.CreateUnicastConsumer(replyQueue);
             busProducer = busFactory.CreateProducer();
             this.logger = logger;
         }
@@ -44,6 +44,7 @@ namespace ServiceBus.Package
                 startedListening = true;
                 busConsumer.MessageReceived += OnResponse;
                 busConsumer.Start();
+                busProducer.Start();
             }
 
             var requestBody = JsonSerializer.SerializeToUtf8Bytes(request);
@@ -60,12 +61,14 @@ namespace ServiceBus.Package
             }
 
             string responseBody = await pendingResponse.Get(cancellationToken);
+            logger.LogInformation("Received raw response: {Response}", responseBody);
             dynamic? response = JsonSerializer.Deserialize(responseBody, typeof(TResponse));
             return response is null ? throw new InvalidOperationException("Response is empty") : (TResponse)response;
         }
 
         private void OnResponse(object? _, MessageReceivedEventArgs args)
         {
+            logger.LogInformation("Received response {Response}", args.Topic);
             if (pendingResponses.TryGetValue(args.RequestId, out PendingResponse? response))
             {
                 response.Set(args.RequestBody);

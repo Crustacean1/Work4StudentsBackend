@@ -1,7 +1,7 @@
 using PostingService.Console.Dto;
 using PostingService.Domain.Commands;
 using PostingService.Domain.Models;
-using ServiceBus.Attributes;
+using W4S.ServiceBus.Attributes;
 
 namespace PostingService.Console.Handlers
 {

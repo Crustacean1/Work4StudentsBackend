@@ -1,4 +1,4 @@
-namespace ServiceBus.Abstractions
+namespace W4S.ServiceBus.Abstractions
 {
     public interface IBusProducer
     {

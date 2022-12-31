@@ -3,7 +3,7 @@ using PostingService.Domain.Commands;
 using PostingService.Domain.Repositories;
 using PostingService.Persistence.Repositories;
 using PostingService.Persistence;
-using ServiceBus.Extensions;
+using W4S.ServiceBus.Extensions;
 
 namespace PostingService.Console
 {

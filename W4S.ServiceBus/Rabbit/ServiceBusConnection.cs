@@ -1,7 +1,7 @@
 using RabbitMQ.Client;
 using Microsoft.Extensions.Logging;
 
-namespace ServiceBus.Rabbit
+namespace W4S.ServiceBus.Rabbit
 {
     public sealed class ServiceBusConnection : IDisposable
     {

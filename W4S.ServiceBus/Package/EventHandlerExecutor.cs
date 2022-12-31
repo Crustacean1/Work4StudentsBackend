@@ -1,19 +1,23 @@
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using ServiceBus.Abstractions;
-using ServiceBus.Events;
+using W4S.ServiceBus.Abstractions;
+using W4S.ServiceBus.Events;
 
-namespace ServiceBus.Package
+namespace W4S.ServiceBus.Package
 {
     public class EventExecutor : ExecutorBase
     {
         private readonly IBusConsumer busConsumer;
-        private ILogger<EventExecutor> logger;
+        private readonly ILogger<EventExecutor> logger;
 
         public EventExecutor(IServiceProvider provider, MethodInfo methodInfo, IBusConsumer busConsumer, ILogger<EventExecutor> logger) : base(provider, methodInfo, logger)
         {
             this.busConsumer = busConsumer;
             this.logger = logger;
+            if (!methodInfo.ReturnType.Equals(typeof(void)))
+            {
+                throw new InvalidOperationException($"Event handler should return void {methodInfo.Name}");
+            }
         }
 
         public override void Start()

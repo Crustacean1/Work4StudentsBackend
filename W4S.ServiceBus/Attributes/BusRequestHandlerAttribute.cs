@@ -1,4 +1,4 @@
-namespace ServiceBus.Attributes
+namespace W4S.ServiceBus.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class BusRequestHandlerAttribute : Attribute

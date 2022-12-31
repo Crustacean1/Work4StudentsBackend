@@ -2,6 +2,11 @@ namespace PostingService.Console.Dto
 {
     public class CreateJobOfferDto
     {
+        public CreateJobOfferDto()
+        {
+
+        }
+
         public string Title { get; set; }
 
         public string Content { get; set; }

@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using ServiceBus.Abstractions;
-using ServiceBus.Package;
-using ServiceBus.Rabbit;
+using W4S.ServiceBus.Abstractions;
+using W4S.ServiceBus.Package;
+using W4S.ServiceBus.Rabbit;
 
-namespace ServiceBus.Extensions
+namespace W4S.ServiceBus.Extensions
 {
     public static class ServiceBusExtension
     {

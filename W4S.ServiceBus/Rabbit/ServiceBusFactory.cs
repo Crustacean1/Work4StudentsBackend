@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using ServiceBus.Abstractions;
+using W4S.ServiceBus.Abstractions;
 
-namespace ServiceBus.Rabbit
+namespace W4S.ServiceBus.Rabbit
 {
     public class ServiceBusFactory : IServiceBusFactory
     {
@@ -24,17 +24,17 @@ namespace ServiceBus.Rabbit
                                    loggerFactory.CreateLogger<BusProducer>());
         }
 
-        public IBusConsumer CreateEventConsumer(string topic)
+        public IBusConsumer CreateMulticastConsumer(string topic)
         {
             return new BusConsumer(connection,
-                                   DeclareRequestExchange,
+                                   DeclareEventExchange,
                                    $"{connection.ServiceName}.{topic}",
                                    topic,
                                    ServiceBusConnection.EventExchange,
                                    loggerFactory.CreateLogger<BusConsumer>());
         }
 
-        public IBusConsumer CreateRequestConsumer(string topic)
+        public IBusConsumer CreateUnicastConsumer(string topic)
         {
             return new BusConsumer(connection,
                                    DeclareRequestExchange,

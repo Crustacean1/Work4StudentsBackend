@@ -1,9 +1,12 @@
 version: "3.9"
 services:
+
   posting:
     build:
       context: ./PostingService
       dockerfile: Dockerfile
+      args:
+        MODE: Debug
     restart: always
     depends_on: 
       - servicebus
@@ -11,23 +14,8 @@ services:
       - internal
     environment:
       CONNECTION_STRING: Host=posting-db;User=root;Password=root;Port=5432
-      SERVICE_BUS_ADDRESS: servicebus
-    volumes:
-      - ./NugetPackages:/NugetPackages
-
-  gateway:
-    build:
-      context: ./W4SGateway
-      dockerfile: Dockerfile
-    restart: always
-    depends_on: 
-      - servicebus
-    ports:
-      - 80:5000
-    networks:
-      - internal
-    environment:
-      SERVICE_BUS_ADDRESS: servicebus
+      BUS_BROKER_ADDRESS: servicebus
+      SERVICE_NAME: OfferService
     volumes:
       - ./NugetPackages:/NugetPackages
 
@@ -40,10 +28,27 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: posting
-    ports:
-      - 5432:5432
     networks:
       - internal
+
+  gateway:
+    build:
+      context: ./W4SGateway
+      dockerfile: Dockerfile
+      args:
+        MODE: Debug
+    restart: always
+    depends_on: 
+      - servicebus
+    ports:
+      - 80:5000
+    networks:
+      - internal
+    environment:
+      BUS_BROKER_ADDRESS: servicebus
+      SERVICE_NAME: Gateway
+    volumes:
+      - ./NugetPackages:/NugetPackages
 
   servicebus:
     build: ./RabbitMq
@@ -59,6 +64,7 @@ services:
 volumes:
   posting-data:
   servicebus-data:
+  registration-data:
 
 networks:
   internal:

@@ -1,6 +1,6 @@
-using System;
+using System.Text;
 
-namespace ServiceBus.Package
+namespace W4S.ServiceBus.Package
 {
     public sealed class PendingResponse : IDisposable
     {
@@ -23,7 +23,7 @@ namespace ServiceBus.Package
         public void Set(ReadOnlySpan<byte> responseBody)
         {
             if (disposed) { throw new ObjectDisposedException("Response.Set()"); }
-            this.responseBody = responseBody.ToString();
+            this.responseBody = Encoding.UTF8.GetString(responseBody);
             _ = semaphore.Release();
         }
 

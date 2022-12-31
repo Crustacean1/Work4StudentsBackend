@@ -1,10 +1,10 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Microsoft.Extensions.Logging;
-using ServiceBus.Events;
-using ServiceBus.Abstractions;
+using W4S.ServiceBus.Events;
+using W4S.ServiceBus.Abstractions;
 
-namespace ServiceBus.Rabbit
+namespace W4S.ServiceBus.Rabbit
 {
     public sealed class BusConsumer : IBusConsumer, IDisposable
     {

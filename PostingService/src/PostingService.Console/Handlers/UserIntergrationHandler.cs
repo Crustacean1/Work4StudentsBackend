@@ -1,5 +1,5 @@
 using PostingService.Console.Dto;
-using ServiceBus.Attributes;
+using W4S.ServiceBus.Attributes;
 
 namespace PostingService.Console.Handlers
 {
@@ -14,8 +14,10 @@ namespace PostingService.Console.Handlers
         }
 
         [BusEventHandler("created")]
-        public void OnuserCreation(CreateUserDto userCreation)
+        public void OnUserCreation(CreateUserDto userCreation)
         {
+            logger.LogInformation("User has been created: {Name}", userCreation.Name);
+            return;
         }
     }
 }

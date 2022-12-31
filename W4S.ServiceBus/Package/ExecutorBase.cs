@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using ServiceBus.Events;
+using W4S.ServiceBus.Events;
 using System.Text.Json;
 using System.Text;
 
-namespace ServiceBus.Package
+namespace W4S.ServiceBus.Package
 {
     public abstract class ExecutorBase
     {
@@ -32,11 +32,15 @@ namespace ServiceBus.Package
         {
             try
             {
+                logger.LogInformation("Creating scope");
+
                 using (var scope = provider.CreateScope())
                 {
+                    logger.LogInformation("Starting Invokation");
+
                     var handler = scope.ServiceProvider.GetRequiredService(methodInfo.DeclaringType!);
 
-                    var methods = handler.GetType().GetMethods();
+                    logger.LogInformation("Handler requested");
 
                     var parameterType = methodInfo.GetParameters()[0].ParameterType;
 
@@ -54,7 +58,8 @@ namespace ServiceBus.Package
         protected dynamic ParseMessageBody(ReadOnlySpan<byte> body)
         {
             string argBody = Encoding.UTF8.GetString(body);
-            return JsonSerializer.Deserialize(argBody, methodInfo.DeclaringType!) ?? throw new InvalidOperationException("OnRequest: Received invalid formatted JSON event, aborting...");
+            var paramType = methodInfo.GetParameters().SingleOrDefault()!.ParameterType;
+            return JsonSerializer.Deserialize(argBody, paramType) ?? throw new InvalidOperationException("OnRequest: Received invalid formatted JSON event, aborting...");
         }
 
         protected abstract void OnMessage(object? _, MessageReceivedEventArgs args);
