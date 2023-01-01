@@ -27,7 +27,7 @@ namespace PostingService.Console.Handlers
                 Title = offer.Title,
                 Content = offer.Content
             };
-            return new JobOfferCreatedDto { Id = Guid.Empty };
+            return new JobOfferCreatedDto { Id = offer.PosterId };
         }
     }
 

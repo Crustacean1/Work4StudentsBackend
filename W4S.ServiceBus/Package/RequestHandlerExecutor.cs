@@ -68,6 +68,10 @@ namespace W4S.ServiceBus.Package
             {
                 logger.LogError("Error in OnMessage: {Error}", e.Message);
             }
+            finally
+            {
+                busConsumer.Acknowledge(args.Tag);
+            }
         }
     }
 }

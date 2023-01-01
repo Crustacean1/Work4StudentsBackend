@@ -52,13 +52,13 @@ namespace W4S.ServiceBus.Rabbit
         {
             if (disposed) { throw new ObjectDisposedException("ServiceBusSender.SendRequest"); }
 
-            logger.LogInformation("Sending message to {Topic}", topic);
-
             var props = channel!.CreateBasicProperties();
             props.ContentType = "application/json";
             props.DeliveryMode = 2;
 
             builder(props);
+
+            logger.LogInformation("Sending message to {Topic}", topic);
 
             channel.BasicPublish(exchange: exchange,
                 routingKey: topic,

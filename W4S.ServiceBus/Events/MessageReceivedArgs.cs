@@ -14,6 +14,7 @@ namespace W4S.ServiceBus.Events
         public string Topic => args.RoutingKey;
         public ReadOnlySpan<byte> RequestBody => args.Body.Span;
         public string ReplyTopic => args.BasicProperties.ReplyTo;
+        public ulong Tag => args.DeliveryTag;
         public Guid RequestId => Guid.Parse(args.BasicProperties.CorrelationId);
     }
 }

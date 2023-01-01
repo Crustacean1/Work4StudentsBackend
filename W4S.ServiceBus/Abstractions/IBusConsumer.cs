@@ -6,6 +6,8 @@ namespace W4S.ServiceBus.Abstractions
     {
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
+        public void Acknowledge(ulong tag);
+
         public void Start();
     }
 }

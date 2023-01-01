@@ -30,8 +30,19 @@ namespace W4S.ServiceBus.Package
         {
             logger.LogInformation("Received event {Topic}", args.Topic);
 
-            dynamic arg = ParseMessageBody(args.RequestBody);
-            _ = InvokeHandler(arg);
+            try
+            {
+                dynamic arg = ParseMessageBody(args.RequestBody);
+                _ = InvokeHandler(arg);
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Error OnMessage: {Error}", e.Message);
+            }
+            finally
+            {
+                busConsumer.Acknowledge(args.Tag);
+            }
         }
     }
 }

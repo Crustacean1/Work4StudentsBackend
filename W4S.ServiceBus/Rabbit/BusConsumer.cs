@@ -58,6 +58,11 @@ namespace W4S.ServiceBus.Rabbit
             channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
         }
 
+        public void Acknowledge(ulong tag)
+        {
+            channel?.BasicAck(tag, false);
+        }
+
         public void Dispose()
         {
             if (!disposed)

@@ -68,6 +68,7 @@ namespace W4S.ServiceBus.Package
 
         private void OnResponse(object? _, MessageReceivedEventArgs args)
         {
+            busConsumer.Acknowledge(args.Tag);
             logger.LogInformation("Received response {Response}", args.Topic);
             if (pendingResponses.TryGetValue(args.RequestId, out PendingResponse? response))
             {
