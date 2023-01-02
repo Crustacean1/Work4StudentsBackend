@@ -9,4 +9,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS production
 WORKDIR /Service
 COPY --from=builder /Service/build .
 
-ENTRYPOINT ["dotnet", "W4SRegistrationService.API.dll"]
+ENTRYPOINT ["dotnet", "W4S.RegistrationMicroservice.API.dll"]
