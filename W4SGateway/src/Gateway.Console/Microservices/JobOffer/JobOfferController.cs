@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ServiceBus.Abstractions;
+using W4S.ServiceBus.Abstractions;
 
 namespace Gateway.Console.Microservices.JobOffer
 {
@@ -16,12 +16,13 @@ namespace Gateway.Console.Microservices.JobOffer
         }
 
         [HttpPut]
-        public async Task<ActionResult<Guid>> CreateJobOffer([FromBody] CreateJobOfferDto jobOffer, CancellationToken cancellationToken)
+        public async Task<ActionResult> CreateJobOffer([FromBody] CreateJobOfferDto jobOffer, CancellationToken cancellationToken)
         {
             logger.LogInformation("Request: Create job posting");
             CreateJobOfferResponse response =
-                await busClient.SendRequest<CreateJobOfferResponse, CreateJobOfferDto>("offers.create", jobOffer, cancellationToken);
-            return response.Id;
+                await busClient.SendRequest<CreateJobOfferResponse, CreateJobOfferDto>("offer.create", jobOffer, cancellationToken);
+            logger.LogInformation("Received response");
+            return Ok(response.Id);
         }
     }
 }

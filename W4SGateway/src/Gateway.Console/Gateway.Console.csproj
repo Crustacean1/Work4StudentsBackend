@@ -9,10 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\ServiceBus\ServiceBus.csproj" />
+    <PackageReference Include="W4S.ServiceBus" Version="0.9.1" />
   </ItemGroup>
 
 </Project>

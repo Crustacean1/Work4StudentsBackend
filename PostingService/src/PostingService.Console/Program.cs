@@ -1,5 +1,9 @@
 using PostingService.Console.Handlers;
-using ServiceBus.Extensions;
+using PostingService.Domain.Commands;
+using PostingService.Domain.Repositories;
+using PostingService.Persistence.Repositories;
+using PostingService.Persistence;
+using W4S.ServiceBus.Extensions;
 
 namespace PostingService.Console
 {
@@ -16,8 +20,11 @@ namespace PostingService.Console
               })
               .ConfigureServices(provider =>
               {
-                  provider.AddScoped<UserCreationHandler>();
+                  provider.AddScoped<CreateJobOfferCommand>();
+                  provider.AddScoped<PostingContext>();
+                  provider.AddScoped<IJobOfferRepository, JobOfferRepository>();
                   provider.AddScoped<JobOfferHandler>();
+                  provider.AddScoped<UserIntegrationHandler>();
                   provider.AddServiceBus();
               })
             .RunConsoleAsync();

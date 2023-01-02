@@ -1,10 +1,8 @@
-﻿using System.Text;
-using W4SRegistrationMicroservice.API.Exceptions;
+﻿using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.API.Models.Users.Creation;
 using W4SRegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities.Users;
-using System.Security.Cryptography;
 using W4SRegistrationMicroservice.Data.Entities;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -24,7 +22,8 @@ namespace W4SRegistrationMicroservice.API.Services
         public RegistrationService(
             IHasher passwordHasher,
             W4SUserbaseDbContext dbContext,
-            ILogger<RegistrationService> logger) {
+            ILogger<RegistrationService> logger)
+        {
             _passwordHasher = passwordHasher;
             _dbContext = dbContext;
             _logger = logger;
@@ -55,9 +54,10 @@ namespace W4SRegistrationMicroservice.API.Services
                 _logger.LogInformation(e.Message);
             }
 
-            if(companyId == null)
+            if (companyId == null)
             {
-                var company = new Company() { 
+                var company = new Company()
+                {
                     Id = 0,
                     Name = employerCreationDto.CompanyName,
                     NIP = employerCreationDto.NIP
@@ -109,12 +109,12 @@ namespace W4SRegistrationMicroservice.API.Services
             {
                 emailDomainId = ValidateUniversity(studentCreationDto.EmailAddress);
             }
-            catch(UniversityDomainNotInDatabaseException e)
+            catch (UniversityDomainNotInDatabaseException e)
             {
                 _logger.LogError(e.Message, e);
                 throw;
             }
-            catch(FormatException e)
+            catch (FormatException e)
             {
                 _logger.LogError(e.Message, e);
                 throw;
@@ -192,7 +192,7 @@ namespace W4SRegistrationMicroservice.API.Services
         private string CheckDomain(string studentEmail)
         {
             var regex = new Regex(REGEX_DOMAIN_PATTERN);
-            
+
             var match = regex.Match(studentEmail);
 
             if (match.Success)

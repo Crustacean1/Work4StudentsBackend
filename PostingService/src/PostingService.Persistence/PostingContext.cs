@@ -7,15 +7,15 @@ namespace PostingService.Persistence
     {
         private readonly string DEFAULT_CONNECTION_STRING = "Database=job_offers;Host=localhost;Port=5432;User=postgres;Password=postgres";
 
-        public DbSet<Applicant> Applicants;
+        public DbSet<ApplicantEntity> Applicants;
 
-        public DbSet<Application> Applications;
+        public DbSet<ApplicationEntity> Applications;
 
-        public DbSet<Company> Companies;
+        public DbSet<CompanyEntity> Companies;
 
-        public DbSet<Recruiter> Recruiters;
+        public DbSet<RecruiterEntity> Recruiters;
 
-        public DbSet<JobOffer> JobOffers;
+        public DbSet<JobOfferEntity> JobOffers;
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
