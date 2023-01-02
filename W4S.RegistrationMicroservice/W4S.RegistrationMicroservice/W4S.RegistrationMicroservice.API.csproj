@@ -30,6 +30,8 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\W4SRegistrationMicroservice.CommonServices\W4SRegistrationMicroservice.CommonServices.csproj" />
 	  <ProjectReference Include="..\W4SRegistrationMicroservice.Data\W4SRegistrationMicroservice.Data.csproj" />
+	  <ProjectReference Include="..\W4S.RegistrationMicroservice.CommonServices\W4S.RegistrationMicroservice.CommonServices.csproj" />
+	  <ProjectReference Include="..\W4S.RegistrationMicroservice.Data\W4S.RegistrationMicroservice.Data.csproj" />
 	</ItemGroup>
 
 </Project>

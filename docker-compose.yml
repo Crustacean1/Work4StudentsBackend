@@ -3,7 +3,7 @@ services:
 
   posting:
     build:
-      context: ./PostingService
+      context: ./W4S.PostingService
       dockerfile: Dockerfile
       args:
         MODE: Debug
@@ -16,8 +16,6 @@ services:
       CONNECTION_STRING: Host=posting-db;User=root;Password=root;Port=5432
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: OfferService
-    volumes:
-      - ./NugetPackages:/NugetPackages
 
   posting-db:
     image: postgres
@@ -33,7 +31,7 @@ services:
 
   gateway:
     build:
-      context: ./W4SGateway
+      context: ./W4S.Gateway
       dockerfile: Dockerfile
       args:
         MODE: Debug
@@ -47,8 +45,6 @@ services:
     environment:
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: Gateway
-    volumes:
-      - ./NugetPackages:/NugetPackages
 
   servicebus:
     build: ./RabbitMq
@@ -60,6 +56,29 @@ services:
       - servicebus-data:/var/lib/rabbitmq
     networks:
       - internal
+
+  registration-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: root
+    volumes:
+      - registration-data:/var/opt/mssql
+
+  registration:
+    build:
+      context: ./W4S.RegistrationMicroservice
+      dockerfile: Dockerfile
+      args:
+        MODE: Debug
+    restart: always
+    depends_on: 
+      - servicebus
+    networks:
+      - internal
+    environment:
+      BUS_BROKER_ADDRESS: servicebus
+      SERVICE_NAME: OfferService
 
 volumes:
   posting-data:

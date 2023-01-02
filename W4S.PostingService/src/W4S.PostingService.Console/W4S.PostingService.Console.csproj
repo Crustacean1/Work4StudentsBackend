@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PostingService.Domain\PostingService.Domain.csproj" />
-    <ProjectReference Include="..\PostingService.Persistence\PostingService.Persistence.csproj" />
+    <ProjectReference Include="..\W4S.PostingService.Domain\W4S.PostingService.Domain.csproj" />
+    <ProjectReference Include="..\W4S.PostingService.Persistence\W4S.PostingService.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
