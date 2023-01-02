@@ -61,7 +61,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: root
+      MSSQL_SA_PASSWORD: Kutafon2137
     volumes:
       - registration-data:/var/opt/mssql
 
