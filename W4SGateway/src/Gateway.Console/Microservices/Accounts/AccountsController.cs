@@ -3,8 +3,8 @@ using Gateway.Console.Microservices.Accounts.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ServiceBus.Abstractions;
-using ServiceBus.Rabbit;
+using W4S.ServiceBus.Abstractions;
+using W4S.ServiceBus.Rabbit;
 using System.Threading;
 
 namespace Gateway.Console.Microservices.Accounts
