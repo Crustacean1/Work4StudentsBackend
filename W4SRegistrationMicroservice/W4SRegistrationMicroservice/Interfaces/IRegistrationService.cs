@@ -1,4 +1,4 @@
-﻿using W4SRegistrationMicroservice.API.Models.Users.Creation;
+﻿using W4S.RegistrationMicroservice.Models.Users.Creation;
 
 namespace W4SRegistrationMicroservice.API.Interfaces
 {

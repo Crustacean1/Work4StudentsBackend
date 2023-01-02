@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4SRegistrationMicroservice
 		{69A8A1DE-A240-436A-BD30-AFBC66BBD188} = {69A8A1DE-A240-436A-BD30-AFBC66BBD188}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4SRegistrationMicroservice.CommonServices", "W4SRegistrationMicroservice.CommonServices\W4SRegistrationMicroservice.CommonServices.csproj", "{69A8A1DE-A240-436A-BD30-AFBC66BBD188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4SRegistrationMicroservice.CommonServices", "W4SRegistrationMicroservice.CommonServices\W4SRegistrationMicroservice.CommonServices.csproj", "{69A8A1DE-A240-436A-BD30-AFBC66BBD188}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
