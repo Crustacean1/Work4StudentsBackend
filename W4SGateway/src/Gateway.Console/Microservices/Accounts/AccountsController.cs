@@ -1,11 +1,7 @@
 ﻿using Gateway.Console.Microservices.Accounts.RequestDtos;
 using Gateway.Console.Microservices.Accounts.Responses;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using ServiceBus.Abstractions;
-using ServiceBus.Rabbit;
-using System.Threading;
+using W4S.ServiceBus.Abstractions;
 
 namespace Gateway.Console.Microservices.Accounts
 {
@@ -29,7 +25,8 @@ namespace Gateway.Console.Microservices.Accounts
             logger.LogInformation("Request: Sign in user");
             UserCredentialsResponse response = await busClient.SendRequest<UserCredentialsResponse, UserCredentialsDto>("signing.signin", userCredentialsDto, cancellationToken);
 
-            if(response.ExceptionMessage is null) {
+            if (response.ExceptionMessage is null)
+            {
                 return Ok(response.JwtTokenValue);
             }
             return BadRequest(response.ExceptionMessage);
@@ -54,8 +51,8 @@ namespace Gateway.Console.Microservices.Accounts
         {
             logger.LogInformation("Request: Register employer");
             RegisterEmployerResponse response = await busClient.SendRequest<RegisterEmployerResponse, RegisterEmployerDto>("registration.employer", registerEmployerDto, cancellationToken);
-            
-            if(response.ExceptionMessage is null)
+
+            if (response.ExceptionMessage is null)
             {
                 return Ok();
             }

@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5B1E3040-938
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway.Console", "src\Gateway.Console\Gateway.Console.csproj", "{55FDEEC0-7C29-4493-AE97-BC50F93114F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus", "..\ServiceBus\ServiceBus.csproj", "{D1115C52-5DE7-4502-83BE-29B9732025E3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,10 +17,6 @@ Global
 		{55FDEEC0-7C29-4493-AE97-BC50F93114F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55FDEEC0-7C29-4493-AE97-BC50F93114F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55FDEEC0-7C29-4493-AE97-BC50F93114F5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1115C52-5DE7-4502-83BE-29B9732025E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1115C52-5DE7-4502-83BE-29B9732025E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1115C52-5DE7-4502-83BE-29B9732025E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1115C52-5DE7-4502-83BE-29B9732025E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
