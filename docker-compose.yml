@@ -59,6 +59,7 @@ services:
 
   registration-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
     environment:
       ACCEPT_EULA: Y
       MSSQL_SA_PASSWORD: Kutafon2137
