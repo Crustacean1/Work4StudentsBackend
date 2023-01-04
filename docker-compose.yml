@@ -15,7 +15,7 @@ services:
     environment:
       CONNECTION_STRING: Host=posting-db;User=root;Password=root;Port=5432
       BUS_BROKER_ADDRESS: servicebus
-      SERVICE_NAME: OfferService
+      SERVICE_NAME: Posting
 
   posting-db:
     image: postgres
@@ -79,7 +79,7 @@ services:
       - internal
     environment:
       BUS_BROKER_ADDRESS: servicebus
-      SERVICE_NAME: OfferService
+      SERVICE_NAME: Registration
 
 volumes:
   posting-data:
