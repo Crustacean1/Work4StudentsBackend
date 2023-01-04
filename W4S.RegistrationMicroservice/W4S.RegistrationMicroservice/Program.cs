@@ -4,13 +4,15 @@ using Microsoft.IdentityModel.Tokens;
 using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.API.Services;
 using W4SRegistrationMicroservice.Data.DbContexts;
-using Serilog;
+using W4S.ServiceBus.Extensions;
 using W4SRegistrationMicroservice.Data.Seeders;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4SRegistrationMicroservice.CommonServices.Services;
 using W4SRegistrationMicroservice.API.Validations.UserAuthentication;
 using System.Text;
+using W4SRegistrationMicroservice.API.Controllers;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,9 +56,10 @@ app.Run();
 
 void ConfigureLogger(ConfigureHostBuilder host)
 {
+    builder.Logging.ClearProviders();
     builder.Host.UseSerilog((ctx, lc) => lc
-        .WriteTo.Console()
-        .ReadFrom.Configuration(ctx.Configuration));
+    .WriteTo.Console()
+    .ReadFrom.Configuration(ctx.Configuration));
 }
 
 void ConfigureValidators(IServiceCollection services, IConfiguration configuration)
@@ -95,6 +98,9 @@ void ConfigureServices(IServiceCollection services)
     services.TryAddScoped<ISeeder, W4SUserbaseSeeder>();
     services.TryAddScoped<IRegistrationService, RegistrationService>();
     services.TryAddScoped<ISigningInService, SigningInService>();
+    services.TryAddScoped<RegistrationController>();
+    services.TryAddScoped<RegistrationController>();
+    services.AddServiceBus();
 }
 
 void ConfigureUserbaseDbContext(IServiceCollection services, string connectionString)

@@ -15,7 +15,7 @@ services:
     environment:
       CONNECTION_STRING: Host=posting-db;User=root;Password=root;Port=5432
       BUS_BROKER_ADDRESS: servicebus
-      SERVICE_NAME: OfferService
+      SERVICE_NAME: Posting
 
   posting-db:
     image: postgres
@@ -59,6 +59,7 @@ services:
 
   registration-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
     environment:
       ACCEPT_EULA: Y
       MSSQL_SA_PASSWORD: Kutafon2137
@@ -78,7 +79,7 @@ services:
       - internal
     environment:
       BUS_BROKER_ADDRESS: servicebus
-      SERVICE_NAME: OfferService
+      SERVICE_NAME: Registration
 
 volumes:
   posting-data:
