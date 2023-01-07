@@ -1,21 +1,21 @@
 using Microsoft.EntityFrameworkCore;
-using PostingService.Persistence.Entities;
+using W4S.PostingService.Domain.Models;
 
-namespace PostingService.Persistence
+namespace W4S.PostingService.Persistence
 {
     public class PostingContext : DbContext
     {
-        private readonly string DEFAULT_CONNECTION_STRING = "Database=job_offers;Host=localhost;Port=5432;User=postgres;Password=postgres";
+        private readonly string DEFAULT_CONNECTION_STRING = "Database=job-offers;Host=localhost;Port=5432;User=postgres;Password=postgres";
 
-        public DbSet<ApplicantEntity> Applicants;
+        public DbSet<Applicant> Applicants;
 
-        public DbSet<ApplicationEntity> Applications;
+        public DbSet<Application> Applications;
 
-        public DbSet<CompanyEntity> Companies;
+        public DbSet<Company> Companies;
 
-        public DbSet<RecruiterEntity> Recruiters;
+        public DbSet<Recruiter> Recruiters;
 
-        public DbSet<JobOfferEntity> JobOffers;
+        public DbSet<JobOffer> JobOffers;
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {

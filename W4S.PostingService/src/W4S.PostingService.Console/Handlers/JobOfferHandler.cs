@@ -1,6 +1,6 @@
 using PostingService.Console.Dto;
-using PostingService.Domain.Commands;
 using PostingService.Domain.Models;
+using W4S.PostingService.Domain.Services;
 using W4S.ServiceBus.Attributes;
 
 namespace PostingService.Console.Handlers
@@ -9,9 +9,9 @@ namespace PostingService.Console.Handlers
     public class JobOfferHandler
     {
         ILogger<JobOfferHandler> logger;
-        CreateJobOfferCommand jobOfferCommand;
+        JobService jobOfferCommand;
 
-        public JobOfferHandler(CreateJobOfferCommand jobOfferCommand, ILogger<JobOfferHandler> logger)
+        public JobOfferHandler(JobService jobOfferCommand, ILogger<JobOfferHandler> logger)
         {
             logger.LogInformation("Creation");
             this.logger = logger;
