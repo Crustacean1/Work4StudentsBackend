@@ -25,7 +25,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
         [BusRequestHandler("signin")]
         public UserSigningResponse SignIn(UserCredentialsDto credentialsDto)
         {
-            _logger.LogInformation("Got signing message.");
+            _logger.LogInformation($"Got signing message from: {credentialsDto.EmailAddress}");
             var response = new UserSigningResponse();
 
             try

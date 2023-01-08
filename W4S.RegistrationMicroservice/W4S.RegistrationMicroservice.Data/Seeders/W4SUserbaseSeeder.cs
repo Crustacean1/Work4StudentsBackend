@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,13 +18,16 @@ namespace W4SRegistrationMicroservice.Data.Seeders
     {
         private readonly W4SUserbaseDbContext _dbContext;
         private readonly IHasher _passwordHasher;
+        private readonly ILogger<W4SUserbaseSeeder> _logger;
 
         public W4SUserbaseSeeder(
             W4SUserbaseDbContext dbContext,
-            IHasher hasher)
+            IHasher hasher,
+            ILogger<W4SUserbaseSeeder> logger)
         {
             _dbContext = dbContext;
             _passwordHasher = hasher;
+            _logger = logger;
         }
 
         public void Seed()
@@ -139,6 +143,10 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     _dbContext.Administrators.Add(admin);
                     _dbContext.SaveChanges();
                 }
+            }
+            else
+            {
+                _logger.LogInformation("Can't connect to the database.");
             }
         }
     }

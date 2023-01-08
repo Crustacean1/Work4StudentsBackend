@@ -78,6 +78,7 @@ services:
     networks:
       - internal
     environment:
+      CONNECTION_STRING: Server=registration-db-1;Database=W4SRegistrationUserbase;User=sa;Password=Kutafon2137;Trusted_Connection=True;encrypt=false
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: Registration
 

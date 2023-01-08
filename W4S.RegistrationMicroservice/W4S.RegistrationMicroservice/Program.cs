@@ -25,10 +25,11 @@ builder.Services.AddSwaggerGen();
 
 ConfigureLogger(builder.Host);
 
-ConfigureUserbaseDbContext(builder.Services, builder.Configuration.GetConnectionString("W4SRegistrationUserbase"));
+ConfigureUserbaseDbContext(builder.Services);
 ConfigureValidators(builder.Services, builder.Configuration);
 
 ConfigureServices(builder.Services);
+ConfigureControllers(builder.Services);
 
 var app = builder.Build();
 
@@ -98,15 +99,21 @@ void ConfigureServices(IServiceCollection services)
     services.TryAddScoped<ISeeder, W4SUserbaseSeeder>();
     services.TryAddScoped<IRegistrationService, RegistrationService>();
     services.TryAddScoped<ISigningInService, SigningInService>();
+}
+
+void ConfigureControllers(IServiceCollection services)
+{
     services.TryAddScoped<RegistrationController>();
-    services.TryAddScoped<RegistrationController>();
+    services.TryAddScoped<SigningInController>();
     services.AddServiceBus();
 }
 
-void ConfigureUserbaseDbContext(IServiceCollection services, string connectionString)
+void ConfigureUserbaseDbContext(IServiceCollection services)//, string connectionString)
 {
+    var connString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
     services.AddDbContext<W4SUserbaseDbContext>(options =>
-        options.UseSqlServer(connectionString));
+        options.UseSqlServer(connString ?? "Server=localhost\\SQLEXPRESS;Database=W4SRegistrationUserbase;User=sa;Password=Kutafon2137;Trusted_Connection=True;encrypt=false"));
 }
 
 void SeedUsersDatabase()

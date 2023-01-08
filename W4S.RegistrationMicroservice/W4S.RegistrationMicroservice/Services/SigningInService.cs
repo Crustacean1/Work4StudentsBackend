@@ -47,8 +47,9 @@ namespace W4SRegistrationMicroservice.API.Services
                 var emailAndPassword = _dbContext.Users
                     .Select(x => new { x.EmailAddress, x.PasswordHash })
                     .First(x => x.EmailAddress == email);
+                _logger.LogInformation("Found corresponding email and password.");
 
-                if(!emailAndPassword.PasswordHash.Equals(_passwordHasher.HashText(password)))
+                if (!emailAndPassword.PasswordHash.Equals(_passwordHasher.HashText(password)))
                 {
                     throw new Exception();
                 }
@@ -63,6 +64,7 @@ namespace W4SRegistrationMicroservice.API.Services
         {
             var user = _dbContext.Users
                 .Select(x => new { x.Id, x.EmailAddress, x.Role })
+                .Where(x => x.EmailAddress == userCredentialsDto.EmailAddress)
                 .First();
 
             var claims = new List<Claim>() {
