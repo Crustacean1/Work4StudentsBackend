@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using W4S.ServiceBus.Abstractions;
 
 namespace Gateway.Console.Microservices.JobOffer
 {
     [Route("joboffers")]
+    [Authorize]
     public class JobOfferController : ControllerBase
     {
         private readonly ILogger<JobOfferController> logger;
@@ -16,6 +18,7 @@ namespace Gateway.Console.Microservices.JobOffer
         }
 
         [HttpPut]
+        [Authorize(Roles = "Employer,Administrator")]
         public async Task<ActionResult> CreateJobOffer([FromBody] CreateJobOfferDto jobOffer, CancellationToken cancellationToken)
         {
             logger.LogInformation("Request: Create job posting");
