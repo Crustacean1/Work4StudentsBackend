@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
 using W4S.ServiceBus.Attributes;
 using W4SRegistrationMicroservice.API.Interfaces;
-using W4SRegistrationMicroservice.API.Models.ServiceBusResponses.Users.Registration;
 
 
 namespace W4SRegistrationMicroservice.API.Controllers

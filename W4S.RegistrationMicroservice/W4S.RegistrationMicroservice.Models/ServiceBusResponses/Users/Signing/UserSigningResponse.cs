@@ -1,4 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.API.Models.ServiceBusResponses.Users.Signing
+﻿namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing
 {
     public class UserSigningResponse : BaseResponse
     {

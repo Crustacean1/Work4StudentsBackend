@@ -1,4 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.API.Models.ServiceBusResponses
+﻿namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses
 {
     public class BaseResponse
     {

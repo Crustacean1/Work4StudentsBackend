@@ -1,4 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.API.Models.Users.Signing
+﻿namespace W4S.RegistrationMicroservice.Models.Users.Signing
 {
     public class UserCredentialsDto
     {

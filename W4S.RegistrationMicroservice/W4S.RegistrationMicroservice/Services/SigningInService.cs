@@ -1,7 +1,7 @@
 ﻿using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
-using W4SRegistrationMicroservice.API.Models.Users.Signing;
+using W4S.RegistrationMicroservice.Models.Users.Signing;
 using W4SRegistrationMicroservice.Data.DbContexts;
 using System.Security.Claims;
 using W4SRegistrationMicroservice.API.Validations.UserAuthentication;

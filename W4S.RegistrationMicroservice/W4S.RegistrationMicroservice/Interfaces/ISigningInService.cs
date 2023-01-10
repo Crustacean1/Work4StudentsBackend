@@ -1,4 +1,4 @@
-﻿using W4SRegistrationMicroservice.API.Models.Users.Signing;
+﻿using W4S.RegistrationMicroservice.Models.Users.Signing;
 
 namespace W4SRegistrationMicroservice.API.Interfaces
 {
