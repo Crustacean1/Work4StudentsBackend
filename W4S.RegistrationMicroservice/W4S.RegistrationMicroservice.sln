@@ -4,15 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4S.RegistrationMicroservice.API", "W4S.RegistrationMicroservice\W4S.RegistrationMicroservice.API.csproj", "{D5C3C122-7AEF-427A-BAAE-4904D8943FC6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BCD35DE0-81DA-427A-8C82-267437234A65} = {BCD35DE0-81DA-427A-8C82-267437234A65}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4S.RegistrationMicroservice.Data", "W4S.RegistrationMicroservice.Data\W4S.RegistrationMicroservice.Data.csproj", "{354627DE-632E-4952-A1A9-CF1134E6D2D7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4S.RegistrationMicroservice.CommonServices", "W4S.RegistrationMicroservice.CommonServices\W4S.RegistrationMicroservice.CommonServices.csproj", "{8DD304D1-B097-4ECF-997D-234C1C6F9927}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4S.RegistrationMicroservice.Models", "W4S.RegistrationMicroservice.Models\W4S.RegistrationMicroservice.Models.csproj", "{BCD35DE0-81DA-427A-8C82-267437234A65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,18 +55,6 @@ Global
 		{8DD304D1-B097-4ECF-997D-234C1C6F9927}.Release|x64.Build.0 = Release|Any CPU
 		{8DD304D1-B097-4ECF-997D-234C1C6F9927}.Release|x86.ActiveCfg = Release|Any CPU
 		{8DD304D1-B097-4ECF-997D-234C1C6F9927}.Release|x86.Build.0 = Release|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Debug|x64.Build.0 = Debug|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Debug|x86.Build.0 = Debug|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Release|x64.ActiveCfg = Release|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Release|x64.Build.0 = Release|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Release|x86.ActiveCfg = Release|Any CPU
-		{BCD35DE0-81DA-427A-8C82-267437234A65}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
