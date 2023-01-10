@@ -108,7 +108,7 @@ void ConfigureControllers(IServiceCollection services)
     services.AddServiceBus();
 }
 
-void ConfigureUserbaseDbContext(IServiceCollection services)//, string connectionString)
+void ConfigureUserbaseDbContext(IServiceCollection services)
 {
     var connString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 

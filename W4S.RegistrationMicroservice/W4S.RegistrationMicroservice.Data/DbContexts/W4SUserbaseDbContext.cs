@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
@@ -24,10 +25,10 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
         public DbSet<Roles> Roles { get; set; }
 
         public W4SUserbaseDbContext(
-            IConfiguration configuration,
+            IHostingEnvironment env,
             ILogger<W4SUserbaseDbContext> logger)
         {
-            //_connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            //_connectionString = configuration.GetSection("ConnectionString");
             _logger = logger;
         }
 

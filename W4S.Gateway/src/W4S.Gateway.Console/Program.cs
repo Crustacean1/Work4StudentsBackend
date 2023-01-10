@@ -11,10 +11,10 @@ namespace Gateway.Console
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
-            var app = builder.Build();
             ConfigureServices(builder.Services);
             ConfigureJwt(builder.Services, builder.Configuration);
+
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
