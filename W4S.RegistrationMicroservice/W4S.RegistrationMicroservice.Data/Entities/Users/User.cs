@@ -7,7 +7,9 @@ namespace W4SRegistrationMicroservice.Data.Entities.Users {
         public required string EmailAddress { get; set; }
         public required string PasswordHash { get; set; }
         public required string Name { get; set; }
+        public string SecondName { get; set; }
         public required string Surname { get; set; }
+        public string PhoneNumber { get; set; }
 
         public long RoleId { get; set; }
         public virtual Roles Role { get; set; }

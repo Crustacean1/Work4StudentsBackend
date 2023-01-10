@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using W4SRegistrationMicroservice.Data.DbContexts;
 
@@ -10,9 +11,11 @@ using W4SRegistrationMicroservice.Data.DbContexts;
 namespace W4SRegistrationMicroservice.Data.Migrations
 {
     [DbContext(typeof(W4SUserbaseDbContext))]
-    partial class W4SUserbaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230109120548_added-additional-user-info")]
+    partial class addedadditionaluserinfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -84,17 +84,30 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                 {
                     var university = _dbContext.Universities.FirstOrDefault(x => x.Name.Equals("Politechnika Śląska"));
 
-                    var student = new Student()
+                    var students = new List<Student>()
                     {
+                        new Student() {
+                        EmailAddress = "janek.tumanek@polsl.pl",
+                        PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
+                        Name = "Jan",
+                        SecondName = "Man",
+                        Surname = "Tuman",
+                        UniversityId = university.Id,
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id
+                        },
+                        new Student()
+                        {
                         EmailAddress = "janek.tumanek@polsl.pl",
                         PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         Name = "Jan",
                         Surname = "Tuman",
+                        PhoneNumber = "729001234",
                         UniversityId = university.Id,
                         RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id
+                        }
                     };
 
-                    _dbContext.Students.Add(student);
+                    _dbContext.Students.AddRange(students);
                     _dbContext.SaveChanges();
                 }
 
@@ -118,6 +131,7 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     {
                         EmailAddress = "someEmployer@gmail.com",
                         Name = "Adam",
+                        SecondName = "Szef",
                         Surname = "Małysz",
                         PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         PositionName = "Majster HR",
