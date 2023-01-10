@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,13 +18,16 @@ namespace W4SRegistrationMicroservice.Data.Seeders
     {
         private readonly W4SUserbaseDbContext _dbContext;
         private readonly IHasher _passwordHasher;
+        private readonly ILogger<W4SUserbaseSeeder> _logger;
 
         public W4SUserbaseSeeder(
             W4SUserbaseDbContext dbContext,
-            IHasher hasher)
+            IHasher hasher,
+            ILogger<W4SUserbaseSeeder> logger)
         {
             _dbContext = dbContext;
             _passwordHasher = hasher;
+            _logger = logger;
         }
 
         public void Seed()
@@ -80,17 +84,30 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                 {
                     var university = _dbContext.Universities.FirstOrDefault(x => x.Name.Equals("Politechnika Śląska"));
 
-                    var student = new Student()
+                    var students = new List<Student>()
                     {
+                        new Student() {
+                        EmailAddress = "janek.tumanek@polsl.pl",
+                        PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
+                        Name = "Jan",
+                        SecondName = "Man",
+                        Surname = "Tuman",
+                        UniversityId = university.Id,
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id
+                        },
+                        new Student()
+                        {
                         EmailAddress = "janek.tumanek@polsl.pl",
                         PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         Name = "Jan",
                         Surname = "Tuman",
+                        PhoneNumber = "729001234",
                         UniversityId = university.Id,
                         RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id
+                        }
                     };
 
-                    _dbContext.Students.Add(student);
+                    _dbContext.Students.AddRange(students);
                     _dbContext.SaveChanges();
                 }
 
@@ -114,6 +131,7 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     {
                         EmailAddress = "someEmployer@gmail.com",
                         Name = "Adam",
+                        SecondName = "Szef",
                         Surname = "Małysz",
                         PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         PositionName = "Majster HR",
@@ -139,6 +157,10 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                     _dbContext.Administrators.Add(admin);
                     _dbContext.SaveChanges();
                 }
+            }
+            else
+            {
+                _logger.LogInformation("Can't connect to the database.");
             }
         }
     }

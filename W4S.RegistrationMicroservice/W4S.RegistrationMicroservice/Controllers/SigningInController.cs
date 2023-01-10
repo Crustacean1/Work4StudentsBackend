@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
+using W4S.RegistrationMicroservice.Models.Users.Signing;
 using W4S.ServiceBus.Attributes;
 using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;
-using W4SRegistrationMicroservice.API.Models.ServiceBusResponses.Users.Signing;
-using W4SRegistrationMicroservice.API.Models.Users.Signing;
 
 namespace W4SRegistrationMicroservice.API.Controllers
 {
@@ -25,6 +25,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
         [BusRequestHandler("signin")]
         public UserSigningResponse SignIn(UserCredentialsDto credentialsDto)
         {
+            _logger.LogInformation($"Got signing message from: {credentialsDto.EmailAddress}");
             var response = new UserSigningResponse();
 
             try

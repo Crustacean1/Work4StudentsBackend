@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
+using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 
 namespace W4SRegistrationMicroservice.API.Services
 {
@@ -30,7 +31,7 @@ namespace W4SRegistrationMicroservice.API.Services
             _logger = logger;
         }
 
-        public long RegisterEmployer(EmployerRegistrationDto employerCreationDto)
+        public Tuple<long, EmployerRegisteredEvent> RegisterEmployer(EmployerRegistrationDto employerCreationDto)
         {
             try
             {
@@ -96,13 +97,23 @@ namespace W4SRegistrationMicroservice.API.Services
             _dbContext.Employers.Add(employer);
             _dbContext.SaveChanges();
 
-            return _dbContext.Employers
-                .Select(x => new { x.Id, x.EmailAddress })
-                .Where(x => x.EmailAddress.Equals(employerCreationDto.EmailAddress))
-                .First().Id;
+            return Tuple.Create<long, EmployerRegisteredEvent>(
+                _dbContext.Employers
+                    .Where(x => x.Name.Equals(employer.Name)).First().Id,
+                new EmployerRegisteredEvent()
+                {
+                    Date = DateTime.Now,
+                    EmailAddress = employerCreationDto.EmailAddress,
+                    FirstName = employerCreationDto.FirstName,
+                    SecondName = employerCreationDto.SecondName,
+                    Surname = employerCreationDto.Surname,
+                    NIP = employerCreationDto.NIP,
+                    CompanyName = employerCreationDto.CompanyName
+
+                });
         }
 
-        public long RegisterStudent(StudentRegistrationDto studentCreationDto)
+        public Tuple<long, StudentRegisteredEvent> RegisterStudent(StudentRegistrationDto studentCreationDto)
         {
             long? emailDomainId = null;
 
@@ -149,10 +160,17 @@ namespace W4SRegistrationMicroservice.API.Services
             _dbContext.Students.Add(student);
             _dbContext.SaveChanges();
 
-            return _dbContext.Students
-                .Select(x => new { x.Id, x.EmailAddress })
-                .Where(x => x.EmailAddress.Equals(studentCreationDto.EmailAddress))
-                .First().Id;
+            return Tuple.Create<long, StudentRegisteredEvent>(_dbContext.Students
+                .Select(x => new { x.Name, x.Id })
+                .Where(x => x.Name.Equals(student.EmailAddress)).First().Id,
+                new StudentRegisteredEvent()
+                {
+                    Date = DateTime.Now,
+                    FirstName = studentCreationDto.FirstName,
+                    SecondName = studentCreationDto.SecondName,
+                    Surname = studentCreationDto.Surname,
+                    UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain
+                });
         }
 
 

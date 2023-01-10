@@ -1,10 +1,11 @@
-﻿using W4S.RegistrationMicroservice.Models.Users.Creation;
+﻿using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
+using W4S.RegistrationMicroservice.Models.Users.Creation;
 
 namespace W4SRegistrationMicroservice.API.Interfaces
 {
     public interface IRegistrationService
     {
-        long RegisterStudent(StudentRegistrationDto studentCreationDto);
-        long RegisterEmployer(EmployerRegistrationDto employerCreationDto);
+        Tuple<long, StudentRegisteredEvent> RegisterStudent(StudentRegistrationDto studentCreationDto);
+        Tuple<long, EmployerRegisteredEvent> RegisterEmployer(EmployerRegistrationDto employerCreationDto);
     }
 }

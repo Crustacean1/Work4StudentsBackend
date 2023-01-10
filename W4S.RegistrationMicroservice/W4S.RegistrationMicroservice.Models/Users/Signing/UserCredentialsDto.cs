@@ -1,4 +1,4 @@
-﻿namespace Gateway.Console.Microservices.Accounts.RequestDtos
+﻿namespace W4S.RegistrationMicroservice.Models.Users.Signing
 {
     public class UserCredentialsDto
     {

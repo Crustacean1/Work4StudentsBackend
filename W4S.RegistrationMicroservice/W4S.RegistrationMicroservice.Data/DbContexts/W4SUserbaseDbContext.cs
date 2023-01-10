@@ -27,30 +27,28 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
             IConfiguration configuration,
             ILogger<W4SUserbaseDbContext> logger)
         {
-            _connectionString = configuration.GetConnectionString("W4SRegistrationUserbase");
+            //_connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
             _logger = logger;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // User
+            modelBuilder.Entity<User>().Property(e => e.EmailAddress).HasMaxLength(100);
+            modelBuilder.Entity<User>().Property(e => e.Name).HasMaxLength(50);
+            modelBuilder.Entity<User>().Property(e => e.SecondName).HasMaxLength(50);
+            modelBuilder.Entity<User>().Property(e => e.Surname).HasMaxLength(50);
+            modelBuilder.Entity<User>().Property(e => e.PhoneNumber).HasMaxLength(10);
+
             // Student
-            modelBuilder.Entity<Student>().Property(e => e.EmailAddress).HasMaxLength(100);
-            modelBuilder.Entity<Student>().Property(e => e.Name).HasMaxLength(50);
-            modelBuilder.Entity<Student>().Property(e => e.Surname).HasMaxLength(50);
             modelBuilder.Entity<Student>().Property(e => e.UniversityId).IsRequired();
             modelBuilder.Entity<Student>().Property(e => e.RoleId).IsRequired();
 
             // Employer
-            modelBuilder.Entity<Employer>().Property(e => e.EmailAddress).HasMaxLength(100);
-            modelBuilder.Entity<Employer>().Property(e => e.Name).HasMaxLength(50);
-            modelBuilder.Entity<Employer>().Property(e => e.Surname).HasMaxLength(50);
             modelBuilder.Entity<Employer>().Property(e => e.CompanyId).IsRequired();
             modelBuilder.Entity<Employer>().Property(e => e.RoleId).IsRequired();
 
             // Administrator
-            modelBuilder.Entity<Administrator>().Property(e => e.EmailAddress).HasMaxLength(100);
-            modelBuilder.Entity<Administrator>().Property(e => e.Name).HasMaxLength(50);
-            modelBuilder.Entity<Administrator>().Property(e => e.Surname).HasMaxLength(50);
             modelBuilder.Entity<Administrator>().Property(e => e.RoleId).IsRequired();
 
             // University

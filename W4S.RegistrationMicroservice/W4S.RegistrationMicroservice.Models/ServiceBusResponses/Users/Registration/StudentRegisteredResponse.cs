@@ -1,4 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.API.Models.ServiceBusResponses.Users.Registration
+﻿namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration
 {
     public class StudentRegisteredResponse : BaseResponse
     {
