@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.API.Services;
-using W4SRegistrationMicroservice.Data.DbContexts;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4S.ServiceBus.Extensions;
 using W4SRegistrationMicroservice.Data.Seeders;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;

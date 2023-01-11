@@ -1,9 +1,8 @@
 ﻿using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;
-using W4SRegistrationMicroservice.Data.DbContexts;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities.Users;
 using W4SRegistrationMicroservice.Data.Entities;
-using W4S.RegistrationMicroservice.Models;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;

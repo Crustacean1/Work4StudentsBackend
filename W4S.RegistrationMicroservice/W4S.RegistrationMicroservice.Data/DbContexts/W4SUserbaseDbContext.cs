@@ -5,11 +5,12 @@ using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
 using W4SRegistrationMicroservice.Data.Entities.Users.User_Settings;
 
-namespace W4SRegistrationMicroservice.Data.DbContexts
+namespace W4S.RegistrationMicroservice.Data.DbContexts
 {
     public class W4SUserbaseDbContext : DbContext
     {
-        private const string DEFAULT_CONNECTION_STRING = "Server=localhost;Database=users;User Id=sa;Password=Haxx0r2137;Encrypt=False";
+        private readonly string DEFAULT_CONNECTION_STRING = "Database=users;Host=localhost;Port=5432;User=postgres;Password=postgres";
+
         private readonly string _connectionString;
         private ILogger<W4SUserbaseDbContext> _logger;
 
@@ -65,7 +66,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? "");
+            optionsBuilder.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? DEFAULT_CONNECTION_STRING);
         }
     }
 }

@@ -1,4 +1,4 @@
-using W4SRegistrationMicroservice.Data.DbContexts;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 
 namespace W4S.RegistrationMicroservice.API.Host
 {

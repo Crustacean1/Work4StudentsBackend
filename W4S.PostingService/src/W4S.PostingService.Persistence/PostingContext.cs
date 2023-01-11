@@ -17,6 +17,11 @@ namespace W4S.PostingService.Persistence
 
         public DbSet<JobOffer> JobOffers;
 
+        public async Task MigrateAsync(CancellationToken cancellationToken)
+        {
+            await Database.MigrateAsync(cancellationToken);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             builder.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? DEFAULT_CONNECTION_STRING);
