@@ -46,7 +46,7 @@ namespace W4S.PostingService.Domain.Services
 
             var newOfferId = recruiter.PostJobOffer(mapper.Map<JobOffer>(offerInfo));
 
-            await recruiterRepository.SaveAsync(recruiter);
+            await recruiterRepository.SaveAsync();
 
             return newOfferId;
         }
@@ -71,7 +71,7 @@ namespace W4S.PostingService.Domain.Services
             {
                 var id = applicant!.SubmitApplication(jobOffer!, notification);
 
-                await applicantRepository.SaveAsync(applicant);
+                await applicantRepository.SaveAsync();
 
                 return id;
             }
@@ -87,7 +87,7 @@ namespace W4S.PostingService.Domain.Services
                 application.Withdraw(notification);
                 if (!notification.HasErrors)
                 {
-                    await applicationRepository.SaveAsync(application);
+                    await applicationRepository.SaveAsync();
                 }
             }
             else

@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4S.PostingService.Persiste
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4S.PostingService.Domain", "src\W4S.PostingService.Domain\W4S.PostingService.Domain.csproj", "{13D48D88-CFE2-4B6F-9930-CAE298759056}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4S.PostingService.Models", "src\W4S.PostingService.Models\W4S.PostingService.Models.csproj", "{6EBF1068-70D3-47D8-91E3-F84B68536DA3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,15 +32,10 @@ Global
 		{13D48D88-CFE2-4B6F-9930-CAE298759056}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13D48D88-CFE2-4B6F-9930-CAE298759056}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13D48D88-CFE2-4B6F-9930-CAE298759056}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EBF1068-70D3-47D8-91E3-F84B68536DA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EBF1068-70D3-47D8-91E3-F84B68536DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EBF1068-70D3-47D8-91E3-F84B68536DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EBF1068-70D3-47D8-91E3-F84B68536DA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2DEFBB52-CA08-45D6-9F9B-B9C1C6B3505F} = {8FB5E11A-5DBB-47FC-8072-5436DCF1E49D}
 		{E1D4D24F-C08F-4377-BE9C-F95585EFA760} = {8FB5E11A-5DBB-47FC-8072-5436DCF1E49D}
 		{13D48D88-CFE2-4B6F-9930-CAE298759056} = {8FB5E11A-5DBB-47FC-8072-5436DCF1E49D}
-		{6EBF1068-70D3-47D8-91E3-F84B68536DA3} = {8FB5E11A-5DBB-47FC-8072-5436DCF1E49D}
 	EndGlobalSection
 EndGlobal
