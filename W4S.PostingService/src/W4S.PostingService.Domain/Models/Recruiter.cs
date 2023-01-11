@@ -1,5 +1,3 @@
-using W4S.PostingService.Domain.Commands;
-
 namespace W4S.PostingService.Domain.Models
 {
     public class Recruiter : Person

@@ -25,7 +25,7 @@ namespace W4S.PostingService.Console
                   provider.AddScoped<PostingContext>();
                   provider.AddScoped<IRepository<JobOffer>, RepositoryBase<JobOffer>>();
                   provider.AddScoped<JobOfferHandler>();
-                  provider.AddScoped<UserIntegrationHandler>();
+                  //provider.AddScoped<UserIntegrationHandler>();
                   provider.AddServiceBus();
               })
             .RunConsoleAsync();

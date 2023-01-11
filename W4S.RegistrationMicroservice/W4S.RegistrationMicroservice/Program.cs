@@ -13,24 +13,32 @@ using W4SRegistrationMicroservice.API.Validations.UserAuthentication;
 using System.Text;
 using W4SRegistrationMicroservice.API.Controllers;
 using Serilog;
+using W4S.RegistrationMicroservice.API.Host;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+
+Log.Logger.Information("Staring application");
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Host.UseSerilog();
+
+builder.Services.AddHostedService<MigrationHost>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-ConfigureLogger(builder.Host);
-
-ConfigureUserbaseDbContext(builder.Services, builder.Configuration.GetConnectionString("W4SRegistrationUserbase"));
+ConfigureUserbaseDbContext(builder.Services);
 ConfigureValidators(builder.Services, builder.Configuration);
-
 ConfigureServices(builder.Services);
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 
@@ -41,8 +49,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging();
-
 SeedUsersDatabase();
 
 app.UseHttpsRedirection();
@@ -52,15 +58,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-void ConfigureLogger(ConfigureHostBuilder host)
-{
-    builder.Logging.ClearProviders();
-    builder.Host.UseSerilog((ctx, lc) => lc
-    .WriteTo.Console()
-    .ReadFrom.Configuration(ctx.Configuration));
-}
 
 void ConfigureValidators(IServiceCollection services, IConfiguration configuration)
 {
@@ -99,14 +96,13 @@ void ConfigureServices(IServiceCollection services)
     services.TryAddScoped<IRegistrationService, RegistrationService>();
     services.TryAddScoped<ISigningInService, SigningInService>();
     services.TryAddScoped<RegistrationController>();
-    services.TryAddScoped<RegistrationController>();
+    services.TryAddScoped<SigningInController>();
     services.AddServiceBus();
 }
 
-void ConfigureUserbaseDbContext(IServiceCollection services, string connectionString)
+void ConfigureUserbaseDbContext(IServiceCollection services)
 {
-    services.AddDbContext<W4SUserbaseDbContext>(options =>
-        options.UseSqlServer(connectionString));
+    services.AddDbContext<W4SUserbaseDbContext>();
 }
 
 void SeedUsersDatabase()

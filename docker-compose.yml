@@ -60,9 +60,13 @@ services:
   registration-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: always
+    ports:
+      - 1433:1433
+    networks:
+      - internal
     environment:
       ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: Kutafon2137
+      MSSQL_SA_PASSWORD: Haxx0r2137
     volumes:
       - registration-data:/var/opt/mssql
 
@@ -78,6 +82,7 @@ services:
     networks:
       - internal
     environment:
+      CONNECTION_STRING: Server=registration-db;Database=users;User Id=sa;Password=Haxx0r2137;TrustServerCertificate=True
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: Registration
 

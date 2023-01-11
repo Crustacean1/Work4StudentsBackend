@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
@@ -11,6 +9,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 {
     public class W4SUserbaseDbContext : DbContext
     {
+        private const string DEFAULT_CONNECTION_STRING = "Server=localhost;Database=users;User Id=sa;Password=Haxx0r2137;Encrypt=False";
         private readonly string _connectionString;
         private ILogger<W4SUserbaseDbContext> _logger;
 
@@ -23,12 +22,9 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
         public DbSet<Domain> UniversitiesDomains { get; set; }
         public DbSet<Roles> Roles { get; set; }
 
-        public W4SUserbaseDbContext(
-            IConfiguration configuration,
-            ILogger<W4SUserbaseDbContext> logger)
+        public async Task MigrateAsync(CancellationToken cancellationToken)
         {
-            _connectionString = configuration.GetConnectionString("W4SRegistrationUserbase");
-            _logger = logger;
+            await Database.MigrateAsync(cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,7 +65,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_connectionString);
+            optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? "");
         }
     }
 }

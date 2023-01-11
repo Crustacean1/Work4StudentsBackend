@@ -1,8 +1,8 @@
 using W4S.PostingService.Domain.Models;
 
-namespace W4S.PostingService.Console.Dto
+namespace W4S.PostingService.Domain.Commands
 {
-    public class CreateJobOfferCommand
+    public class PostJobOfferCommand
     {
         public Guid Id { get; set; }
 

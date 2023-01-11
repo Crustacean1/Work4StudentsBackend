@@ -50,12 +50,12 @@ namespace W4SRegistrationMicroservice.API.Services
 
                 if(!emailAndPassword.PasswordHash.Equals(_passwordHasher.HashText(password)))
                 {
-                    throw new Exception();
+                    throw new Exception("Invalid password");// It's bad practice to throw exception and catch it right away...
                 }
             }
-            catch
+            catch(Exception e)
             {
-                throw new UserNotFoundException("Given credentials could not be verified.");
+                throw new UserNotFoundException("Given credentials could not be verified.", e);
             }
         }
 

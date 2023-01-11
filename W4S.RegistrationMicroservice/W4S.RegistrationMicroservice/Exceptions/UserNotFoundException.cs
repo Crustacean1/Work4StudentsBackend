@@ -7,5 +7,10 @@
         {
 
         }
+        public UserNotFoundException(string message, Exception e) 
+            : base(message, e)
+        {
+
+        }
     }
 }

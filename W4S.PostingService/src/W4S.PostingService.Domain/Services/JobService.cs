@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Repositories;
 using W4S.PostingService.Domain.Models;
+using W4S.PostingService.Domain.Commands;
 using AutoMapper;
 using W4S.PostingService.Domain.ValueType;
-using W4S.PostingService.Domain.Commands;
 
 namespace W4S.PostingService.Domain.Services
 {
@@ -28,7 +28,7 @@ namespace W4S.PostingService.Domain.Services
             this.recruiterRepository = recruiterRepository;
             this.applicationRepository = applicationRepository;
 
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<JobOffer, CreateJobOffer>());
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<JobOffer, PostJobOfferCommand>());
             mapper = config.CreateMapper();
         }
 
