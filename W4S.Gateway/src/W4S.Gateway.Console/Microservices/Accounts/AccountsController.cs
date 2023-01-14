@@ -6,8 +6,8 @@ using W4S.ServiceBus.Rabbit;
 using System.Threading;
 using W4S.RegistrationMicroservice.Models.Users.Signing;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration;
-using W4SRegistrationMicroservice.API.Models.ServiceBusResponses.Users.Signing;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
 
 namespace Gateway.Console.Microservices.Accounts
 {
