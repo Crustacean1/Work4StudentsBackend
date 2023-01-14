@@ -13,13 +13,13 @@ namespace W4SRegistrationMicroservice.API.Controllers
     {
         private readonly IRegistrationService _registrationService;
 
-        public RegistrationController(IRegistrationService registrationService) 
-        { 
+        public RegistrationController(IRegistrationService registrationService)
+        {
             _registrationService = registrationService;
         }
 
         [BusRequestHandler("student")]
-        public StudentRegisteredResponse RegisterStudent([FromBody] StudentRegistrationDto dto)
+        public Task<StudentRegisteredResponse> RegisterStudent([FromBody] StudentRegistrationDto dto)
         {
             var response = new StudentRegisteredResponse();
 
@@ -27,29 +27,29 @@ namespace W4SRegistrationMicroservice.API.Controllers
             {
                 response.Id = _registrationService.RegisterStudent(dto);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.ExceptionMessage = ex.Message;
             }
 
-            return response;
+            return Task.FromResult(response);
         }
 
         [BusRequestHandler("employer")]
-        public EmployerRegisteredResponse RegisterEmployer([FromBody] EmployerRegistrationDto dto)
+        public Task<EmployerRegisteredResponse> RegisterEmployer([FromBody] EmployerRegistrationDto dto)
         {
             var response = new EmployerRegisteredResponse();
 
             try
             {
-                 response.Id = _registrationService.RegisterEmployer(dto);
+                response.Id = _registrationService.RegisterEmployer(dto);
             }
             catch (Exception ex)
             {
                 response.ExceptionMessage = ex.Message;
             }
 
-            return response;
+            return Task.FromResult(response);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace W4S.Gateway.Console.Posting
         [HttpPost]
         public async Task<ActionResult> PostJobOffer([FromBody] PostJobOfferCommand postJobOffer, CancellationToken cancellationToken)
         {
-            var response = await busClient.SendRequest<JobOfferCreatedDto, PostJobOfferCommand>("", postJobOffer, cancellationToken);
+            var response = await busClient.SendRequest<JobOfferCreatedDto, PostJobOfferCommand>("offer.create", postJobOffer, cancellationToken);
             if (response.Errors.Any())
             {
                 return StatusCode(500, response.Errors);

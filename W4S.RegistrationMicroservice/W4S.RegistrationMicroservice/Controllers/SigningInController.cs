@@ -23,7 +23,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("signin")]
-        public UserSigningResponse SignIn(UserCredentialsDto credentialsDto)
+        public Task<UserSigningResponse> SignIn(UserCredentialsDto credentialsDto)
         {
             var response = new UserSigningResponse();
 
@@ -38,7 +38,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
                 response.ExceptionMessage = ex.Message;
             }
 
-            return response;
+            return Task.FromResult(response);
         }
     }
 }

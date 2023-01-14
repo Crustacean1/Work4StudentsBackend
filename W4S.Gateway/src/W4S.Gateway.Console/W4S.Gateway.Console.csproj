@@ -10,8 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="W4S.PostingService.Domain" Version="0.3.0" />
-    <PackageReference Include="W4S.ServiceBus" Version="0.9.1" />
+    <PackageReference Include="W4S.PostingService.Domain" Version="0.4.0" />
+    <PackageReference Include="W4S.ServiceBus" Version="1.5.0" />
   </ItemGroup>
 
 </Project>
