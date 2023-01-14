@@ -4,10 +4,11 @@ using W4S.PostingService.Domain.Models;
 using W4S.PostingService.Domain.Commands;
 using AutoMapper;
 using W4S.PostingService.Domain.ValueType;
+using W4S.PostingService.Domain.Abstractions;
 
 namespace W4S.PostingService.Domain.Services
 {
-    public class JobService
+    public class JobService : IJobService
     {
         private readonly ILogger<JobService> logger;
         private readonly IRepository<JobOffer> offerRepository;
@@ -32,31 +33,31 @@ namespace W4S.PostingService.Domain.Services
             mapper = config.CreateMapper();
         }
 
-        public async Task<Guid> PostJobOffer(Guid recruiterId, JobOffer offerInfo, Notification notification)
+        public async Task<Guid> PostJobOffer(PostJobOfferCommand postJobOffer, Notification notification)
         {
             logger.LogInformation("Creating new job offer");
 
-            var recruiter = await recruiterRepository.GetEntityAsync(recruiterId);
+            var recruiter = await recruiterRepository.GetEntityAsync(postJobOffer.RecruiterId);
 
             if (recruiter is null)
             {
-                notification.AddError($"JobOffer needs to be created by recruiter, no recruiter with id: {recruiterId}");
+                notification.AddError($"JobOffer needs to be created by recruiter, no recruiter with id: {postJobOffer.RecruiterId}");
                 return Guid.Empty;
             }
 
-            var newOfferId = recruiter.PostJobOffer(mapper.Map<JobOffer>(offerInfo));
+            var newOfferId = recruiter.PostJobOffer(mapper.Map<JobOffer>(postJobOffer));
 
             await recruiterRepository.SaveAsync();
 
             return newOfferId;
         }
 
-        public async Task<Guid> Apply(Guid applicantId, Guid offerId, Notification notification)
+        public async Task<Guid> Apply(ApplyForJobCommand jobApplication, Notification notification)
         {
-            logger.LogInformation("Creating application of user {ApplicantId} to job with id: {OfferId}", applicantId, offerId);
+            logger.LogInformation("Creating application of user {ApplicantId} to job with id: {OfferId}", jobApplication.ApplicantId, jobApplication.OfferId);
 
-            var applicant = await applicantRepository.GetEntityAsync(applicantId);
-            var jobOffer = await offerRepository.GetEntityAsync(offerId);
+            var applicant = await applicantRepository.GetEntityAsync(jobApplication.ApplicantId);
+            var jobOffer = await offerRepository.GetEntityAsync(jobApplication.OfferId);
 
             if (applicant is null)
             {

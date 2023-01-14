@@ -9,7 +9,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
 {
     public class W4SUserbaseDbContext : DbContext
     {
-        private readonly string DEFAULT_CONNECTION_STRING = "Database=users;Host=localhost;Port=5432;User=postgres;Password=postgres";
+        private readonly string DEFAULT_CONNECTION_STRING = "Database=users;Host=localhost;Port=5432;Username=root;Password=root";
 
         private readonly string _connectionString;
         private ILogger<W4SUserbaseDbContext> _logger;

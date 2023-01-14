@@ -3,7 +3,7 @@ using System.Text;
 using W4S.Gateway.Console.CommonSettings;
 using W4S.ServiceBus.Extensions;
 
-namespace Gateway.Console
+namespace W4S.Gateway.Console
 {
     public class Program
     {
@@ -13,6 +13,13 @@ namespace Gateway.Console
 
             ConfigureServices(builder.Services);
             ConfigureJwt(builder.Services, builder.Configuration);
+
+            builder.Services.AddControllers();
+
+            builder.Services.AddServiceBus();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
