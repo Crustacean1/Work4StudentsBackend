@@ -40,7 +40,7 @@ namespace W4S.ServiceBus.Package
         }
 
 
-        protected override void OnMessage(object? _, MessageReceivedEventArgs args)
+        protected override async void OnMessage(object? _, MessageReceivedEventArgs args)
         {
             if (!producerCreated)
             {
@@ -53,12 +53,12 @@ namespace W4S.ServiceBus.Package
             try
             {
                 dynamic arg = ParseMessageBody(args.RequestBody);
-                logger.LogInformation("Message body parsed");
 
-                object? response = InvokeHandler(arg);
+                object? response = await InvokeHandler(arg);
 
                 if (response is not null)
                 {
+                    logger.LogInformation("ResponseType : {Response}", response.GetType().Name);
                     var responseBody = JsonSerializer.SerializeToUtf8Bytes(response);
                     logger.LogInformation("Response: {Response}", Encoding.UTF8.GetString(responseBody));
                     busProducer?.Reply(args.ReplyTopic, responseBody, args.RequestId);

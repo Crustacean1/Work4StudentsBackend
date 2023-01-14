@@ -1,3 +1,5 @@
+using W4S.PostingService.Domain.Abstractions;
+using W4S.PostingService.Domain.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using W4S.Gateway.Console.CommonSettings;
