@@ -5,6 +5,7 @@ using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
 using W4SRegistrationMicroservice.Data.Entities.Users.User_Settings;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace W4SRegistrationMicroservice.Data.Seeders
 {
