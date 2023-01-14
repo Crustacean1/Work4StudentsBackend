@@ -5,7 +5,7 @@ namespace W4S.PostingService.Persistence
 {
     public class PostingContext : DbContext
     {
-        private readonly string DEFAULT_CONNECTION_STRING = "Database=job-offers;Host=localhost;Port=5432;User=postgres;Password=postgres";
+        private readonly string DEFAULT_CONNECTION_STRING = "Database=job-offers;Host=localhost;Port=5432;Username=root;Password=root";
 
         public DbSet<Applicant> Applicants;
 

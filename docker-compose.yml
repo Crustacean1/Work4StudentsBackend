@@ -13,11 +13,11 @@ services:
     networks:
       - internal
     environment:
-      CONNECTION_STRING: Database=job-offers;Host=posting-db;User=root;Password=root;Port=5432
+      CONNECTION_STRING: Database=job-offers;Host=db;Username=root;Password=root;Port=5432
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: Posting
 
-  posting-db:
+  db:
     image: postgres
     restart: always
     volumes: 
@@ -69,7 +69,7 @@ services:
     networks:
       - internal
     environment:
-      CONNECTION_STRING: Database=users;Host=posting-db;User=root;Password=root;Port=5432
+      CONNECTION_STRING: Database=users;Host=db;Username=root;Password=root;Port=5432
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: Registration
 

@@ -1,6 +1,6 @@
 using W4S.ServiceBus.Extensions;
 
-namespace Gateway.Console
+namespace W4S.Gateway.Console
 {
     public class Program
     {
@@ -16,6 +16,7 @@ namespace Gateway.Console
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddMvc().AddNewtonsoftJson();
 
             var app = builder.Build();
 

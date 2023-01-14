@@ -22,7 +22,7 @@ namespace W4S.PostingService.Console
                         .WriteTo.Console()
                         .CreateLogger();
 
-            var host =  new HostBuilder()
+            var host = new HostBuilder()
               .ConfigureServices(provider =>
               {
                   provider.AddScoped<JobService>();
