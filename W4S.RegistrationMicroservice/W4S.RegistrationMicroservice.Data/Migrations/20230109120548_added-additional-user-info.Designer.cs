@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using W4SRegistrationMicroservice.Data.DbContexts;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 
 #nullable disable
 
