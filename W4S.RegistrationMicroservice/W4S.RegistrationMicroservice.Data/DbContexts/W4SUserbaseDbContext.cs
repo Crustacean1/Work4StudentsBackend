@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
@@ -12,7 +11,6 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
         private readonly string DEFAULT_CONNECTION_STRING = "Database=users;Host=localhost;Port=5432;Username=root;Password=root";
 
         private readonly string _connectionString;
-        private ILogger<W4SUserbaseDbContext> _logger;
 
         public DbSet<User> Users { get; set; }
         public DbSet<Administrator> Administrators { get; set; }

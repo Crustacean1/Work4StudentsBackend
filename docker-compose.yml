@@ -13,7 +13,7 @@ services:
     networks:
       - internal
     environment:
-      CONNECTION_STRING: Database=job-offers;Host=db;Username=root;Password=root;Port=5432
+      CONNECTION_STRING: Database=offers;Host=db;Username=root;Password=root;Port=5432
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: Posting
 
@@ -21,11 +21,13 @@ services:
     image: postgres
     restart: always
     volumes: 
-      - posting-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+      - ./Postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: posting
     networks:
       - internal
 
@@ -74,9 +76,8 @@ services:
       SERVICE_NAME: Registration
 
 volumes:
-  posting-data:
+  db-data:
   servicebus-data:
-  registration-data:
 
 networks:
   internal:
