@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
-using W4SRegistrationMicroservice.Data.DbContexts;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;

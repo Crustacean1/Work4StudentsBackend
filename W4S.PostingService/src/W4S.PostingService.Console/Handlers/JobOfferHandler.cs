@@ -1,6 +1,6 @@
-using PostingService.Console.Dto;
-using PostingService.Domain.Commands;
-using PostingService.Domain.Models;
+using W4S.PostingService.Domain.Abstractions;
+using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Domain.Models;
 using W4S.ServiceBus.Attributes;
 
 namespace PostingService.Console.Handlers
@@ -9,25 +9,26 @@ namespace PostingService.Console.Handlers
     public class JobOfferHandler
     {
         ILogger<JobOfferHandler> logger;
-        CreateJobOfferCommand jobOfferCommand;
+        IJobService jobService;
 
-        public JobOfferHandler(CreateJobOfferCommand jobOfferCommand, ILogger<JobOfferHandler> logger)
+        public JobOfferHandler(IJobService jobService, ILogger<JobOfferHandler> logger)
         {
             logger.LogInformation("Creation");
             this.logger = logger;
-            this.jobOfferCommand = jobOfferCommand;
+            this.jobService = jobService;
         }
 
         [BusRequestHandler("create")]
-        public JobOfferCreatedDto OnCreateJobOffer(CreateJobOfferDto offer)
+        public async Task<JobOfferCreatedDto> OnPostJobOffer(PostJobOfferCommand offer)
         {
             logger.LogInformation("Received job creation request");
-            var newJobOffer = new JobOffer
+
+            var newJobId = await jobService.PostJobOffer(offer);
+
+            return new JobOfferCreatedDto
             {
-                Title = offer.Title,
-                Content = offer.Content
+                Id = newJobId
             };
-            return new JobOfferCreatedDto { Id = offer.PosterId };
         }
     }
 

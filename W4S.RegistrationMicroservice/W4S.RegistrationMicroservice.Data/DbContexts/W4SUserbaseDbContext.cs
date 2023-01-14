@@ -1,17 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using W4SRegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
 using W4SRegistrationMicroservice.Data.Entities.Users.User_Settings;
 
-namespace W4SRegistrationMicroservice.Data.DbContexts
+namespace W4S.RegistrationMicroservice.Data.DbContexts
 {
     public class W4SUserbaseDbContext : DbContext
     {
+        private readonly string DEFAULT_CONNECTION_STRING = "Database=users;Host=localhost;Port=5432;User=postgres;Password=postgres";
+
         private readonly string _connectionString;
         private ILogger<W4SUserbaseDbContext> _logger;
 
@@ -24,12 +23,9 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
         public DbSet<Domain> UniversitiesDomains { get; set; }
         public DbSet<Roles> Roles { get; set; }
 
-        public W4SUserbaseDbContext(
-            IHostingEnvironment env,
-            ILogger<W4SUserbaseDbContext> logger)
+        public async Task MigrateAsync(CancellationToken cancellationToken)
         {
-            //_connectionString = configuration.GetSection("ConnectionString");
-            _logger = logger;
+            await Database.MigrateAsync(cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -68,7 +64,7 @@ namespace W4SRegistrationMicroservice.Data.DbContexts
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_connectionString);
+            optionsBuilder.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? DEFAULT_CONNECTION_STRING);
         }
     }
 }

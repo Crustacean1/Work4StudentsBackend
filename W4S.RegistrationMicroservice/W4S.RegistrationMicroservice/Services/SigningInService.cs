@@ -3,6 +3,8 @@ using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4S.RegistrationMicroservice.Models.Users.Signing;
 using W4SRegistrationMicroservice.Data.DbContexts;
+using W4SRegistrationMicroservice.API.Models.Users.Signing;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 using System.Security.Claims;
 using W4SRegistrationMicroservice.API.Validations.UserAuthentication;
 using Microsoft.Extensions.Options;
@@ -51,12 +53,12 @@ namespace W4SRegistrationMicroservice.API.Services
 
                 if (!emailAndPassword.PasswordHash.Equals(_passwordHasher.HashText(password)))
                 {
-                    throw new Exception();
+                    throw new Exception("Invalid password");// It's bad practice to throw exception and catch it right away...
                 }
             }
-            catch
+            catch(Exception e)
             {
-                throw new UserNotFoundException("Given credentials could not be verified.");
+                throw new UserNotFoundException("Given credentials could not be verified.", e);
             }
         }
 

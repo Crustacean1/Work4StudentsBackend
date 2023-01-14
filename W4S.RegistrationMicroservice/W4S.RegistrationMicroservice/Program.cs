@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using W4SRegistrationMicroservice.API.Interfaces;
 using W4SRegistrationMicroservice.API.Services;
-using W4SRegistrationMicroservice.Data.DbContexts;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4S.ServiceBus.Extensions;
 using W4SRegistrationMicroservice.Data.Seeders;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;
@@ -13,25 +13,33 @@ using W4SRegistrationMicroservice.API.Validations.UserAuthentication;
 using System.Text;
 using W4SRegistrationMicroservice.API.Controllers;
 using Serilog;
+using W4S.RegistrationMicroservice.API.Host;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+
+Log.Logger.Information("Staring application");
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Host.UseSerilog();
+
+builder.Services.AddHostedService<MigrationHost>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-ConfigureLogger(builder.Host);
-
 ConfigureUserbaseDbContext(builder.Services);
 ConfigureValidators(builder.Services, builder.Configuration);
-
 ConfigureServices(builder.Services);
 ConfigureControllers(builder.Services);
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 
@@ -42,8 +50,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging();
-
 SeedUsersDatabase();
 
 app.UseHttpsRedirection();
@@ -53,15 +59,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-void ConfigureLogger(ConfigureHostBuilder host)
-{
-    builder.Logging.ClearProviders();
-    builder.Host.UseSerilog((ctx, lc) => lc
-    .WriteTo.Console()
-    .ReadFrom.Configuration(ctx.Configuration));
-}
 
 void ConfigureValidators(IServiceCollection services, IConfiguration configuration)
 {
@@ -110,10 +107,7 @@ void ConfigureControllers(IServiceCollection services)
 
 void ConfigureUserbaseDbContext(IServiceCollection services)
 {
-    var connString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-
-    services.AddDbContext<W4SUserbaseDbContext>(options =>
-        options.UseSqlServer(connString ?? "Server=localhost\\SQLEXPRESS;Database=W4SRegistrationUserbase;User=sa;Password=Kutafon2137;Trusted_Connection=True;encrypt=false"));
+    services.AddDbContext<W4SUserbaseDbContext>();
 }
 
 void SeedUsersDatabase()

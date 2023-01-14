@@ -1,25 +1,25 @@
-using PostingService.Domain.Models;
-using Microsoft.Extensions.Logging;
-using PostingService.Domain.Repositories;
+using W4S.PostingService.Domain.Models;
 
-namespace PostingService.Domain.Commands
+namespace W4S.PostingService.Domain.Commands
 {
-    public class CreateJobOfferCommand
+    public class PostJobOfferCommand
     {
-        private readonly ILogger<CreateJobOfferCommand> logger;
-        private readonly IJobOfferRepository repository;
+        public Guid Id { get; set; }
 
-        public CreateJobOfferCommand(ILogger<CreateJobOfferCommand> logger, IJobOfferRepository repository)
-        {
-            this.logger = logger;
-            this.repository = repository;
-        }
+        public Guid RecruiterId { get; set; }
 
-        public Guid CreateJobOffer(JobOffer offer)
-        {
-            logger.LogInformation("Creating new job offer");
-            repository.AddJobOffer(offer);
-            return Guid.Empty;
-        }
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public string Role { get; set; }
+
+        public Address Address { get; set; }
+
+        public uint Openings { get; set; }
+
+        public PayRange PayRange { get; set; }
+
+        public Schedule WorkingHours { get; set; }
     }
 }
