@@ -32,7 +32,7 @@ namespace W4S.PostingService.Domain.Models
 
         public PayRange PayRange { get; set; }
 
-        public Schedule WorkingHours { get; set; }
+        public IEnumerable<Schedule> WorkingHours { get; set; }
 
         public IEnumerable<Application> Applications => applications;
 

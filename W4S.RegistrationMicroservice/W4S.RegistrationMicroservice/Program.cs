@@ -25,8 +25,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
 
-builder.Services.AddHostedService<MigrationHost>();
-
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -49,8 +47,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-SeedUsersDatabase();
 
 app.UseHttpsRedirection();
 
@@ -102,6 +98,7 @@ void ConfigureControllers(IServiceCollection services)
 {
     services.TryAddScoped<RegistrationController>();
     services.TryAddScoped<SigningInController>();
+    services.AddHostedService<MigrationHost>();
     services.AddServiceBus();
 }
 
