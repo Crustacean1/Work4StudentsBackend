@@ -28,15 +28,15 @@ namespace W4S.ServiceBus.Package
 
         public abstract void Start();
 
-        protected dynamic? InvokeHandler(dynamic arg)
+        protected async Task<object?> InvokeHandler(dynamic arg)
         {
             try
             {
-                logger.LogInformation("Creating scope");
+                logger.LogInformation("Invokin scope");
 
                 using (var scope = provider.CreateScope())
                 {
-                    logger.LogInformation("Starting Invokation");
+                    logger.LogInformation("Starting Invokation returning {ReturnType}", methodInfo.ReturnType.Name);
 
                     var handler = scope.ServiceProvider.GetRequiredService(methodInfo.DeclaringType!);
 
@@ -45,7 +45,10 @@ namespace W4S.ServiceBus.Package
                     var parameterType = methodInfo.GetParameters()[0].ParameterType;
 
                     logger.LogInformation("Executing handler method {Name}", methodInfo.Name);
-                    return methodInfo.Invoke(handler, new object[] { arg });
+
+                    var task = (Task)methodInfo.Invoke(handler, new object[] { arg })!;
+                    await task.ConfigureAwait(false);
+                    return task.GetType().GetProperty("Result").GetValue(task, null);
                 }
             }
             catch (Exception e)

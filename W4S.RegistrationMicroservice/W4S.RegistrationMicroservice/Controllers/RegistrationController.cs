@@ -25,7 +25,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("student")]
-        public StudentRegisteredResponse RegisterStudent([FromBody] StudentRegistrationDto dto)
+        public Task<StudentRegisteredResponse> RegisterStudent([FromBody] StudentRegistrationDto dto)
         {
             var response = new StudentRegisteredResponse();
 
@@ -35,16 +35,16 @@ namespace W4SRegistrationMicroservice.API.Controllers
                 _busClient.SendEvent("registeredStudent", eventAndId.Item2);
                 response.Id = eventAndId.Item1;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 response.ExceptionMessage = ex.Message;
             }
 
-            return response;
+            return Task.FromResult(response);
         }
 
         [BusRequestHandler("employer")]
-        public EmployerRegisteredResponse RegisterEmployer([FromBody] EmployerRegistrationDto dto)
+        public Task<EmployerRegisteredResponse> RegisterEmployer([FromBody] EmployerRegistrationDto dto)
         {
             var response = new EmployerRegisteredResponse();
 
@@ -59,7 +59,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
                 response.ExceptionMessage = ex.Message;
             }
 
-            return response;
+            return Task.FromResult(response);
         }
     }
 }
