@@ -1,5 +1,5 @@
-﻿using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
-using W4S.RegistrationMicroservice.Models.Users.Creation;
+﻿using W4S.RegistrationMicroservice.Models.Users.Creation;
+using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 
 namespace W4SRegistrationMicroservice.API.Interfaces
 {

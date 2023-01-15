@@ -5,6 +5,7 @@ using W4SRegistrationMicroservice.Data.Entities.Universities;
 using W4SRegistrationMicroservice.Data.Entities.Users;
 using W4SRegistrationMicroservice.Data.Entities.Users.User_Settings;
 using W4SRegistrationMicroservice.Data.Seeders.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace W4SRegistrationMicroservice.Data.Seeders
 {
@@ -28,7 +29,7 @@ namespace W4SRegistrationMicroservice.Data.Seeders
         {
             if (_dbContext.Database.CanConnect())
             {
-                if(!_dbContext.Roles.Any())
+                if (!_dbContext.Roles.Any())
                 {
                     List<Roles> roles = new List<Roles>() {
                         new Roles()
@@ -87,7 +88,8 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                         SecondName = "Man",
                         Surname = "Tuman",
                         UniversityId = university.Id,
-                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Student")).Id,
+                        PhoneNumber = "2137"
                         },
                         new Student()
                         {
@@ -130,7 +132,8 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                         PasswordHash = _passwordHasher.HashText("NOTHASHED:DDD"),
                         PositionName = "Majster HR",
                         CompanyId = company.Id,
-                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Employer")).Id
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Employer")).Id,
+                        PhoneNumber = "2137"
                     };
 
                     _dbContext.Employers.Add(employer);
@@ -145,7 +148,8 @@ namespace W4SRegistrationMicroservice.Data.Seeders
                         PasswordHash = _passwordHasher.HashText("U wish u knew."),
                         Name = "Admin",
                         Surname = "Joe",
-                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Administrator")).Id
+                        RoleId = _dbContext.Roles.First(s => s.Role.Equals("Administrator")).Id,
+                        PhoneNumber = "2137"
                     };
 
                     _dbContext.Administrators.Add(admin);
