@@ -3,7 +3,7 @@ services:
 
   posting:
     build:
-      context: ./PostingService
+      context: ./W4S.PostingService
       dockerfile: Dockerfile
       args:
         MODE: Debug
@@ -13,27 +13,27 @@ services:
     networks:
       - internal
     environment:
-      CONNECTION_STRING: Host=posting-db;User=root;Password=root;Port=5432
+      CONNECTION_STRING: Database=offers;Host=db;Username=root;Password=root;Port=5432
       BUS_BROKER_ADDRESS: servicebus
-      SERVICE_NAME: OfferService
-    volumes:
-      - ./NugetPackages:/NugetPackages
+      SERVICE_NAME: Posting
 
-  posting-db:
+  db:
     image: postgres
     restart: always
     volumes: 
-      - posting-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+      - ./Postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: posting
     networks:
       - internal
 
   gateway:
     build:
-      context: ./W4SGateway
+      context: ./W4S.Gateway
       dockerfile: Dockerfile
       args:
         MODE: Debug
@@ -47,8 +47,6 @@ services:
     environment:
       BUS_BROKER_ADDRESS: servicebus
       SERVICE_NAME: Gateway
-    volumes:
-      - ./NugetPackages:/NugetPackages
 
   servicebus:
     build: ./RabbitMq
@@ -61,10 +59,25 @@ services:
     networks:
       - internal
 
+  registration:
+    build:
+      context: ./W4S.RegistrationMicroservice
+      dockerfile: Dockerfile
+      args:
+        MODE: Debug
+    restart: always
+    depends_on: 
+      - servicebus
+    networks:
+      - internal
+    environment:
+      CONNECTION_STRING: Database=users;Host=db;Username=root;Password=root;Port=5432
+      BUS_BROKER_ADDRESS: servicebus
+      SERVICE_NAME: Registration
+
 volumes:
-  posting-data:
+  db-data:
   servicebus-data:
-  registration-data:
 
 networks:
   internal:
