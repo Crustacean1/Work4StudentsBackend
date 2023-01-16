@@ -1,17 +1,16 @@
-﻿using W4SRegistrationMicroservice.Data.Entities.Users.User_Settings;
-
-namespace W4SRegistrationMicroservice.Data.Entities.Users {
+﻿namespace W4S.RegistrationMicroservice.Data.Entities.Users
+{
     public class User
     {
-        public long Id { get; set; }
-        public required string EmailAddress { get; set; }
-        public required string PasswordHash { get; set; }
-        public required string Name { get; set; }
-        public string SecondName { get; set; }
-        public required string Surname { get; set; }
-        public string PhoneNumber { get; set; }
+        public Guid Id { get; init; }
+        public required string EmailAddress { get; init; }
+        public required string PasswordHash { get; init; }
+        public required string Name { get; init; }
+        public string SecondName { get; init; }
+        public required string Surname { get; init; }
+        public string PhoneNumber { get; init; }
 
-        public long RoleId { get; set; }
-        public virtual Roles Role { get; set; }
+        public Guid RoleId { get; init; }
+        public virtual Role Role { get; init; }
     }
 }

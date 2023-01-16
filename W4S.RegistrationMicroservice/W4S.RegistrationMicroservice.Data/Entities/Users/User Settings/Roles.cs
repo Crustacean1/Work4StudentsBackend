@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace W4SRegistrationMicroservice.Data.Entities.Users.User_Settings
+﻿namespace W4S.RegistrationMicroservice.Data.Entities.Users
 {
-    public class Roles
+    public class Role
     {
-        public long Id { get; set; }
-        public string Role { get; set; }
+        public Guid Id { get; set; }
+
+        public string Description { get; set; }
     }
 }

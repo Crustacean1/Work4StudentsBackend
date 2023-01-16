@@ -14,7 +14,7 @@ namespace W4SRegistrationMicroservice.API.Services
 {
     public class SigningInService : ISigningInService
     {
-        private readonly W4SUserbaseDbContext _dbContext;
+        private readonly UserbaseDbContext _dbContext;
         private readonly IHasher _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
         private readonly ILogger<SigningInService> _logger;
@@ -22,7 +22,7 @@ namespace W4SRegistrationMicroservice.API.Services
         public SigningInService(
             IHasher passwordHasher,
             IOptions<AuthenticationSettings> authenticationSettings,
-            W4SUserbaseDbContext dbContext,
+            UserbaseDbContext dbContext,
             ILogger<SigningInService> logger)
         {
             _passwordHasher = passwordHasher;
@@ -54,7 +54,7 @@ namespace W4SRegistrationMicroservice.API.Services
                     throw new Exception("Invalid password");// It's bad practice to throw exception and catch it right away...
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new UserNotFoundException("Given credentials could not be verified.", e);
             }
@@ -70,7 +70,7 @@ namespace W4SRegistrationMicroservice.API.Services
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.EmailAddress}"),
-                new Claim(ClaimTypes.Role, $"{user.Role.Role}")
+                new Claim(ClaimTypes.Role, $"{user.Role.Description}")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));

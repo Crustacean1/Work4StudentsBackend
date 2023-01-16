@@ -2,6 +2,6 @@
 {
     public class StudentRegisteredResponse : BaseResponse
     {
-        public long? Id { get; set; }
+        public Guid? Id { get; set; }
     }
 }

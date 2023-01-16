@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using W4SRegistrationMicroservice.Data.Entities;
-using W4SRegistrationMicroservice.Data.Entities.Universities;
-using W4SRegistrationMicroservice.Data.Entities.Users;
-using W4SRegistrationMicroservice.Data.Entities.Users.User_Settings;
+using W4S.RegistrationMicroservice.Data.Seeders;
+using W4S.RegistrationMicroservice.Data.Entities;
+using W4S.RegistrationMicroservice.Data.Entities.Users;
 
 namespace W4S.RegistrationMicroservice.Data.DbContexts
 {
-    public class W4SUserbaseDbContext : DbContext
+    public class UserbaseDbContext : DbContext
     {
         private readonly string DEFAULT_CONNECTION_STRING = "Database=users;Host=localhost;Port=5432;Username=root;Password=root";
 
         private readonly string _connectionString;
+        private readonly UserbaseSeeder _seeder = new();
 
         public DbSet<User> Users { get; set; }
         public DbSet<Administrator> Administrators { get; set; }
@@ -19,12 +19,13 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
         public DbSet<Company> Companies { get; set; }
         public DbSet<University> Universities { get; set; }
         public DbSet<Domain> UniversitiesDomains { get; set; }
-        public DbSet<Roles> Roles { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         public async Task MigrateAsync(CancellationToken cancellationToken)
         {
             await Database.MigrateAsync(cancellationToken);
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,7 +58,18 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<Company>().Property(e => e.NIP).HasMaxLength(10);
 
             // Roles
-            modelBuilder.Entity<Roles>().Property(e => e.Role).IsRequired();
+            modelBuilder.Entity<Role>().Property(e => e.Description).IsRequired();
+
+            //Seeding values...
+
+            modelBuilder.Entity<Role>().HasData(new List<Role>() { _seeder.StudentRole, _seeder.EmployerRole, _seeder.AdminRole });
+            modelBuilder.Entity<Domain>().HasData(_seeder.EmailDomain);
+            modelBuilder.Entity<University>().HasData(_seeder.University);
+            modelBuilder.Entity<Company>().HasData(_seeder.Company);
+
+            modelBuilder.Entity<Student>().HasData(_seeder.Student);
+            modelBuilder.Entity<Employer>().HasData(_seeder.Employer);
+            modelBuilder.Entity<Administrator>().HasData(_seeder.Admin);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
