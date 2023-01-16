@@ -11,7 +11,7 @@ using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
 
 namespace Gateway.Console.Microservices.Accounts
 {
-    [Route("accounts")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
