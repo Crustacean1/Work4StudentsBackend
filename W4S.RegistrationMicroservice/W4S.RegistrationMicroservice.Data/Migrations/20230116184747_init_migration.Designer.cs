@@ -12,8 +12,8 @@ using W4S.RegistrationMicroservice.Data.DbContexts;
 namespace W4S.RegistrationMicroservice.Data.Migrations
 {
     [DbContext(typeof(UserbaseDbContext))]
-    [Migration("20230115225952_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20230116184747_init_migration")]
+    partial class initmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +48,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("50543f72-294b-4a85-b45e-613f85a39a48"),
+                            Id = new Guid("8ccac33d-768d-4ae3-9749-a9f756471234"),
                             NIP = "5283121250",
                             Name = "Empty firm in Poland"
                         });
@@ -72,7 +72,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("476e3e6f-265d-4d3c-8c10-03830f745732"),
+                            Id = new Guid("335587c9-9bfd-4517-a506-5541425636f6"),
                             EmailDomain = "@polsl.pl"
                         });
                 });
@@ -100,8 +100,8 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d6700711-6103-4b56-a108-419ee205ea80"),
-                            EmailDomainId = new Guid("476e3e6f-265d-4d3c-8c10-03830f745732"),
+                            Id = new Guid("b133cb75-8968-4844-9b1a-568f3d642d81"),
+                            EmailDomainId = new Guid("335587c9-9bfd-4517-a506-5541425636f6"),
                             Name = "Politechnika Śląska"
                         });
                 });
@@ -123,17 +123,17 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cb90ce28-101d-45c5-bdd3-419c13d49b01"),
-                            Description = "Administrator"
+                            Id = new Guid("4e50b4cc-ca26-411f-8fc9-9c8429af0457"),
+                            Description = "Student"
                         },
                         new
                         {
-                            Id = new Guid("26c8d022-b1da-4a48-8e9c-81b39c95f22e"),
-                            Description = "Administrator"
+                            Id = new Guid("60a5ce7b-fc37-4f7b-ad7e-50780509002d"),
+                            Description = "Employer"
                         },
                         new
                         {
-                            Id = new Guid("86b206da-db92-4ae2-b8b1-8bb551482f3b"),
+                            Id = new Guid("318d3ea9-f9fa-4c88-bd4f-5437f283a6aa"),
                             Description = "Administrator"
                         });
                 });
@@ -159,7 +159,6 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
@@ -167,7 +166,6 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("SecondName")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -194,14 +192,14 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d9d27168-3012-4679-b3e9-818f76aa708a"),
-                            EmailAddress = "someEmployer@gmail.com",
-                            Name = "Adam",
-                            PasswordHash = "4e4f544841534845443a444444",
+                            Id = new Guid("94be9e1e-aa78-4329-b07e-c045801ebd7e"),
+                            EmailAddress = "someAdmin@gmail.com",
+                            Name = "Admin",
+                            PasswordHash = "61646d696e31323334",
                             PhoneNumber = "2137",
-                            RoleId = new Guid("86b206da-db92-4ae2-b8b1-8bb551482f3b"),
-                            SecondName = "Szef",
-                            Surname = "Małysz"
+                            RoleId = new Guid("318d3ea9-f9fa-4c88-bd4f-5437f283a6aa"),
+                            SecondName = "Adminsky",
+                            Surname = "Administator"
                         });
                 });
 
@@ -223,15 +221,15 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("881ee53f-2d9b-41fd-96f1-bc01c67c4f76"),
+                            Id = new Guid("3c60b300-32a0-49d3-8b6b-9aa629d14cac"),
                             EmailAddress = "someEmployer@gmail.com",
                             Name = "Adam",
-                            PasswordHash = "4e4f544841534845443a444444",
+                            PasswordHash = "61646d696e",
                             PhoneNumber = "2137",
-                            RoleId = new Guid("26c8d022-b1da-4a48-8e9c-81b39c95f22e"),
+                            RoleId = new Guid("60a5ce7b-fc37-4f7b-ad7e-50780509002d"),
                             SecondName = "Szef",
                             Surname = "Małysz",
-                            CompanyId = new Guid("50543f72-294b-4a85-b45e-613f85a39a48"),
+                            CompanyId = new Guid("8ccac33d-768d-4ae3-9749-a9f756471234"),
                             PositionName = "Majster HR"
                         });
                 });
@@ -250,15 +248,15 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("17e08779-c16e-4e25-8caf-fe466e4eb428"),
+                            Id = new Guid("ee1f732a-2b7c-46a7-b198-d62887e388a0"),
                             EmailAddress = "student.debil@polsl.pl",
                             Name = "John",
                             PasswordHash = "61646d696e",
                             PhoneNumber = "+2137",
-                            RoleId = new Guid("cb90ce28-101d-45c5-bdd3-419c13d49b01"),
+                            RoleId = new Guid("4e50b4cc-ca26-411f-8fc9-9c8429af0457"),
                             SecondName = "Karol",
                             Surname = "Pavulon",
-                            UniversityId = new Guid("d6700711-6103-4b56-a108-419ee205ea80")
+                            UniversityId = new Guid("b133cb75-8968-4844-9b1a-568f3d642d81")
                         });
                 });
 

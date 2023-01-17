@@ -43,13 +43,13 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
             StudentRole = new Role()
             {
                 Id = Guid.NewGuid(),
-                Description = "Administrator"
+                Description = "Student"
             };
 
             EmployerRole = new Role()
             {
                 Id = Guid.NewGuid(),
-                Description = "Administrator"
+                Description = "Employer"
             };
 
             Company = new Company()
