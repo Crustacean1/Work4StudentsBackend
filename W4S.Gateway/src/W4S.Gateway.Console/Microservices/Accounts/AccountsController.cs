@@ -11,7 +11,7 @@ using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
 
 namespace Gateway.Console.Microservices.Accounts
 {
-    [Route("accounts")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
@@ -30,7 +30,8 @@ namespace Gateway.Console.Microservices.Accounts
             logger.LogInformation("Request: Sign in user");
             UserSigningResponse response = await busClient.SendRequest<UserSigningResponse, UserCredentialsDto>("signing.signin", userCredentialsDto, cancellationToken);
 
-            if(response.ExceptionMessage is null) {
+            if (response.ExceptionMessage is null)
+            {
                 return Ok(response.JwtTokenValue);
             }
             return BadRequest(response.ExceptionMessage);

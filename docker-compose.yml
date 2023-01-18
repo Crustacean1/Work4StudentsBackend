@@ -10,6 +10,7 @@ services:
     restart: always
     depends_on: 
       - servicebus
+      - db
     networks:
       - internal
     environment:
@@ -68,6 +69,7 @@ services:
     restart: always
     depends_on: 
       - servicebus
+      - db
     networks:
       - internal
     environment:

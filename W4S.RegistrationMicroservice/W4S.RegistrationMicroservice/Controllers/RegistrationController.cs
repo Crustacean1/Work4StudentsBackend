@@ -14,13 +14,16 @@ namespace W4SRegistrationMicroservice.API.Controllers
     {
         private readonly IRegistrationService _registrationService;
         private readonly IClient _busClient;
+        private readonly ILogger<RegistrationController> _logger;
 
         public RegistrationController(
             IRegistrationService registrationService,
-            IClient client) 
-        { 
+            IClient client,
+            ILogger<RegistrationController> logger)
+        {
             _registrationService = registrationService;
             _busClient = client;
+            _logger = logger;
         }
 
         [BusRequestHandler("student")]
@@ -36,6 +39,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message, ex);
                 response.ExceptionMessage = ex.Message;
             }
 
