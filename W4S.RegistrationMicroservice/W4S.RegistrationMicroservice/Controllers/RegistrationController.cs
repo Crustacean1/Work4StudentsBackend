@@ -21,9 +21,9 @@ namespace W4SRegistrationMicroservice.API.Controllers
             IClient client,
             ILogger<RegistrationController> logger)
         {
-            _registrationService = registrationService;
-            _busClient = client;
-            _logger = logger;
+            _registrationService = registrationService ?? throw new ArgumentNullException(nameof(registrationService));
+            _busClient = client ?? throw new ArgumentNullException(nameof(client));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [BusRequestHandler("student")]
@@ -35,7 +35,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
             {
                 var eventAndId = _registrationService.RegisterStudent(dto);
                 _logger.LogInformation("User registered.");
-                //_busClient.SendEvent("registeredStudent", eventAndId.Item2);
+                 //_busClient.SendEvent("registeredStudent", eventAndId.Item2); // not working properly yet
                 _logger.LogInformation("Event registeredStudent sent.");
                 response.Id = eventAndId.Item1;
             }
