@@ -2,6 +2,7 @@
 using W4S.RegistrationMicroservice.Data.Seeders;
 using W4S.RegistrationMicroservice.Data.Entities;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
+using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 
 namespace W4S.RegistrationMicroservice.Data.DbContexts
 {
@@ -9,7 +10,6 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
     {
         private readonly string DEFAULT_CONNECTION_STRING = "Database=users;Host=localhost;Port=5432;Username=root;Password=root";
 
-        private readonly string _connectionString;
         private readonly UserbaseSeeder _seeder = new();
 
         public DbSet<User> Users { get; set; }
@@ -20,6 +20,11 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
         public DbSet<University> Universities { get; set; }
         public DbSet<Domain> UniversitiesDomains { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Profile> Profiles { get; set; }
+        public DbSet<EmployerProfile> EmployerProfiles { get; set; }
+        public DbSet<StudentProfile> StudentProfiles { get; set; }
+
 
         public async Task MigrateAsync(CancellationToken cancellationToken)
         {
@@ -60,6 +65,16 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             // Roles
             modelBuilder.Entity<Role>().Property(e => e.Description).IsRequired();
 
+            modelBuilder.Entity<Rating>().Property(e => e.Id).IsRequired();
+            modelBuilder.Entity<Rating>().Property(e => e.StudentId).IsRequired();
+            
+            // Profiles
+            modelBuilder.Entity<Profile>().Property(x => x.Image).HasMaxLength(5242880); // 5MB in bytes
+            modelBuilder.Entity<Profile>().Property(x => x.Description).HasMaxLength(500);
+
+            // StudenProfiles
+            modelBuilder.Entity<StudentProfile>().Property(x => x.ResumeFile).HasMaxLength(5242880); // 5MB in bytes
+
             //Seeding values...
 
             modelBuilder.Entity<Role>().HasData(new List<Role>() { _seeder.StudentRole, _seeder.EmployerRole, _seeder.AdminRole });
@@ -70,6 +85,9 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<Student>().HasData(_seeder.Student);
             modelBuilder.Entity<Employer>().HasData(_seeder.Employer);
             modelBuilder.Entity<Administrator>().HasData(_seeder.Admin);
+
+            modelBuilder.Entity<StudentProfile>().HasData(_seeder.StudentProfile);
+            modelBuilder.Entity<EmployerProfile>().HasData(_seeder.EmployerProfile);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

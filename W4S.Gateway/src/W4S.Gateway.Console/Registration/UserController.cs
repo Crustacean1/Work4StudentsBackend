@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using W4S.ServiceBus.Abstractions;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses;
 
 namespace Gateway.Console.Controllers
 {

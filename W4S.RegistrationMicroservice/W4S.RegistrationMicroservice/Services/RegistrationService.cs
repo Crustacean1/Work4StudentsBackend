@@ -93,12 +93,16 @@ namespace W4SRegistrationMicroservice.API.Services
                 RoleId = _dbContext.Roles.First(s => s.Description.Equals("Employer")).Id
             };
 
+            _logger.LogInformation($"Employer role id: {employer.RoleId}");
+
             _dbContext.Employers.Add(employer);
+
+
+
             _dbContext.SaveChanges();
 
             return Tuple.Create<Guid, EmployerRegisteredEvent>(
-                _dbContext.Employers
-                    .Where(x => x.Name.Equals(employer.Name)).First().Id,
+                employer.Id,
                 new EmployerRegisteredEvent()
                 {
                     Date = DateTime.Now,
@@ -138,7 +142,8 @@ namespace W4SRegistrationMicroservice.API.Services
             {
                 _logger.LogInformation("Trying to find an university.");
                 universityId = _dbContext.Universities
-                    .FirstOrDefault(e => e.EmailDomainId.CompareTo(emailDomainId.Value) == 0).Id;
+                    .Select(x => new {x.Id, x.EmailDomainId})
+                    .First(e => e.EmailDomainId == emailDomainId).Id;
             }
             catch (Exception e)
             {
@@ -187,18 +192,28 @@ namespace W4SRegistrationMicroservice.API.Services
             {
                 _logger.LogError("Could not save changes. :----)");
                 _logger.LogError(e.Message, e);
-                _logger.LogError(e.InnerException.Message, e);
+                _logger.LogError(e.InnerException.Message ?? "", e);
             }
 
-            return Tuple.Create(student.Id,
-                new StudentRegisteredEvent()
-                {
-                    Date = DateTime.Now,
-                    FirstName = studentCreationDto.FirstName,
-                    SecondName = studentCreationDto.SecondName,
-                    Surname = studentCreationDto.Surname,
-                    UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain
-                });
+            var studentEvent = new StudentRegisteredEvent()
+            {
+                Date = DateTime.Now,
+                FirstName = studentCreationDto.FirstName,
+                SecondName = studentCreationDto.SecondName,
+                Surname = studentCreationDto.Surname,
+                UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain
+            };
+
+            if(studentEvent != null)
+            {
+                _logger.LogInformation("Student event is not null.");
+            }
+            else
+            {
+                _logger.LogInformation("Student event is null >:(");
+            }
+
+            return Tuple.Create(student.Id, studentEvent);
         }
 
 

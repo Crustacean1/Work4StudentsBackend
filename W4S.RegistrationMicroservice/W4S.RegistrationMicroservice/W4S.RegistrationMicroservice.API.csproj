@@ -23,7 +23,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="W4S.ServiceBus" Version="1.5.0" />
-    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="2.4.0" />
+    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="2.5.2" />
   </ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\W4S.RegistrationMicroservice.Data\W4S.RegistrationMicroservice.Data.csproj" />

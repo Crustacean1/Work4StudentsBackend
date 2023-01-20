@@ -1,6 +1,7 @@
 ﻿using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.Data.Entities;
 using W4SRegistrationMicroservice.CommonServices.Services;
+using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 
 namespace W4S.RegistrationMicroservice.Data.Seeders
 {
@@ -20,6 +21,12 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
         public Administrator Admin { get; set; }
 
         public Domain EmailDomain { get; set; }
+
+        public Rating Rating { get; set; }
+
+        public EmployerProfile EmployerProfile { get; set;}
+        public StudentProfile StudentProfile { get; set;}
+
 
         public UserbaseSeeder()
         {
@@ -103,6 +110,36 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
                 PasswordHash = _passwordHasher.HashText("admin1234"),
                 PhoneNumber = "2137",
                 RoleId = AdminRole.Id
+            };
+
+            EmployerProfile = new EmployerProfile()
+            {
+                Id = Guid.NewGuid(),
+                EmployerId = Employer.Id,
+                Description = "My company is the best.",
+                Image = new byte[]
+                {
+                    0x00, 0x00, 0x00, 0x00
+                }
+            };
+
+
+            StudentProfile = new StudentProfile()
+            {
+                Id = Guid.NewGuid(),
+                StudentId = Student.Id,
+                Description = "My university is the best.",
+                Image = new byte[]
+                {
+                    0x00, 0x00, 0x00, 0x00
+                }
+            };
+
+            Rating = new Rating()
+            {
+                Id = Guid.NewGuid(),
+                StudentId = Student.Id,
+                RatingValue = 5.0m
             };
 
         }

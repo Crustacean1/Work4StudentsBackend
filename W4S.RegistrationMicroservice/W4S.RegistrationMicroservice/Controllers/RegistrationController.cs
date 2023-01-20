@@ -34,12 +34,15 @@ namespace W4SRegistrationMicroservice.API.Controllers
             try
             {
                 var eventAndId = _registrationService.RegisterStudent(dto);
-                _busClient.SendEvent("registeredStudent", eventAndId.Item2);
+                _logger.LogInformation("User registered.");
+                //_busClient.SendEvent("registeredStudent", eventAndId.Item2);
+                _logger.LogInformation("Event registeredStudent sent.");
                 response.Id = eventAndId.Item1;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
+                _logger.LogError(ex.InnerException.Message ?? "", ex);
                 response.ExceptionMessage = ex.Message;
             }
 
