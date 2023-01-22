@@ -44,7 +44,7 @@ namespace W4S.PostingService.Console.Handlers
             return new ApplicationAcceptedDto();
         }
 
-        [BusRequestHandler("list.job")]
+        [BusRequestHandler("list.offer")]
         public async Task<ApplicationListResponse> OnJobApplicationList(ListOfferApplicationsQuery listQuery)
         {
             logger.LogInformation("Lising applications for job {Job}", listQuery.OfferId);

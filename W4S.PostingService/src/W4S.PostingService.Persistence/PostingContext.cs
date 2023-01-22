@@ -56,8 +56,17 @@ namespace W4S.PostingService.Persistence
 
             builder.Entity<Applicant>(b =>
             {
-                b.OwnsOne(a => a.Address);
+                b.OwnsOne(a => a.Address).HasData(new
+                {
+                    Country = "Polandia",
+                    Region = "Silesia",
+                    City = "Gliwice",
+                    Street = "Street",
+                    Building = "Boilding",
+                    ApplicantId = seeder.FakeApplicant.Id
+                });
                 b.OwnsMany(a => a.Availability);
+                b.HasData(seeder.FakeApplicant);
             });
 
             builder.Entity<Application>(b =>

@@ -47,6 +47,16 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Applicants");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("84970053-0cdb-4438-8812-7a4a581b2452"),
+                            Email = "noreply@company.et",
+                            FirstName = "John",
+                            PhoneNumber = "123456789",
+                            Surname = "Smith"
+                        });
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Application", b =>
@@ -107,7 +117,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1ef726d5-7d70-4cce-b185-77e3ae15f7ca"),
+                            Id = new Guid("2badd62b-ddd2-4f46-9a5b-3f8f37c91ea8"),
                             Description = "It is what it is",
                             Name = "Company"
                         });
@@ -181,8 +191,8 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d8b254d4-2eb8-44c4-a6aa-4ddf5b16e791"),
-                            CompanyId = new Guid("1ef726d5-7d70-4cce-b185-77e3ae15f7ca"),
+                            Id = new Guid("815a4216-3e5b-4b84-9afc-ff099763fd59"),
+                            CompanyId = new Guid("2badd62b-ddd2-4f46-9a5b-3f8f37c91ea8"),
                             Email = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
@@ -223,6 +233,17 @@ namespace W4S.PostingService.Persistence.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicantId");
+
+                            b1.HasData(
+                                new
+                                {
+                                    ApplicantId = new Guid("84970053-0cdb-4438-8812-7a4a581b2452"),
+                                    Building = "Boilding",
+                                    City = "Gliwice",
+                                    Country = "Polandia",
+                                    Region = "Silesia",
+                                    Street = "Street"
+                                });
                         });
 
                     b.OwnsMany("W4S.PostingService.Domain.Models.Schedule", "Availability", b1 =>
@@ -312,7 +333,7 @@ namespace W4S.PostingService.Persistence.Migrations
                             b1.HasData(
                                 new
                                 {
-                                    CompanyId = new Guid("1ef726d5-7d70-4cce-b185-77e3ae15f7ca"),
+                                    CompanyId = new Guid("2badd62b-ddd2-4f46-9a5b-3f8f37c91ea8"),
                                     Building = "Macdonald",
                                     City = "Gliwice",
                                     Country = "Poland",

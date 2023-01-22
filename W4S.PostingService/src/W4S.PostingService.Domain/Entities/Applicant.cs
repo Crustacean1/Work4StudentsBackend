@@ -7,8 +7,8 @@ namespace W4S.PostingService.Domain.Entities
     {
         public Address Address { get; set; }
 
-        public IEnumerable<Schedule> Availability { get; set; }
+        public IEnumerable<Schedule> Availability { get; set; } = new List<Schedule>();
 
-        public ICollection<Application> Applications { get; set; }
+        public ICollection<Application> Applications { get; set; } = new List<Application>();
     }
 }

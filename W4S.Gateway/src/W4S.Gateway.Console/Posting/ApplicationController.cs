@@ -39,6 +39,7 @@ namespace W4S.Gateway.Console.Posting
         public async Task<ActionResult> AcceptApplication([FromBody] AcceptApplicationDto acceptCommand, CancellationToken cancellationToken)
         {
             var response = await busClient.SendRequest<ApplicationAcceptedDto, AcceptApplicationDto>("application.accept", acceptCommand, cancellationToken);
+
             if (response.Errors.Any())
             {
                 return StatusCode(400, response.Errors);
@@ -47,7 +48,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Route("/offer/{id}")]
+        [Route("offer/{id}")]
         public async Task<ActionResult> GetJobApplications([FromRoute] Guid id, [FromQuery] int page, [FromQuery] int pageSize, CancellationToken cancellationToken)
         {
             var query = new ListOfferApplicationsQuery
@@ -57,7 +58,7 @@ namespace W4S.Gateway.Console.Posting
                 OfferId = id
             };
 
-            var response = await busClient.SendRequest<ApplicationListResponse, ListOfferApplicationsQuery>("offer.list", query, cancellationToken);
+            var response = await busClient.SendRequest<ApplicationListResponse, ListOfferApplicationsQuery>("application.list.offer", query, cancellationToken);
 
             if (response.Errors.Any())
             {
@@ -68,7 +69,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Route("/applicant/{id}")]
+        [Route("applicant/{id}")]
         public async Task<ActionResult> GetApplicantApplications([FromRoute] Guid id, [FromQuery] int page, [FromQuery] int pageSize, CancellationToken cancellationToken)
         {
             var query = new ListApplicantApplicationsQuery
@@ -78,7 +79,7 @@ namespace W4S.Gateway.Console.Posting
                 ApplicantId = id
             };
 
-            var response = await busClient.SendRequest<ApplicationListResponse, ListApplicantApplicationsQuery>("offer.list", query, cancellationToken);
+            var response = await busClient.SendRequest<ApplicationListResponse, ListApplicantApplicationsQuery>("offer.list.applicant", query, cancellationToken);
 
             if (response.Errors.Any())
             {

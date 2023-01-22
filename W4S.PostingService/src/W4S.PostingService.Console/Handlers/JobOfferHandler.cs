@@ -10,12 +10,11 @@ namespace W4S.PostingService.Console.Handlers
     [BusService("offer")]
     public class JobOfferHandler
     {
-        ILogger<JobOfferHandler> logger;
-        IJobService jobService;
+        private readonly ILogger<JobOfferHandler> logger;
+        private readonly IJobService jobService;
 
         public JobOfferHandler(IJobService jobService, ILogger<JobOfferHandler> logger)
         {
-            logger.LogInformation("Creation");
             this.logger = logger; this.jobService = jobService;
         }
 
@@ -37,6 +36,8 @@ namespace W4S.PostingService.Console.Handlers
         [BusRequestHandler("list")]
         public async Task<JobOffersDto> GetOfferListing(JobOffersQuery query)
         {
+            logger.LogInformation("Listing job offers");
+
             var offers = await jobService.ListJobOffers(query);
             return new JobOffersDto { JobOffers = offers };
         }

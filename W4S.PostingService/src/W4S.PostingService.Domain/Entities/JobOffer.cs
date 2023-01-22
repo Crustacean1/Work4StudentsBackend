@@ -30,9 +30,9 @@ namespace W4S.PostingService.Domain.Entities
 
         public PayRange PayRange { get; set; }
 
-        public IEnumerable<Schedule> WorkingHours { get; set; }
+        public ICollection<Schedule> WorkingHours { get; set; } = new List<Schedule>();
 
-        public ICollection<Application> Applications { get; set; }
+        public ICollection<Application> Applications { get; set; } = new List<Application>();
 
     }
 }

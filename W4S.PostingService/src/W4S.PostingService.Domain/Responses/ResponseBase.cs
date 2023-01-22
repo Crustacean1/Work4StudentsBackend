@@ -2,6 +2,6 @@ namespace W4S.PostingService.Domain.Responses
 {
     public record ResponseBase
     {
-        public List<string> Errors { get; set; }
+        public List<string> Errors { get; set; } = new List<string>();
     }
 }
