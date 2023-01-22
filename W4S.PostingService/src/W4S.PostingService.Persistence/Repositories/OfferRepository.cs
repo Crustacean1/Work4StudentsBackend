@@ -1,0 +1,49 @@
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using W4S.PostingService.Domain.Entities;
+
+namespace W4S.PostingService.Persistence.Repositories
+{
+    public class OfferRepository : RepositoryBase<JobOffer>
+    {
+        public OfferRepository(PostingContext context) : base(context)
+        {
+        }
+
+        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(int page, int pageSize, Expression<Func<JobOffer, object>> comparator)
+        {
+            var result = context.Set<JobOffer>()
+                .Include(jo => jo.WorkingHours)
+                .OrderBy(comparator)
+                .Skip(page * pageSize)
+                .Take(pageSize);
+            return await result.ToListAsync();
+        }
+
+        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(int page, int pageSize)
+        {
+            var result = context.Set<JobOffer>()
+                .Include(jo => jo.WorkingHours)
+                .OrderBy(e => e.Id)
+                .Skip(page * pageSize)
+                .Take(pageSize);
+            return await result.ToListAsync();
+        }
+
+        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(Expression<Func<JobOffer, bool>> selector)
+        {
+            IEnumerable<JobOffer> result = await context.Set<JobOffer>()
+                .Include(jo => jo.WorkingHours)
+                .Where(selector)
+                .ToListAsync();
+            return result;
+        }
+
+        public override async Task<JobOffer?> GetEntityAsync(Guid id)
+        {
+            return await context.Set<JobOffer>()
+                .Include(jo => jo.WorkingHours)
+                .SingleOrDefaultAsync(o => o.Id == id);
+        }
+    }
+}

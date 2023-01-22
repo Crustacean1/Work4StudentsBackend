@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Repositories;
-using W4S.PostingService.Domain.Models;
 using W4S.PostingService.Domain.Commands;
 using AutoMapper;
 using W4S.PostingService.Domain.ValueType;
 using W4S.PostingService.Domain.Abstractions;
+using W4S.PostingService.Domain.Queries;
+using W4S.PostingService.Domain.Entities;
 
 namespace W4S.PostingService.Domain.Services
 {
@@ -29,57 +30,65 @@ namespace W4S.PostingService.Domain.Services
             this.recruiterRepository = recruiterRepository;
             this.applicationRepository = applicationRepository;
 
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<JobOffer, PostJobOfferCommand>());
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<PostJobOfferCommand, JobOffer>());
             mapper = config.CreateMapper();
         }
 
-        public async Task<Guid> PostJobOffer(PostJobOfferCommand postJobOffer, Notification notification)
+        public async Task<Guid> PostJobOffer(PostJobOfferCommand postOfferCommand, Notification notification)
         {
-            logger.LogInformation("Creating new job offer");
-
-            var recruiter = await recruiterRepository.GetEntityAsync(postJobOffer.RecruiterId);
+            var recruiter = await recruiterRepository.GetEntityAsync(postOfferCommand.RecruiterId);
 
             if (recruiter is null)
             {
-                notification.AddError($"JobOffer needs to be created by recruiter, no recruiter with id: {postJobOffer.RecruiterId}");
+                notification.AddError($"JobOffer needs to be created by recruiter, no recruiter with id: {postOfferCommand.RecruiterId}");
                 return Guid.Empty;
             }
 
-            var newOfferId = recruiter.PostJobOffer(mapper.Map<JobOffer>(postJobOffer));
+            var offer = mapper.Map<JobOffer>(postOfferCommand);
+            offer.Id = Guid.NewGuid();
+            offer.Recruiter = recruiter;
+            await offerRepository.AddAsync(offer);
 
-            await recruiterRepository.SaveAsync();
+            logger.LogInformation("So far so good");
+            try
+            {
+                await offerRepository.SaveAsync();
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Error: {Error} {Inner} {StackTrace}", e.Message, e.InnerException?.Message ?? "None", e.StackTrace);
+            }
+            logger.LogInformation("Even better");
 
-            return newOfferId;
+            return offer.Id;
         }
 
-        public async Task<Guid> Apply(ApplyForJobCommand jobApplication, Notification notification)
+        public async Task<IEnumerable<JobOffer>> ListJobOffers(JobOffersQuery query)
         {
-            logger.LogInformation("Creating application of user {ApplicantId} to job with id: {OfferId}", jobApplication.ApplicantId, jobApplication.OfferId);
+            return await offerRepository.GetEntitiesAsync(query.Page, query.PageSize);
+        }
 
-            var applicant = await applicantRepository.GetEntityAsync(jobApplication.ApplicantId);
-            var jobOffer = await offerRepository.GetEntityAsync(jobApplication.OfferId);
+        public async Task<Guid> Apply(Guid applicantId, Guid jobOfferId, string message, Notification notification)
+        {
+            logger.LogInformation("Creating application of user {ApplicantId} for job with id: {OfferId}", applicantId, jobOfferId);
 
-            if (applicant is null)
-            {
-                notification.AddError("Applicant could not be found");
-            }
-            if (jobOffer is null)
-            {
-                notification.AddError("Job offer could not be found");
-            }
+            var applicant = await applicantRepository.GetEntityAsync(applicantId);
+            var jobOffer = await offerRepository.GetEntityAsync(jobOfferId);
+
+            var application = new Application { Applicant = applicant, Offer = jobOffer, Message = message };
+            application.Submit(notification);
 
             if (!notification.HasErrors)
             {
-                var id = applicant!.SubmitApplication(jobOffer!, notification);
-
-                await applicantRepository.SaveAsync();
-
-                return id;
+                await applicationRepository.AddAsync(application);
+                await applicationRepository.SaveAsync();
+                return application.Id;
             }
+
             return Guid.Empty;
         }
 
-        public async Task WithdrawApplication(Guid applicationId, Notification notification)
+        /*public async Task WithdrawApplication(Guid applicationId, Notification notification)
         {
             var application = await applicationRepository.GetEntityAsync(applicationId);
 
@@ -95,6 +104,13 @@ namespace W4S.PostingService.Domain.Services
             {
                 notification.AddError($"Cannot withdraw application with id {applicationId}, application doesn't exist");
             }
+        }*/
+
+        public async Task ArchiveOffer(ArchiveJobOfferCommand archiveCommand)
+        {
+            JobOffer offer = await offerRepository.GetEntityAsync(archiveCommand.OfferId) ?? throw new InvalidOperationException($"Could not archive {archiveCommand.OfferId}");
+            offer.Status = JobOffer.OfferStatus.Archived;
+            await offerRepository.SaveAsync();
         }
     }
 }

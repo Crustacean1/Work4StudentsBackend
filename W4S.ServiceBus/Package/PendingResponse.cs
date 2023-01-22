@@ -7,17 +7,19 @@ namespace W4S.ServiceBus.Package
         private readonly SemaphoreSlim semaphore;
         private string responseBody = string.Empty;
         private bool disposed;
+        private TimeSpan timeout;
 
-        public PendingResponse()
+        public PendingResponse(int timeout)
         {
             semaphore = new SemaphoreSlim(0);
+            this.timeout = TimeSpan.FromSeconds(timeout);
         }
 
-        public async Task<string> Get(CancellationToken cancellationToken)
+        public async Task<string?> Get(CancellationToken cancellationToken)
         {
             if (disposed) { throw new ObjectDisposedException("Response.Get()"); }
-            await semaphore.WaitAsync(cancellationToken);
-            return responseBody!;
+            bool received = await semaphore.WaitAsync(timeout, cancellationToken);
+            return received ? responseBody : null;
         }
 
         public void Set(ReadOnlySpan<byte> responseBody)

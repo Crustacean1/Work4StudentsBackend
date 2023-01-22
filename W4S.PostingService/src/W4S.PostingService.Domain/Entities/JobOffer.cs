@@ -1,11 +1,22 @@
 using W4S.PostingService.Domain.Models;
 using W4S.PostingService.Domain.ValueType;
 
-namespace W4S.PostingService.Domain.Commands
+namespace W4S.PostingService.Domain.Entities
 {
-    public class PostJobOfferCommand
+    public class JobOffer : Entity
     {
+        public enum OfferStatus
+        {
+            Active,
+            Finished,
+            Archived
+        }
+
         public Guid RecruiterId { get; set; }
+
+        public Recruiter Recruiter { get; set; }
+
+        public OfferStatus Status { get; set; }
 
         public string Title { get; set; }
 
@@ -20,5 +31,8 @@ namespace W4S.PostingService.Domain.Commands
         public PayRange PayRange { get; set; }
 
         public IEnumerable<Schedule> WorkingHours { get; set; }
+
+        public ICollection<Application> Applications { get; set; }
+
     }
 }
