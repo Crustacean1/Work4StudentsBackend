@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
 using W4S.ServiceBus.Abstractions;
 using W4S.ServiceBus.Attributes;
-using W4SRegistrationMicroservice.API.Interfaces;
 
 
 namespace W4SRegistrationMicroservice.API.Controllers
@@ -33,11 +33,13 @@ namespace W4SRegistrationMicroservice.API.Controllers
 
             try
             {
-                var eventAndId = _registrationService.RegisterStudent(dto);
+                var registrationEvent = _registrationService.RegisterStudent(dto);
                 _logger.LogInformation("User registered.");
-                 //_busClient.SendEvent("registeredStudent", eventAndId.Item2); // not working properly yet
-                _logger.LogInformation("Event registeredStudent sent.");
-                response.Id = eventAndId.Item1;
+
+                _busClient.SendEvent("registered.student", registrationEvent);
+                response.Id = registrationEvent.Id;
+
+                _logger.LogInformation("Event registered.student sent.");
             }
             catch (Exception ex)
             {
@@ -56,9 +58,9 @@ namespace W4SRegistrationMicroservice.API.Controllers
 
             try
             {
-                var eventAndId = _registrationService.RegisterEmployer(dto);
-                _busClient.SendEvent("registeredEmployer", eventAndId.Item2);
-                response.Id = eventAndId.Item1;
+                var registrationEvent = _registrationService.RegisterEmployer(dto);
+                _busClient.SendEvent("registered.employer", registrationEvent);
+                response.Id = registrationEvent.Id;
             }
             catch (Exception ex)
             {

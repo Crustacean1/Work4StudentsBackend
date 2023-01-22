@@ -34,6 +34,7 @@ namespace W4S.PostingService.Console
                   provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
                   provider.AddScoped<JobOfferHandler>();
                   provider.AddScoped<ApplicationHandler>();
+                  provider.AddScoped<RegistrationIntegrationHandler>();
                   provider.AddHostedService<MigrationHost>();
                   provider.AddServiceBus();
               })
