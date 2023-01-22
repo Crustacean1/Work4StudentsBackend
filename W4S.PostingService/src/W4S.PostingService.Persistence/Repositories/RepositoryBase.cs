@@ -1,36 +1,48 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using W4S.PostingService.Domain.Models;
+using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Persistence.Repositories
 {
     public class RepositoryBase<T> : IRepository<T> where T : Entity
     {
-        private readonly PostingContext context;
+        protected readonly PostingContext context;
 
         public RepositoryBase(PostingContext context)
         {
             this.context = context;
         }
 
-        public async Task DeleteAsync(Guid id)
+        public virtual async Task AddAsync(T entity)
         {
-            await context.JobOffers.Where(o => o.Id == id).ExecuteDeleteAsync();
+            await context.Set<T>().AddAsync(entity);
         }
 
-        public Task<IEnumerable<T>> GetEntitiesAsync(int pageSize, int pageSkip, Expression<Func<T, T, bool>> comparator)
+        public virtual async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            await context.Set<T>().Where(o => o.Id == id).ExecuteDeleteAsync();
         }
 
-        public async Task<IEnumerable<T>> GetEntitiesAsync(Expression<Func<T, bool>> selector)
+        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize, Expression<Func<T, object>> comparator)
+        {
+            var result = context.Set<T>().OrderBy(comparator).Skip(page * pageSize).Take(pageSize);
+            return await result.ToListAsync();
+        }
+
+        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize)
+        {
+            var result = context.Set<T>().OrderBy(e => e.Id).Skip(page * pageSize).Take(pageSize);
+            return await result.ToListAsync();
+        }
+
+        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(Expression<Func<T, bool>> selector)
         {
             IEnumerable<T> result = await context.Set<T>().Where(selector).ToListAsync();
             return result;
         }
 
-        public async Task<T?> GetEntityAsync(Guid id)
+        public virtual async Task<T?> GetEntityAsync(Guid id)
         {
             return await context.Set<T>().SingleOrDefaultAsync(o => o.Id == id);
         }

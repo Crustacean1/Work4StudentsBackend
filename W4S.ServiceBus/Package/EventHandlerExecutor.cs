@@ -28,16 +28,14 @@ namespace W4S.ServiceBus.Package
 
         protected override void OnMessage(object? _, MessageReceivedEventArgs args)
         {
-            logger.LogInformation("Received event {Topic}", args.Topic);
-
             try
             {
                 dynamic arg = ParseMessageBody(args.RequestBody);
-                _ = InvokeHandler(arg);
+                _ = ExecuteMethod(arg);
             }
             catch (Exception e)
             {
-                logger.LogError("Error OnMessage: {Error}", e.Message);
+                logger.LogError("Error during event execution for message {Message}: {Error}", args.Topic, e.Message);
             }
             finally
             {

@@ -1,4 +1,4 @@
-namespace W4S.PostingService.Domain.Models
+namespace W4S.PostingService.Domain.Entities
 {
     public class Person : Entity
     {

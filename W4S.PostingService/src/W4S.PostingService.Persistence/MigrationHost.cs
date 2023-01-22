@@ -20,6 +20,7 @@ namespace W4S.PostingService.Persistence
             await context.MigrateAsync(cancellationToken);
             logger.LogInformation("Migration done");
         }
+
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
