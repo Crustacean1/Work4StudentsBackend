@@ -9,7 +9,7 @@ using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration
 using W4S.RegistrationMicroservice.Models.Users.Creation;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
 
-namespace Gateway.Console.Microservices.Accounts
+namespace W4S.Gateway.Console.Accounts
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -46,7 +46,7 @@ namespace Gateway.Console.Microservices.Accounts
 
             if (response.ExceptionMessage is null)
             {
-                return Ok();
+                return Ok(response.Id);
             }
             return BadRequest(response.ExceptionMessage);
         }
@@ -56,10 +56,10 @@ namespace Gateway.Console.Microservices.Accounts
         {
             logger.LogInformation("Request: Register employer");
             EmployerRegisteredResponse response = await busClient.SendRequest<EmployerRegisteredResponse, EmployerRegistrationDto>("registration.employer", registerEmployerDto, cancellationToken);
-            
-            if(response.ExceptionMessage is null)
+
+            if (response.ExceptionMessage is null)
             {
-                return Ok();
+                return Ok(response.Id);
             }
             return BadRequest(response.ExceptionMessage);
         }

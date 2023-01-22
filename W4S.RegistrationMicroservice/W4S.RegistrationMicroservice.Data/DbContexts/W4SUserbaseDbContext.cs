@@ -12,6 +12,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
 
         private readonly UserbaseSeeder _seeder = new();
 
+        public DbSet<Entity> Entities { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Administrator> Administrators { get; set; }
         public DbSet<Employer> Employers { get; set; }
@@ -24,6 +25,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<EmployerProfile> EmployerProfiles { get; set; }
         public DbSet<StudentProfile> StudentProfiles { get; set; }
+        public DbSet<CompanyProfile> CompanyProfiles { get; set; }
 
 
         public async Task MigrateAsync(CancellationToken cancellationToken)
@@ -34,6 +36,8 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Entity>().Property(e => e.Id).ValueGeneratedNever();
+
             // User
             modelBuilder.Entity<User>().Property(e => e.EmailAddress).HasMaxLength(100);
             modelBuilder.Entity<User>().Property(e => e.Name).HasMaxLength(50);
@@ -88,6 +92,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
 
             modelBuilder.Entity<StudentProfile>().HasData(_seeder.StudentProfile);
             modelBuilder.Entity<EmployerProfile>().HasData(_seeder.EmployerProfile);
+            modelBuilder.Entity<CompanyProfile>().HasData(_seeder.CompanyProfile);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
