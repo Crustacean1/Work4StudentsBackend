@@ -35,6 +35,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var profileId = _profilesService.CreateStudentProfile(dto);
+                response.Id = profileId;
                 _logger.LogInformation($"Profile with Id {profileId} created.");
             }
             catch (Exception ex)

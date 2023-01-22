@@ -14,6 +14,7 @@ using W4S.RegistrationMicroservice.API.Host;
 using W4S.RegistrationMicroservice.Data.Seeders;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Services;
+using W4S.RegistrationMicroservice.API.Controllers;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -99,6 +100,7 @@ void ConfigureControllers(IServiceCollection services)
 {
     services.TryAddScoped<RegistrationController>();
     services.TryAddScoped<SigningInController>();
+    services.TryAddScoped<ProfilesController>();
     services.AddHostedService<MigrationHost>();
     services.AddServiceBus();
 }

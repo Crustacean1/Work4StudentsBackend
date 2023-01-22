@@ -1,4 +1,5 @@
-﻿using W4S.RegistrationMicroservice.API.Interfaces;
+﻿using W4S.RegistrationMicroservice.API.Exceptions;
+using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Models.Profiles.Create;
@@ -31,7 +32,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 Description = dto.Description,
                 Image = dto.Image,
                 ResumeFile = dto.ResumeFile,
-                StudentId = dto.UserId
+                EntityId = dto.UserId
             };
 
             _logger.LogInformation($"Profile with an Id: {profile.Id} created.");
@@ -85,6 +86,15 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public Guid CreateEmployerProfile(CreateProfileDto dto)
         {
+            try
+            {
+                CheckIfEntityProfileAlreadyExist(dto.UserId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             _logger.LogInformation("Creating a new profile for Student with Id: ...");
 
             var profile = new EmployerProfile() // fill it with a dto
@@ -92,7 +102,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 Id = Guid.NewGuid(),
                 Description = dto.Description,
                 Image = dto.Image,
-                EmployerId = dto.UserId
+                EntityId = dto.UserId
             };
 
             _logger.LogInformation($"Profile with an Id: {profile.Id} created.");
@@ -136,6 +146,20 @@ namespace W4S.RegistrationMicroservice.API.Services
 
                 _dbContext.EmployerProfiles.Update(employerProfile);
                 _dbContext.SaveChanges();
+            }
+        }
+
+        #endregion
+
+        #region Common methods
+
+        private void CheckIfEntityProfileAlreadyExist(Guid entityId)
+        {
+            _logger.LogInformation("Checking if a profile for this entity already exists.");
+
+            if (_dbContext.Profiles.Where(p => p.EntityId == entityId).Any())
+            {
+                throw new ProfileAlreadyExistsException("Profile  for this entity is already set up.");
             }
         }
 

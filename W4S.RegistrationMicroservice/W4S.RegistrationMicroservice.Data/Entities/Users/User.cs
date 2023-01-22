@@ -1,8 +1,7 @@
 ﻿namespace W4S.RegistrationMicroservice.Data.Entities.Users
 {
-    public class User
+    public class User : Entity
     {
-        public Guid Id { get; init; }
         public required string EmailAddress { get; init; }
         public required string PasswordHash { get; init; }
         public required string Name { get; init; }

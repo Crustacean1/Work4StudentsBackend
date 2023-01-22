@@ -46,7 +46,7 @@ namespace W4S.Gateway.Console.Accounts
 
             if (response.ExceptionMessage is null)
             {
-                return Ok();
+                return Ok(response.Id);
             }
             return BadRequest(response.ExceptionMessage);
         }
@@ -59,7 +59,7 @@ namespace W4S.Gateway.Console.Accounts
 
             if (response.ExceptionMessage is null)
             {
-                return Ok();
+                return Ok(response.Id);
             }
             return BadRequest(response.ExceptionMessage);
         }

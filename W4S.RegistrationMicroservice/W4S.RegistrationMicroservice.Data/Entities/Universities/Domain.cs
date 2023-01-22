@@ -1,8 +1,7 @@
 ﻿namespace W4S.RegistrationMicroservice.Data.Entities
 {
-    public class Domain
+    public class Domain : Entity
     {
-        public Guid Id { get; set; }
         public string EmailDomain { get; set; }
     }
 }
