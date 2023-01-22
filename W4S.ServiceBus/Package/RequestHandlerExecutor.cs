@@ -48,25 +48,31 @@ namespace W4S.ServiceBus.Package
                 busProducer.Start();
             }
 
-            logger.LogInformation("Received request {Topic}", args.Topic);
+            logger.LogInformation("Received request: {Topic} reply address: {ReplyAddress} id: {Id} ", args.Topic, args.ReplyTopic, args.RequestId);
 
             try
             {
                 dynamic arg = ParseMessageBody(args.RequestBody);
 
-                object? response = await InvokeHandler(arg);
+                object? response = await ExecuteMethod(arg);
+
+                logger.LogError("Response received");
 
                 if (response is not null)
                 {
-                    logger.LogInformation("ResponseType : {Response}", response.GetType().Name);
-                    var responseBody = JsonSerializer.SerializeToUtf8Bytes(response);
-                    logger.LogInformation("Response: {Response}", Encoding.UTF8.GetString(responseBody));
+                    logger.LogError("Response validated");
+                    byte[] responseBody = JsonSerializer.SerializeToUtf8Bytes(response);
+                    logger.LogError("Repsonse parsed");
                     busProducer?.Reply(args.ReplyTopic, responseBody, args.RequestId);
+                }
+                else
+                {
+                    logger.LogError("Invalid return type: method handling {Request} should return non-null type", args.Topic);
                 }
             }
             catch (Exception e)
             {
-                logger.LogError("Error in OnMessage: {Error}", e.Message);
+                logger.LogError("Error during request execution {Name}: {Error}", args.Topic, e.Message);
             }
             finally
             {

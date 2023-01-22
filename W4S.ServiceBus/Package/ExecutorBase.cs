@@ -28,33 +28,36 @@ namespace W4S.ServiceBus.Package
 
         public abstract void Start();
 
-        protected async Task<object?> InvokeHandler(dynamic arg)
+        protected async Task<object?> ExecuteMethod(dynamic arg)
+        {
+            using (var scope = provider.CreateScope())
+            {
+                var handler = scope.ServiceProvider.GetRequiredService(methodInfo.DeclaringType!);
+                logger.LogInformation("Executing handler method: {Name} with return type: {Type}", methodInfo.Name, methodInfo.ReturnType.Name);
+                return await InvokeHandler(handler, arg);
+            }
+        }
+
+        private async Task<object?> InvokeHandler(object handler, dynamic arg)
         {
             try
             {
-                logger.LogInformation("Invokin scope");
+                object? result = methodInfo.Invoke(handler, new object[] { arg });
 
-                using (var scope = provider.CreateScope())
+                if (result is Task task)
                 {
-                    logger.LogInformation("Starting Invokation returning {ReturnType}", methodInfo.ReturnType.Name);
-
-                    var handler = scope.ServiceProvider.GetRequiredService(methodInfo.DeclaringType!);
-
-                    logger.LogInformation("Handler requested");
-
-                    var parameterType = methodInfo.GetParameters()[0].ParameterType;
-
-                    logger.LogInformation("Executing handler method {Name}", methodInfo.Name);
-
-                    var task = (Task)methodInfo.Invoke(handler, new object[] { arg })!;
-                    await task.ConfigureAwait(false);
-                    return task.GetType().GetProperty("Result").GetValue(task, null);
+                    await task;
+                    return task.GetType().GetProperty("Result")!.GetValue(task, null);
+                }
+                else
+                {
+                    return result;
                 }
             }
             catch (Exception e)
             {
-                logger.LogError("Error in InvokeHandler: {Error}", e.Message);
-                return null;
+                logger.LogError("Execution error: {Error} {InnerError} {StackTrace}", e.Message, e.InnerException?.Message ?? "<None>", e.StackTrace);
+                throw new InvalidOperationException("Failed to execute handler");
             }
         }
 

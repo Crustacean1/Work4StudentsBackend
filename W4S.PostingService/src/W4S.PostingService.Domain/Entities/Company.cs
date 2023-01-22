@@ -1,4 +1,6 @@
-namespace W4S.PostingService.Domain.Models
+using W4S.PostingService.Domain.ValueType;
+
+namespace W4S.PostingService.Domain.Entities
 {
     public class Company : Entity
     {
