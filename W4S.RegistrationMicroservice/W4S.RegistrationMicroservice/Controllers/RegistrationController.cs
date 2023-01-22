@@ -41,9 +41,9 @@ namespace W4SRegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message, ex);
-                _logger.LogError(ex.InnerException.Message ?? "", ex);
-                response.ExceptionMessage = ex.Message;
+                var message = ex.InnerException.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
             }
 
             return Task.FromResult(response);
@@ -62,7 +62,9 @@ namespace W4SRegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                response.ExceptionMessage = ex.Message;
+                var message = ex.InnerException.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
             }
 
             return Task.FromResult(response);

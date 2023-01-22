@@ -12,6 +12,8 @@ using W4SRegistrationMicroservice.API.Controllers;
 using Serilog;
 using W4S.RegistrationMicroservice.API.Host;
 using W4S.RegistrationMicroservice.Data.Seeders;
+using W4S.RegistrationMicroservice.API.Interfaces;
+using W4S.RegistrationMicroservice.API.Services;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -90,6 +92,7 @@ void ConfigureServices(IServiceCollection services)
     services.TryAddScoped<UserbaseSeeder>();
     services.TryAddScoped<IRegistrationService, RegistrationService>();
     services.TryAddScoped<ISigningInService, SigningInService>();
+    services.TryAddScoped<IProfilesService, ProfilesService>();
 }
 
 void ConfigureControllers(IServiceCollection services)

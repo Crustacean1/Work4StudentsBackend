@@ -1,17 +1,18 @@
-﻿using W4S.RegistrationMicroservice.Data.DbContexts;
+﻿using W4S.RegistrationMicroservice.API.Interfaces;
+using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Models.Profiles.Create;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 
 namespace W4S.RegistrationMicroservice.API.Services
 {
-    public class ProfilesService
+    public class ProfilesService : IProfilesService
     {
         private readonly UserbaseDbContext _dbContext;
         private readonly ILogger<ProfilesService> _logger;
 
         public ProfilesService(
-            UserbaseDbContext dbContext, 
+            UserbaseDbContext dbContext,
             ILogger<ProfilesService> logger)
         {
             _dbContext = dbContext;
@@ -41,7 +42,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _dbContext.StudentProfiles.Add(profile);
                 _dbContext.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogInformation("Something went wrong with adding to the db.");
                 _logger.LogInformation(ex.Message, ex);
@@ -61,14 +62,14 @@ namespace W4S.RegistrationMicroservice.API.Services
                     .Where(p => p.Id == Id)
                     .First();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("Could not find a user with this Id.");
                 _logger.LogError(ex.Message, ex);
             }
 
-            if(studentProfile != null) 
-            { 
+            if (studentProfile != null)
+            {
                 studentProfile.Description = dto.Description;
                 studentProfile.Image = dto.Image;
                 studentProfile.ResumeFile = dto.ResumeFile;
