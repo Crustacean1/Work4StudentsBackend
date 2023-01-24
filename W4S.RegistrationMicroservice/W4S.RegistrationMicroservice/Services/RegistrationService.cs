@@ -8,6 +8,7 @@ using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
+using W4S.RegistrationMicroservice.API.Exceptions;
 
 namespace W4SRegistrationMicroservice.API.Services
 {
@@ -122,6 +123,7 @@ namespace W4SRegistrationMicroservice.API.Services
 
             try
             {
+                ValidateEmailCorrectness(studentCreationDto.EmailAddress);
                 emailDomainId = ValidateUniversity(studentCreationDto.EmailAddress);
                 _logger.LogInformation($"Domain Id is: {emailDomainId}");
             }
@@ -190,9 +192,8 @@ namespace W4SRegistrationMicroservice.API.Services
             }
             catch(Exception e)
             {
-                _logger.LogError("Could not save changes. :----)");
+                _logger.LogError("Could not save changes.");
                 _logger.LogError(e.Message, e);
-                _logger.LogError(e.InnerException.Message ?? "", e);
             }
 
             var studentEvent = new StudentRegisteredEvent()
@@ -222,19 +223,7 @@ namespace W4SRegistrationMicroservice.API.Services
         {
             try
             {
-                MailAddress mail = new MailAddress(studentEmail);
-            }
-            catch (FormatException e)
-            {
-                _logger.LogError(e.Message, e);
-                throw;
-            }
-
-            string domain = string.Empty;
-
-            try
-            {
-                domain = CheckDomain(studentEmail);
+                var domain = CheckDomain(studentEmail);
 
                 return _dbContext.UniversitiesDomains
                     .First(x => x.EmailDomain.Equals(domain)).Id;
@@ -246,9 +235,47 @@ namespace W4SRegistrationMicroservice.API.Services
             }
         }
 
+        private void ValidateEmailCorrectness(string email)
+        {
+            try
+            {
+                MailAddress mail = new MailAddress(email);
+            }
+            catch (FormatException e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+
+            try
+            {
+                if(_dbContext.Users.Any(e => e.EmailAddress == email))
+                {
+                    throw new UserAlreadyRegisteredException("This email is already connected to an another user.");
+                }
+            }
+            catch (UserAlreadyRegisteredException e)
+            {
+                _logger.LogError(e.Message, e);
+                throw;
+            }
+
+        }
+
         private void ValidateNIPNumber(string nipNumber)
         {
-            //throw new IncorrectNIPNumberException("The NIP number is incorrect.");
+            _logger.LogInformation($"Checking NIP number {nipNumber}");
+            nipNumber = nipNumber.Replace("-", string.Empty);
+
+            if (nipNumber.Length != 10 || nipNumber.Any(chr => !Char.IsDigit(chr)))
+                throw new IncorrectNIPNumberException("NIP number is not supposed to have non-digit characters.");
+
+            int[] weights = { 6, 5, 7, 2, 3, 4, 5, 6, 7, 0 };
+            int sum = nipNumber.Zip(weights, (digit, weight) => (digit - '0') * weight).Sum();
+
+            if((sum % 11) != (nipNumber[9] - '0')){
+                throw new IncorrectNIPNumberException("This is not a valid NIP number.");
+            }
         }
 
         private string CheckDomain(string studentEmail)
