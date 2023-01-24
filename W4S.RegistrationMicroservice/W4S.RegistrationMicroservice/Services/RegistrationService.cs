@@ -110,8 +110,9 @@ namespace W4S.RegistrationMicroservice.API.Services
                 SecondName = employerCreationDto.SecondName,
                 Surname = employerCreationDto.Surname,
                 NIP = employerCreationDto.NIP,
-                CompanyName = employerCreationDto.CompanyName
-
+                Name = employerCreationDto.CompanyName,
+                CompanyId = companyId.Value,
+                PhoneNumber = employerCreationDto.PhoneNumber
             };
         }
 
@@ -201,6 +202,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 FirstName = studentCreationDto.FirstName,
                 SecondName = studentCreationDto.SecondName,
                 Surname = studentCreationDto.Surname,
+                EmailAddress = studentCreationDto.EmailAddress,
                 UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain
             };
 

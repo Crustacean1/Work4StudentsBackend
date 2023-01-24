@@ -86,7 +86,7 @@ namespace W4S.ServiceBus.Package
 
                     foreach (var method in methods)
                     {
-                        if (method.GetParameters().Count() != 1) { continue; }
+                        if (method.GetParameters().Length != 1) { continue; }
 
                         if (method.GetCustomAttribute<BusRequestHandlerAttribute>() is BusRequestHandlerAttribute requestHandler)
                         {
