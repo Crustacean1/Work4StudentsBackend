@@ -52,11 +52,9 @@ namespace W4S.PostingService.Domain.Entities
             if (!notification.HasErrors)
             {
                 Status = ApplicationStatus.Submitted;
-                LastChange = DateTime.Now;
+                LastChange = DateTime.Now.ToUniversalTime();
                 WorkTimeOverlap = 0.2137M;
                 Proximity = 1234;
-                Applicant!.Applications.Add(this);
-                Offer!.Applications.Add(this);
             }
         }
 

@@ -7,6 +7,7 @@ using Serilog;
 using W4S.PostingService.Domain.Abstractions;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Console.Handlers;
+using W4s.PostingService.Domain.Services;
 
 namespace W4S.PostingService.Console
 {
@@ -25,12 +26,15 @@ namespace W4S.PostingService.Console
               .ConfigureServices(provider =>
               {
                   provider.AddScoped<IJobService, JobService>();
+                  provider.AddScoped<IApplicationService, ApplicationService>();
                   provider.AddDbContext<PostingContext>();
                   provider.AddScoped<IRepository<JobOffer>, RepositoryBase<JobOffer>>();
                   provider.AddScoped<IRepository<Applicant>, RepositoryBase<Applicant>>();
                   provider.AddScoped<IRepository<Recruiter>, RepositoryBase<Recruiter>>();
                   provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
                   provider.AddScoped<JobOfferHandler>();
+                  provider.AddScoped<ApplicationHandler>();
+                  provider.AddScoped<RegistrationIntegrationHandler>();
                   provider.AddHostedService<MigrationHost>();
                   provider.AddServiceBus();
               })

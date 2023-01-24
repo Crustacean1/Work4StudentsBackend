@@ -10,16 +10,15 @@ namespace W4S.PostingService.Console.Handlers
     [BusService("offer")]
     public class JobOfferHandler
     {
-        ILogger<JobOfferHandler> logger;
-        IJobService jobService;
+        private readonly ILogger<JobOfferHandler> logger;
+        private readonly IJobService jobService;
 
         public JobOfferHandler(IJobService jobService, ILogger<JobOfferHandler> logger)
         {
-            logger.LogInformation("Creation");
             this.logger = logger; this.jobService = jobService;
         }
 
-        [BusRequestHandler("create")]
+        [BusRequestHandler("post")]
         public async Task<JobOfferCreatedDto> OnPostJobOffer(PostJobOfferCommand offer)
         {
             logger.LogInformation("Recruiter: {Recruiter} posts job offer titled: {Title}", offer.RecruiterId, offer.Title);
@@ -34,23 +33,11 @@ namespace W4S.PostingService.Console.Handlers
             };
         }
 
-        /*[BusRequestHandler("apply")]
-        public async Task<ApplicationSubmittedDto> OnJobApplication(ApplyForJobCommand jobApplication)
-        {
-            logger.LogInformation("Applicant {Applicant} applies for {JobOffer} offer", jobApplication.ApplicantId, jobApplication.OfferId);
-
-            var notification = new Notification();
-            var newApplicationId = await jobService.Apply(jobApplication, notification);
-            return new ApplicationSubmittedDto
-            {
-                Id = newApplicationId,
-                Errors = notification.ErrorMessages.ToList()
-            };
-        }*/
-
         [BusRequestHandler("list")]
         public async Task<JobOffersDto> GetOfferListing(JobOffersQuery query)
         {
+            logger.LogInformation("Listing job offers");
+
             var offers = await jobService.ListJobOffers(query);
             return new JobOffersDto { JobOffers = offers };
         }

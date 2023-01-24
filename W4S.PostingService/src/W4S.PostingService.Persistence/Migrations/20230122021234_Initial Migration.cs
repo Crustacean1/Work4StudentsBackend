@@ -175,14 +175,19 @@ namespace W4S.PostingService.Persistence.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Applicants",
+                columns: new[] { "Id", "Email", "FirstName", "PhoneNumber", "Surname", "Address_Building", "Address_City", "Address_Country", "Address_Region", "Address_Street" },
+                values: new object[] { new Guid("84970053-0cdb-4438-8812-7a4a581b2452"), "noreply@company.et", "John", "123456789", "Smith", "Boilding", "Gliwice", "Polandia", "Silesia", "Street" });
+
+            migrationBuilder.InsertData(
                 table: "Companies",
                 columns: new[] { "Id", "Description", "Name", "Address_Building", "Address_City", "Address_Country", "Address_Region", "Address_Street" },
-                values: new object[] { new Guid("1ef726d5-7d70-4cce-b185-77e3ae15f7ca"), "It is what it is", "Company", "Macdonald", "Gliwice", "Poland", "Silesia", "Wrocławska" });
+                values: new object[] { new Guid("2badd62b-ddd2-4f46-9a5b-3f8f37c91ea8"), "It is what it is", "Company", "Macdonald", "Gliwice", "Poland", "Silesia", "Wrocławska" });
 
             migrationBuilder.InsertData(
                 table: "Recruiters",
                 columns: new[] { "Id", "CompanyId", "Email", "FirstName", "PhoneNumber", "Surname" },
-                values: new object[] { new Guid("d8b254d4-2eb8-44c4-a6aa-4ddf5b16e791"), new Guid("1ef726d5-7d70-4cce-b185-77e3ae15f7ca"), "noreply@company.et", "John", "123456789", "Smith" });
+                values: new object[] { new Guid("815a4216-3e5b-4b84-9afc-ff099763fd59"), new Guid("2badd62b-ddd2-4f46-9a5b-3f8f37c91ea8"), "noreply@company.et", "John", "123456789", "Smith" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_ApplicantId",

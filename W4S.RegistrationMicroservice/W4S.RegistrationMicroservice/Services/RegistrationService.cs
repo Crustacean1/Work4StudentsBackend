@@ -1,5 +1,4 @@
 ﻿using W4SRegistrationMicroservice.API.Exceptions;
-using W4SRegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4S.RegistrationMicroservice.Data.Entities;
 using System.Net.Mail;
@@ -8,9 +7,10 @@ using W4SRegistrationMicroservice.CommonServices.Interfaces;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
+using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Exceptions;
 
-namespace W4SRegistrationMicroservice.API.Services
+namespace W4S.RegistrationMicroservice.API.Services
 {
     public class RegistrationService : IRegistrationService
     {
@@ -31,7 +31,7 @@ namespace W4SRegistrationMicroservice.API.Services
             _logger = logger;
         }
 
-        public Tuple<Guid, EmployerRegisteredEvent> RegisterEmployer(EmployerRegistrationDto employerCreationDto)
+        public EmployerRegisteredEvent RegisterEmployer(EmployerRegistrationDto employerCreationDto)
         {
             try
             {
@@ -102,22 +102,21 @@ namespace W4SRegistrationMicroservice.API.Services
 
             _dbContext.SaveChanges();
 
-            return Tuple.Create<Guid, EmployerRegisteredEvent>(
-                employer.Id,
-                new EmployerRegisteredEvent()
-                {
-                    Date = DateTime.Now,
-                    EmailAddress = employerCreationDto.EmailAddress,
-                    FirstName = employerCreationDto.FirstName,
-                    SecondName = employerCreationDto.SecondName,
-                    Surname = employerCreationDto.Surname,
-                    NIP = employerCreationDto.NIP,
-                    CompanyName = employerCreationDto.CompanyName
+            return new EmployerRegisteredEvent()
+            {
+                Id = employer.Id,
+                Date = DateTime.Now,
+                EmailAddress = employerCreationDto.EmailAddress,
+                FirstName = employerCreationDto.FirstName,
+                SecondName = employerCreationDto.SecondName,
+                Surname = employerCreationDto.Surname,
+                NIP = employerCreationDto.NIP,
+                CompanyName = employerCreationDto.CompanyName
 
-                });
+            };
         }
 
-        public Tuple<Guid, StudentRegisteredEvent> RegisterStudent(StudentRegistrationDto studentCreationDto)
+        public StudentRegisteredEvent RegisterStudent(StudentRegistrationDto studentCreationDto)
         {
             Guid? emailDomainId = null;
 
@@ -144,7 +143,7 @@ namespace W4SRegistrationMicroservice.API.Services
             {
                 _logger.LogInformation("Trying to find an university.");
                 universityId = _dbContext.Universities
-                    .Select(x => new {x.Id, x.EmailDomainId})
+                    .Select(x => new { x.Id, x.EmailDomainId })
                     .First(e => e.EmailDomainId == emailDomainId).Id;
             }
             catch (Exception e)
@@ -157,7 +156,7 @@ namespace W4SRegistrationMicroservice.API.Services
 
             var roles = _dbContext.Roles.ToList();
 
-            foreach(var role in roles) 
+            foreach (var role in roles)
             {
                 _logger.LogInformation($"Role with id: {role.Id} is named: {role.Description}.");
             }
@@ -179,7 +178,7 @@ namespace W4SRegistrationMicroservice.API.Services
                 _dbContext.Students.Add(student);
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError("Could not add a student. :---D");
                 _logger.LogError(e.Message, e);
@@ -190,7 +189,7 @@ namespace W4SRegistrationMicroservice.API.Services
                 _logger.LogInformation("Trying to save changes.");
                 _dbContext.SaveChanges();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError("Could not save changes.");
                 _logger.LogError(e.Message, e);
@@ -198,6 +197,7 @@ namespace W4SRegistrationMicroservice.API.Services
 
             var studentEvent = new StudentRegisteredEvent()
             {
+                Id = student.Id,
                 Date = DateTime.Now,
                 FirstName = studentCreationDto.FirstName,
                 SecondName = studentCreationDto.SecondName,
@@ -205,7 +205,7 @@ namespace W4SRegistrationMicroservice.API.Services
                 UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain
             };
 
-            if(studentEvent != null)
+            if (studentEvent != null)
             {
                 _logger.LogInformation("Student event is not null.");
             }
@@ -214,7 +214,7 @@ namespace W4SRegistrationMicroservice.API.Services
                 _logger.LogInformation("Student event is null >:(");
             }
 
-            return Tuple.Create(student.Id, studentEvent);
+            return studentEvent;
         }
 
 

@@ -30,7 +30,8 @@ namespace W4S.ServiceBus.Package
 
         public void SendEvent<TEvent>(string topic, TEvent busEvent) where TEvent : class
         {
-            var eventBody = JsonSerializer.SerializeToUtf8Bytes(busEvent);
+            Start();
+            byte[] eventBody = JsonSerializer.SerializeToUtf8Bytes(busEvent);
             busProducer.Publish(topic, eventBody);
         }
 
@@ -41,7 +42,7 @@ namespace W4S.ServiceBus.Package
 
         public async Task<TResponse> SendRequest<TResponse, TRequest>(string topic, TRequest request, CancellationToken cancellationToken) where TResponse : class where TRequest : class
         {
-            StartReceiving();
+            Start();
 
             var requestBody = JsonSerializer.SerializeToUtf8Bytes(request);
 
@@ -84,7 +85,7 @@ namespace W4S.ServiceBus.Package
             }
         }
 
-        private void StartReceiving()
+        private void Start()
         {
             if (!startedReceiving)
             {
