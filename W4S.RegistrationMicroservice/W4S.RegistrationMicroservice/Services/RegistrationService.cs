@@ -212,7 +212,13 @@ namespace W4S.RegistrationMicroservice.API.Services
                 SecondName = studentCreationDto.SecondName,
                 Surname = studentCreationDto.Surname,
                 EmailAddress = studentCreationDto.EmailAddress,
-                UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain
+                UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain,
+                PhoneNumber = studentCreationDto.PhoneNumber,
+                Country = "Poland",
+                Region = "Śląsk",
+                City = "Gliwice",
+                Street = "Akademicka",
+                Building = "2a"
             };
 
             if (studentEvent != null)
