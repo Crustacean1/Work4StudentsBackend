@@ -35,11 +35,19 @@ namespace W4S.RegistrationMicroservice.API.Services
         {
             try
             {
+                ValidateEmailCorrectness(employerCreationDto.EmailAddress);
                 ValidateNIPNumber(employerCreationDto.NIP);
             }
             catch (IncorrectNIPNumberException e)
             {
-                _logger.LogError(e.Message);
+                throw;
+            }
+            catch(UserAlreadyRegisteredException e)
+            {
+                throw;
+            }
+            catch(FormatException e)
+            {
                 throw;
             }
 
