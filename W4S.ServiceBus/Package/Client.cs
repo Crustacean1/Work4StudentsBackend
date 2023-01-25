@@ -32,6 +32,7 @@ namespace W4S.ServiceBus.Package
         {
             Start();
             byte[] eventBody = JsonSerializer.SerializeToUtf8Bytes(busEvent);
+            logger.LogInformation("Sending event");
             busProducer.Publish(topic, eventBody);
         }
 

@@ -35,7 +35,8 @@ namespace W4S.PostingService.Persistence
             {
                 Id = Guid.NewGuid(),
                 Name = "Company",
-                Description = "It is what it is",
+                NIP = "7821160955",
+                Description = "Hmmmmmm",
             };
 
             FakeRecruiter = new Recruiter
@@ -43,7 +44,7 @@ namespace W4S.PostingService.Persistence
                 FirstName = "John",
                 Surname = "Smith",
                 PhoneNumber = "123456789",
-                Email = "noreply@company.et",
+                EmailAddress = "noreply@company.et",
 
                 Id = Guid.NewGuid(),
                 CompanyId = FakeCompany.Id,
@@ -68,7 +69,7 @@ namespace W4S.PostingService.Persistence
                 FirstName = "John",
                 Surname = "Smith",
                 PhoneNumber = "123456789",
-                Email = "noreply@company.et",
+                EmailAddress = "noreply@company.et",
 
                 Id = Guid.NewGuid(),
                 Availability = new List<Schedule>(),

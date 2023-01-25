@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using W4S.RegistrationMicroservice.Models.Users.Signing;
+﻿using W4S.RegistrationMicroservice.Models.Users.Signing;
 using W4S.ServiceBus.Attributes;
 using W4SRegistrationMicroservice.API.Exceptions;
 using W4SRegistrationMicroservice.API.Interfaces;

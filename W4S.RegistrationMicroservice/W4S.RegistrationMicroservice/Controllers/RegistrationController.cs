@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
@@ -7,7 +6,7 @@ using W4S.ServiceBus.Abstractions;
 using W4S.ServiceBus.Attributes;
 
 
-namespace W4SRegistrationMicroservice.API.Controllers
+namespace W4S.RegistrationMicroservice.API.Controllers
 {
     [BusService("registration")]
     public class RegistrationController
@@ -34,17 +33,18 @@ namespace W4SRegistrationMicroservice.API.Controllers
             try
             {
                 var registrationEvent = _registrationService.RegisterStudent(dto);
-                _logger.LogInformation("User registered.");
-
-                _busClient.SendEvent("registered.student", registrationEvent);
                 response.Id = registrationEvent.Id;
 
-                _logger.LogInformation("Event registered.student sent.");
+                _busClient.SendEvent("registered.student", registrationEvent);
+
+                _logger.LogInformation("Registered student with email {Email} and Id: {Id}",
+                                       registrationEvent.EmailAddress,
+                                       registrationEvent.Id);
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
-                _logger.LogError(message, ex);
+                var message = ex.InnerException?.Message ?? ex.Message;
+                _logger.LogError("Error during student registration: {Error}, {Exception}", message, ex);
                 response.ExceptionMessage = message;
             }
 
@@ -59,13 +59,18 @@ namespace W4SRegistrationMicroservice.API.Controllers
             try
             {
                 var registrationEvent = _registrationService.RegisterEmployer(dto);
-                _busClient.SendEvent("registered.employer", registrationEvent);
                 response.Id = registrationEvent.Id;
+
+                _busClient.SendEvent("registered.employer", registrationEvent);
+
+                _logger.LogInformation("Registered employer with email {Email} and Id: {Id}",
+                                       registrationEvent.EmailAddress,
+                                       registrationEvent.Id);
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
-                _logger.LogError(message, ex);
+                var message = ex.InnerException?.Message ?? ex.Message;
+                _logger.LogError("Error during employer registration: {Error}, {Exception}", message, ex);
                 response.ExceptionMessage = message;
             }
 

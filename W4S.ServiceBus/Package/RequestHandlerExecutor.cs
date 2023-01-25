@@ -56,13 +56,9 @@ namespace W4S.ServiceBus.Package
 
                 object? response = await ExecuteMethod(arg);
 
-                logger.LogError("Response received");
-
                 if (response is not null)
                 {
-                    logger.LogError("Response validated");
                     byte[] responseBody = JsonSerializer.SerializeToUtf8Bytes(response);
-                    logger.LogError("Repsonse parsed");
                     busProducer?.Reply(args.ReplyTopic, responseBody, args.RequestId);
                 }
                 else

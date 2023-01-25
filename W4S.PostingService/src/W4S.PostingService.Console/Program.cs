@@ -8,6 +8,7 @@ using W4S.PostingService.Domain.Abstractions;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Console.Handlers;
 using W4s.PostingService.Domain.Services;
+using System.Globalization;
 
 namespace W4S.PostingService.Console
 {
@@ -18,7 +19,7 @@ namespace W4S.PostingService.Console
         {
             Log.Logger = new LoggerConfiguration()
                         .Enrich.FromLogContext()
-                        .WriteTo.Console()
+                        .WriteTo.Console(formatProvider: new CultureInfo("pl-PL"))
                         .CreateLogger();
 
             var host = new HostBuilder()
@@ -27,14 +28,16 @@ namespace W4S.PostingService.Console
               {
                   provider.AddScoped<IJobService, JobService>();
                   provider.AddScoped<IApplicationService, ApplicationService>();
+                  provider.AddScoped<IProfileIntegrationService, ProfileIntegrationService>();
                   provider.AddDbContext<PostingContext>();
                   provider.AddScoped<IRepository<JobOffer>, RepositoryBase<JobOffer>>();
                   provider.AddScoped<IRepository<Applicant>, RepositoryBase<Applicant>>();
                   provider.AddScoped<IRepository<Recruiter>, RepositoryBase<Recruiter>>();
                   provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
+                  provider.AddScoped<IRepository<Company>, RepositoryBase<Company>>();
                   provider.AddScoped<JobOfferHandler>();
                   provider.AddScoped<ApplicationHandler>();
-                  provider.AddScoped<RegistrationIntegrationHandler>();
+                  provider.AddScoped<ProfileIntegrationHandler>();
                   provider.AddHostedService<MigrationHost>();
                   provider.AddServiceBus();
               })
