@@ -14,10 +14,6 @@ namespace W4S.ServiceBus.Package
         {
             this.busConsumer = busConsumer;
             this.logger = logger;
-            if (!methodInfo.ReturnType.Equals(typeof(void)))
-            {
-                throw new InvalidOperationException($"Event handler should return void {methodInfo.Name}");
-            }
         }
 
         public override void Start()
@@ -26,12 +22,12 @@ namespace W4S.ServiceBus.Package
             busConsumer.Start();
         }
 
-        protected override void OnMessage(object? _, MessageReceivedEventArgs args)
+        protected override async void OnMessage(object? _, MessageReceivedEventArgs args)
         {
             try
             {
                 dynamic arg = ParseMessageBody(args.RequestBody);
-                _ = ExecuteMethod(arg);
+                _ = await ExecuteMethod(arg);
             }
             catch (Exception e)
             {

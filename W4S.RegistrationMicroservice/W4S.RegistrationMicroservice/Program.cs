@@ -15,9 +15,10 @@ using W4S.RegistrationMicroservice.Data.Seeders;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Services;
 using W4S.RegistrationMicroservice.API.Controllers;
+using System.Globalization;
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: new CultureInfo("pl-PL"))
     .CreateLogger();
 
 Log.Logger.Information("Staring application");
