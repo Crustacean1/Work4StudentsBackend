@@ -1,8 +1,5 @@
-using W4S.PostingService.Domain.Abstractions;
-using W4S.PostingService.Domain.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using W4S.Gateway.Console.CommonSettings;
 using W4S.ServiceBus.Extensions;
 
@@ -16,6 +13,17 @@ namespace W4S.Gateway.Console
 
             ConfigureServices(builder.Services);
             ConfigureJwt(builder.Services, builder.Configuration);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin();
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    //policy.AllowCredentials();
+                });
+            });
 
             builder.Services.AddControllers();
 
@@ -34,7 +42,7 @@ namespace W4S.Gateway.Console
             app.UseSwaggerUI();
 
             //app.UseAuthorization();
-
+            app.UseCors();
             app.MapControllers();
 
             app.Run();
@@ -47,6 +55,7 @@ namespace W4S.Gateway.Console
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
         }
 
         private static void ConfigureJwt(IServiceCollection services, IConfiguration configuration)

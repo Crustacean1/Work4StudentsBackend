@@ -7,7 +7,7 @@ using W4S.PostingService.Domain.Queries;
 namespace W4S.Gateway.Console.Posting
 {
     [ApiController]
-    [Route("api/application")]
+    [Route("api/application/")]
     public class ApplicationController : ControllerBase
     {
 
