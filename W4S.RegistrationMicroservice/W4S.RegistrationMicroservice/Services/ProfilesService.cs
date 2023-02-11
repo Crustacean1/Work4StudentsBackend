@@ -80,6 +80,47 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
+        public StudentProfile GetStudentProfile(Guid Id)
+        {
+            StudentProfile? studentProfile = null;
+
+            try
+            {
+                studentProfile = _dbContext.StudentProfiles
+                    .Where(p => p.Id == Id)
+                    .First();
+            }
+            catch(Exception ex)
+            {
+                var message = ex.InnerException.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                throw;
+            }
+
+            return studentProfile;
+        }
+
+        public ICollection<StudentProfile> GetStudentProfiles(int pageSize, int pageNumber)
+        {
+            IQueryable<StudentProfile> studentProfiles = null;
+
+            try
+            {
+                studentProfiles = _dbContext.StudentProfiles
+                    .Select(x => x)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize);
+            }
+            catch(Exception ex)
+            {
+                var message = ex.InnerException.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                throw;
+            }
+
+            return studentProfiles.ToList();
+        }
+
         #endregion
 
         #region Employer
