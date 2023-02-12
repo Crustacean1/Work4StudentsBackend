@@ -24,15 +24,13 @@ namespace W4S.PostingService.Persistence.Repositories
             await context.Set<T>().Where(o => o.Id == id).ExecuteDeleteAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize, Expression<Func<T, object>> comparator)
+        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize, Expression<Func<T, bool>> selector, Expression<Func<T, object>> comparator)
         {
-            var result = context.Set<T>().OrderBy(comparator).Skip(page * pageSize).Take(pageSize);
-            return await result.ToListAsync();
-        }
-
-        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize)
-        {
-            var result = context.Set<T>().OrderBy(e => e.Id).Skip(page * pageSize).Take(pageSize);
+            var result = context.Set<T>()
+                .Where(selector)
+                .OrderBy(comparator)
+                .Skip(page * pageSize)
+                .Take(pageSize);
             return await result.ToListAsync();
         }
 
@@ -47,9 +45,14 @@ namespace W4S.PostingService.Persistence.Repositories
             return await context.Set<T>().SingleOrDefaultAsync(o => o.Id == id);
         }
 
+        public virtual async Task<int> GetTotalCount(Expression<Func<T, bool>> selector)
+        {
+            return await context.Set<T>().CountAsync(selector);
+        }
+
         public async Task SaveAsync()
         {
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
         }
     }
 }

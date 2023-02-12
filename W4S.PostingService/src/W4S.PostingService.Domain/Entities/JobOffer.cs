@@ -5,13 +5,6 @@ namespace W4S.PostingService.Domain.Entities
 {
     public class JobOffer : Entity
     {
-        public enum OfferStatus
-        {
-            Active,
-            Finished,
-            Archived
-        }
-
         public Guid RecruiterId { get; set; }
 
         public Recruiter Recruiter { get; set; }
@@ -26,9 +19,9 @@ namespace W4S.PostingService.Domain.Entities
 
         public Address Address { get; set; }
 
-        public uint Openings { get; set; }
-
         public PayRange PayRange { get; set; }
+
+        public DateTime CreationDate { get; set; }
 
         public ICollection<Schedule> WorkingHours { get; set; } = new List<Schedule>();
 

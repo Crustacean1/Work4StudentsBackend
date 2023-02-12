@@ -1,14 +1,13 @@
 using W4S.PostingService.Domain.Repositories;
 using W4S.PostingService.Persistence;
 using W4S.ServiceBus.Extensions;
-using W4S.PostingService.Domain.Services;
 using W4S.PostingService.Persistence.Repositories;
 using Serilog;
-using W4S.PostingService.Domain.Abstractions;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Console.Handlers;
-using W4s.PostingService.Domain.Services;
 using System.Globalization;
+using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Domain.Queries;
 
 namespace W4S.PostingService.Console
 {
@@ -26,24 +25,45 @@ namespace W4S.PostingService.Console
                 .UseSerilog()
               .ConfigureServices(provider =>
               {
-                  provider.AddScoped<IJobService, JobService>();
-                  provider.AddScoped<IApplicationService, ApplicationService>();
-                  provider.AddScoped<IProfileIntegrationService, ProfileIntegrationService>();
                   provider.AddDbContext<PostingContext>();
                   provider.AddScoped<IRepository<JobOffer>, RepositoryBase<JobOffer>>();
-                  provider.AddScoped<IRepository<Applicant>, RepositoryBase<Applicant>>();
+                  provider.AddScoped<IRepository<Student>, RepositoryBase<Student>>();
                   provider.AddScoped<IRepository<Recruiter>, RepositoryBase<Recruiter>>();
                   provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
                   provider.AddScoped<IRepository<Company>, RepositoryBase<Company>>();
-                  provider.AddScoped<JobOfferHandler>();
+                  provider.AddScoped<OfferHandler>();
                   provider.AddScoped<ApplicationHandler>();
                   provider.AddScoped<ProfileIntegrationHandler>();
                   provider.AddHostedService<MigrationHost>();
+
+                  AddCommandHandlers(provider);
+
+                  AddQueryHandlers(provider);
+
                   provider.AddServiceBus();
               })
             .Build();
 
             await host.RunAsync();
+        }
+
+        public static void AddCommandHandlers(IServiceCollection services)
+        {
+            services.AddScoped<PostOfferCommandHandler>();
+            services.AddScoped<UpdateOfferCommandHandler>();
+            services.AddScoped<SubmitApplicationCommandHandler>();
+            services.AddScoped<WithdrawApplicationCommandHandler>();
+        }
+
+        public static void AddQueryHandlers(IServiceCollection services)
+        {
+            services.AddScoped<GetOfferApplicationsQueryHandler>();
+            services.AddScoped<GetOfferQueryHandler>();
+            services.AddScoped<GetOffersQueryHandler>();
+            services.AddScoped<GetRecruiterOffersQueryHandler>();
+            services.AddScoped<GetStudentApplicationsQueryHandler>();
+            services.AddScoped<RegisterStudentCommandHandler>();
+            services.AddScoped<RegisterRecruiterCommandHandler>();
         }
     }
 }

@@ -22,56 +22,13 @@ namespace W4S.PostingService.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Applicant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("EmailAddress")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SecondName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Applicants");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("7148bf79-e2bd-4d48-b979-fb7f89a106f2"),
-                            EmailAddress = "noreply@company.et",
-                            FirstName = "John",
-                            PhoneNumber = "123456789",
-                            Surname = "Smith"
-                        });
-                });
-
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Application", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ApplicantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("LastChange")
+                    b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Message")
@@ -87,14 +44,17 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
                     b.Property<decimal>("WorkTimeOverlap")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicantId");
-
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Applications");
                 });
@@ -104,10 +64,6 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("NIP")
                         .IsRequired()
@@ -124,10 +80,9 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("334b1847-0f07-4479-adcd-5731831fd5c7"),
-                            Description = "Hmmmmmm",
+                            Id = new Guid("8db7c987-8a09-4904-9c95-bda5dfe55f2f"),
                             NIP = "7821160955",
-                            Name = "Company"
+                            Name = "Comarch"
                         });
                 });
 
@@ -137,12 +92,12 @@ namespace W4S.PostingService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<long>("Openings")
-                        .HasColumnType("bigint");
 
                     b.Property<Guid>("RecruiterId")
                         .HasColumnType("uuid");
@@ -202,8 +157,8 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("753d9460-1565-471a-8eeb-0aef2afc7fca"),
-                            CompanyId = new Guid("334b1847-0f07-4479-adcd-5731831fd5c7"),
+                            Id = new Guid("935b10a7-f02d-4e8e-a9e6-729f3e38afe7"),
+                            CompanyId = new Guid("8db7c987-8a09-4904-9c95-bda5dfe55f2f"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
@@ -211,150 +166,63 @@ namespace W4S.PostingService.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Applicant", b =>
+            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Student", b =>
                 {
-                    b.OwnsOne("W4S.PostingService.Domain.ValueType.Address", "Address", b1 =>
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Applicants");
+
+                    b.HasData(
+                        new
                         {
-                            b1.Property<Guid>("ApplicantId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Building")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Region")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Street")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("ApplicantId");
-
-                            b1.ToTable("Applicants");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ApplicantId");
-
-                            b1.HasData(
-                                new
-                                {
-                                    ApplicantId = new Guid("7148bf79-e2bd-4d48-b979-fb7f89a106f2"),
-                                    Building = "Boilding",
-                                    City = "Gliwice",
-                                    Country = "Polandia",
-                                    Region = "Silesia",
-                                    Street = "Street"
-                                });
+                            Id = new Guid("e49f7268-2dd6-4f4b-9709-c828373ae6b7"),
+                            EmailAddress = "noreply@company.et",
+                            FirstName = "John",
+                            PhoneNumber = "123456789",
+                            Surname = "Smith"
                         });
-
-                    b.OwnsMany("W4S.PostingService.Domain.Models.Schedule", "Availability", b1 =>
-                        {
-                            b1.Property<Guid>("ApplicantId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
-
-                            b1.Property<DateTime>("End")
-                                .HasColumnType("timestamp with time zone");
-
-                            b1.Property<DateTime>("Start")
-                                .HasColumnType("timestamp with time zone");
-
-                            b1.HasKey("ApplicantId", "Id");
-
-                            b1.ToTable("Applicants_Availability");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ApplicantId");
-                        });
-
-                    b.Navigation("Address")
-                        .IsRequired();
-
-                    b.Navigation("Availability");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Application", b =>
                 {
-                    b.HasOne("W4S.PostingService.Domain.Entities.Applicant", "Applicant")
-                        .WithMany("Applications")
-                        .HasForeignKey("ApplicantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("W4S.PostingService.Domain.Entities.JobOffer", "Offer")
                         .WithMany("Applications")
                         .HasForeignKey("OfferId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Applicant");
+                    b.HasOne("W4S.PostingService.Domain.Entities.Student", "Student")
+                        .WithMany("Applications")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Offer");
-                });
 
-            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Company", b =>
-                {
-                    b.OwnsOne("W4S.PostingService.Domain.ValueType.Address", "Address", b1 =>
-                        {
-                            b1.Property<Guid>("CompanyId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Building")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Region")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Street")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("CompanyId");
-
-                            b1.ToTable("Companies");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CompanyId");
-
-                            b1.HasData(
-                                new
-                                {
-                                    CompanyId = new Guid("334b1847-0f07-4479-adcd-5731831fd5c7"),
-                                    Building = "Macdonald",
-                                    City = "Gliwice",
-                                    Country = "Poland",
-                                    Region = "Silesia",
-                                    Street = "Wrocławska"
-                                });
-                        });
-
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.JobOffer", b =>
@@ -464,9 +332,81 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Applicant", b =>
+            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Student", b =>
                 {
-                    b.Navigation("Applications");
+                    b.OwnsOne("W4S.PostingService.Domain.ValueType.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("StudentId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Building")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Region")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("StudentId");
+
+                            b1.ToTable("Applicants");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StudentId");
+
+                            b1.HasData(
+                                new
+                                {
+                                    StudentId = new Guid("e49f7268-2dd6-4f4b-9709-c828373ae6b7"),
+                                    Building = "Boilding",
+                                    City = "Gliwice",
+                                    Country = "Polandia",
+                                    Region = "Silesia",
+                                    Street = "Street"
+                                });
+                        });
+
+                    b.OwnsMany("W4S.PostingService.Domain.Models.Schedule", "Availability", b1 =>
+                        {
+                            b1.Property<Guid>("StudentId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime>("End")
+                                .HasColumnType("timestamp with time zone");
+
+                            b1.Property<DateTime>("Start")
+                                .HasColumnType("timestamp with time zone");
+
+                            b1.HasKey("StudentId", "Id");
+
+                            b1.ToTable("Applicants_Availability");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StudentId");
+                        });
+
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("Availability");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.JobOffer", b =>
@@ -477,6 +417,11 @@ namespace W4S.PostingService.Persistence.Migrations
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Recruiter", b =>
                 {
                     b.Navigation("Offers");
+                });
+
+            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Student", b =>
+                {
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }

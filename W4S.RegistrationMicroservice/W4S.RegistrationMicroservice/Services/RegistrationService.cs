@@ -42,11 +42,11 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 throw;
             }
-            catch(UserAlreadyRegisteredException e)
+            catch (UserAlreadyRegisteredException e)
             {
                 throw;
             }
-            catch(FormatException e)
+            catch (FormatException e)
             {
                 throw;
             }
@@ -118,9 +118,12 @@ namespace W4S.RegistrationMicroservice.API.Services
                 FirstName = employerCreationDto.FirstName,
                 SecondName = employerCreationDto.SecondName,
                 Surname = employerCreationDto.Surname,
-                NIP = employerCreationDto.NIP,
-                Name = employerCreationDto.CompanyName,
-                CompanyId = companyId.Value,
+                Company = new CompanyDto
+                {
+                    NIP = employerCreationDto.NIP,
+                    Name = employerCreationDto.CompanyName,
+                    Id = companyId.Value,
+                },
                 PhoneNumber = employerCreationDto.PhoneNumber
             };
         }
@@ -265,7 +268,7 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             try
             {
-                if(_dbContext.Users.Any(e => e.EmailAddress == email))
+                if (_dbContext.Users.Any(e => e.EmailAddress == email))
                 {
                     throw new UserAlreadyRegisteredException("This email is already connected to an another user.");
                 }
@@ -289,7 +292,8 @@ namespace W4S.RegistrationMicroservice.API.Services
             int[] weights = { 6, 5, 7, 2, 3, 4, 5, 6, 7, 0 };
             int sum = nipNumber.Zip(weights, (digit, weight) => (digit - '0') * weight).Sum();
 
-            if((sum % 11) != (nipNumber[9] - '0')){
+            if ((sum % 11) != (nipNumber[9] - '0'))
+            {
                 throw new IncorrectNIPNumberException("This is not a valid NIP number.");
             }
         }

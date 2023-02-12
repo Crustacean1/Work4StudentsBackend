@@ -10,21 +10,12 @@ namespace W4S.PostingService.Persistence.Repositories
         {
         }
 
-        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(int page, int pageSize, Expression<Func<JobOffer, object>> comparator)
+        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(int page, int pageSize, Expression<Func<JobOffer, bool>> selector, Expression<Func<JobOffer, object>> comparator)
         {
             var result = context.Set<JobOffer>()
+                .Where(selector)
                 .Include(jo => jo.WorkingHours)
                 .OrderBy(comparator)
-                .Skip(page * pageSize)
-                .Take(pageSize);
-            return await result.ToListAsync();
-        }
-
-        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(int page, int pageSize)
-        {
-            var result = context.Set<JobOffer>()
-                .Include(jo => jo.WorkingHours)
-                .OrderBy(e => e.Id)
                 .Skip(page * pageSize)
                 .Take(pageSize);
             return await result.ToListAsync();
