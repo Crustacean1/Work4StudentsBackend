@@ -21,11 +21,10 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
         public DbSet<University> Universities { get; set; }
         public DbSet<Domain> UniversitiesDomains { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<ProfilePhoto> ProfilePhotos { get; set; }
         public DbSet<EmployerProfile> EmployerProfiles { get; set; }
         public DbSet<StudentProfile> StudentProfiles { get; set; }
-        public DbSet<CompanyProfile> CompanyProfiles { get; set; }
 
 
         public async Task MigrateAsync(CancellationToken cancellationToken)
@@ -73,8 +72,10 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<Rating>().Property(e => e.StudentId).IsRequired();
             
             // Profiles
-            modelBuilder.Entity<Profile>().Property(x => x.Image).HasMaxLength(5242880); // 5MB in bytes
             modelBuilder.Entity<Profile>().Property(x => x.Description).HasMaxLength(500);
+
+            // ProfilePhotos
+            modelBuilder.Entity<ProfilePhoto>().Property(x => x.PhotoFile).HasMaxLength(5242880);   // 5MB in bytes
 
             // StudenProfiles
             modelBuilder.Entity<StudentProfile>().Property(x => x.ResumeFile).HasMaxLength(5242880); // 5MB in bytes
@@ -90,9 +91,9 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<Employer>().HasData(_seeder.Employer);
             modelBuilder.Entity<Administrator>().HasData(_seeder.Admin);
 
+            modelBuilder.Entity<ProfilePhoto>().HasData(_seeder.ProfilePhoto);
             modelBuilder.Entity<StudentProfile>().HasData(_seeder.StudentProfile);
             modelBuilder.Entity<EmployerProfile>().HasData(_seeder.EmployerProfile);
-            modelBuilder.Entity<CompanyProfile>().HasData(_seeder.CompanyProfile);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

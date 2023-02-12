@@ -26,13 +26,18 @@ namespace W4S.RegistrationMicroservice.API.Services
         {
             _logger.LogInformation("Creating a new profile for Student with Id: ...");
 
+            var photo = new ProfilePhoto()
+            {
+                Id = Guid.NewGuid(),
+                PhotoFile = dto.Image
+            };
+
             var profile = new StudentProfile() // fill it with a dto
             {
                 Id = Guid.NewGuid(),
                 Description = dto.Description,
-                Image = dto.Image,
+                PhotoId = photo.Id,
                 ResumeFile = dto.ResumeFile,
-                EntityId = dto.UserId
             };
 
             _logger.LogInformation($"Profile with an Id: {profile.Id} created.");
@@ -53,14 +58,14 @@ namespace W4S.RegistrationMicroservice.API.Services
             return profile.Id;
         }
 
-        public void UpdateStudentProfile(Guid Id, UpdateStudentProfileDto dto)
+        public void UpdateStudentProfile(Guid id, UpdateStudentProfileDto dto)
         {
             StudentProfile? studentProfile = null;
 
             try
             {
-                studentProfile = _dbContext.StudentProfiles
-                    .Where(p => p.Id == Id)
+                studentProfile = _dbContext.StudentProfiles // include photos, update photo and profile
+                    .Where(p => p.Id == id)
                     .First();
             }
             catch (Exception ex)
@@ -72,7 +77,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             if (studentProfile != null)
             {
                 studentProfile.Description = dto.Description;
-                studentProfile.Image = dto.Image;
+                //studentProfile.Image = dto.Image;
                 studentProfile.ResumeFile = dto.ResumeFile;
 
                 _dbContext.StudentProfiles.Update(studentProfile);
@@ -80,15 +85,15 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
-        public StudentProfile GetStudentProfile(Guid Id)
+        public StudentProfile GetStudentProfile(Guid id)
         {
-            StudentProfile? studentProfile = null;
-
+            _logger.LogInformation("Getting student profile from the database.");
             try
             {
-                studentProfile = _dbContext.StudentProfiles
-                    .Where(p => p.Id == Id)
+                var studentProfile = _dbContext.StudentProfiles
+                    .Where(p => p.Id == id)
                     .First();
+                return studentProfile;
             }
             catch(Exception ex)
             {
@@ -96,29 +101,23 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _logger.LogError(message, ex);
                 throw;
             }
-
-            return studentProfile;
         }
 
-        public ICollection<StudentProfile> GetStudentProfiles(int pageSize, int pageNumber)
+        public List<StudentProfile> GetStudentProfiles(Guid[] ids)
         {
-            IQueryable<StudentProfile> studentProfiles = null;
-
+            _logger.LogInformation("Getting student profiles from the database.");
             try
             {
-                studentProfiles = _dbContext.StudentProfiles
-                    .Select(x => x)
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
+                var studentProfile = _dbContext.StudentProfiles
+                    .Where(p => ids.Contains(p.Id));
+                return studentProfile.ToList();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var message = ex.InnerException.Message ?? ex.Message;
                 _logger.LogError(message, ex);
                 throw;
             }
-
-            return studentProfiles.ToList();
         }
 
         #endregion
@@ -138,12 +137,17 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             _logger.LogInformation("Creating a new profile for Student with Id: ...");
 
+            var photo = new ProfilePhoto()
+            {
+                Id = Guid.NewGuid(),
+                PhotoFile = dto.Image
+            };
+
             var profile = new EmployerProfile() // fill it with a dto
             {
                 Id = Guid.NewGuid(),
                 Description = dto.Description,
-                Image = dto.Image,
-                EntityId = dto.UserId
+                PhotoId = photo.Id,
             };
 
             _logger.LogInformation($"Profile with an Id: {profile.Id} created.");
@@ -170,7 +174,7 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             try
             {
-                employerProfile = _dbContext.EmployerProfiles
+                employerProfile = _dbContext.EmployerProfiles // include photos, update photo and profile
                     .Where(p => p.Id == Id)
                     .First();
             }
@@ -183,7 +187,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             if (employerProfile != null)
             {
                 employerProfile.Description = dto.Description;
-                employerProfile.Image = dto.Image;
+                //employerProfile.Image = dto.Image;
 
                 _dbContext.EmployerProfiles.Update(employerProfile);
                 _dbContext.SaveChanges();
@@ -198,9 +202,13 @@ namespace W4S.RegistrationMicroservice.API.Services
         {
             _logger.LogInformation("Checking if a profile for this entity already exists.");
 
-            if (_dbContext.Profiles.Where(p => p.EntityId == entityId).Any())
+            if (_dbContext.StudentProfiles.Where(p => p.StudentId == entityId).Any())
             {
-                throw new ProfileAlreadyExistsException("Profile  for this entity is already set up.");
+                throw new ProfileAlreadyExistsException("Profile for this entity is already set up.");
+            }
+            else if(_dbContext.EmployerProfiles.Where(p => p.EmployerId == entityId).Any())
+            {
+                throw new ProfileAlreadyExistsException("Profile for this entity is already set up.");
             }
         }
 

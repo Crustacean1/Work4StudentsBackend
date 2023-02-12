@@ -2,14 +2,14 @@
 {
     public class User : Entity
     {
-        public required string EmailAddress { get; init; }
-        public required string PasswordHash { get; init; }
-        public required string Name { get; init; }
-        public string? SecondName { get; init; }
-        public required string Surname { get; init; }
-        public string? PhoneNumber { get; init; }
+        public required string EmailAddress { get; set; }
+        public required string PasswordHash { get; set; }
+        public required string Name { get; set; }
+        public string? SecondName { get; set; }
+        public required string Surname { get; set; }
+        public string? PhoneNumber { get; set; }
 
-        public Guid RoleId { get; init; }
-        public virtual Role Role { get; init; }
+        public Guid RoleId { get; set; }
+        public virtual Role Role { get; set; }
     }
 }

@@ -24,9 +24,9 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
 
         public Rating Rating { get; set; }
 
+        public ProfilePhoto ProfilePhoto { get; set; }
         public EmployerProfile EmployerProfile { get; set;}
         public StudentProfile StudentProfile { get; set;}
-        public CompanyProfile CompanyProfile { get; set;}
 
 
         public UserbaseSeeder()
@@ -113,41 +113,27 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
                 RoleId = AdminRole.Id
             };
 
+            ProfilePhoto = new ProfilePhoto()
+            {
+                Id = Guid.NewGuid(),
+                PhotoFile = new byte[] { 0x00, 0x00, 0x00, 0x00 }
+            };
+
             EmployerProfile = new EmployerProfile()
             {
                 Id = Guid.NewGuid(),
-                EntityId = Employer.Id,
                 EmployerId = Employer.Id,
                 Description = "My company is the best.",
-                Image = new byte[]
-                {
-                    0x00, 0x00, 0x00, 0x00
-                }
+                PhotoId = ProfilePhoto.Id,
             };
 
 
             StudentProfile = new StudentProfile()
             {
                 Id = Guid.NewGuid(),
-                EntityId = Student.Id,
                 StudentId = Student.Id,
                 Description = "My university is the best.",
-                Image = new byte[]
-                {
-                    0x00, 0x00, 0x00, 0x00
-                }
-            };
-
-            CompanyProfile = new CompanyProfile()
-            {
-                Id = Guid.NewGuid(),
-                EntityId = Company.Id,
-                CompanyId = Company.Id,
-                Description = "Greatest company there is.",
-                Image = new byte[]
-                {
-                    0x00, 0x00, 0x00, 0x00
-                }
+                PhotoId = ProfilePhoto.Id
             };
 
             Rating = new Rating()

@@ -9,6 +9,8 @@ using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Exceptions;
+using W4S.RegistrationMicroservice.Data.Entities.Profiles;
+using W4S.RegistrationMicroservice.Models.Profiles.Create;
 
 namespace W4S.RegistrationMicroservice.API.Services
 {
@@ -17,16 +19,19 @@ namespace W4S.RegistrationMicroservice.API.Services
         private const string REGEX_DOMAIN_PATTERN = @"@([\w\-]+)((\.(\w){2,3})+)$";
 
         private readonly IHasher _passwordHasher;
+        private readonly IProfilesService _profilesService;
 
         private readonly UserbaseDbContext _dbContext;
         private readonly ILogger _logger;
 
         public RegistrationService(
             IHasher passwordHasher,
+            IProfilesService profilesService,
             UserbaseDbContext dbContext,
             ILogger<RegistrationService> logger)
         {
             _passwordHasher = passwordHasher;
+            _profilesService = profilesService;
             _dbContext = dbContext;
             _logger = logger;
         }
@@ -102,13 +107,24 @@ namespace W4S.RegistrationMicroservice.API.Services
                 RoleId = _dbContext.Roles.First(s => s.Description.Equals("Employer")).Id
             };
 
-            _logger.LogInformation($"Employer role id: {employer.RoleId}");
+            try
+            {
+                _logger.LogInformation("Trying to add the employer to the db.");
+                _dbContext.Employers.Add(employer);
+                _dbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Could not add the employer. :---D");
+                _logger.LogError(e.Message, e);
+            }
 
-            _dbContext.Employers.Add(employer);
+            var employerProfileDto = new CreateProfileDto()
+            {
+                // fill it with data after changes in dtos
+            };
 
-
-
-            _dbContext.SaveChanges();
+            _profilesService.CreateEmployerProfile(employerProfileDto);
 
             return new EmployerRegisteredEvent()
             {
@@ -183,26 +199,43 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             try
             {
-                _logger.LogInformation("Trying to add a student to the db.");
+                _logger.LogInformation("Trying to add the student to the db.");
                 _dbContext.Students.Add(student);
-
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("Could not add a student. :---D");
-                _logger.LogError(e.Message, e);
-            }
-
-            try
-            {
-                _logger.LogInformation("Trying to save changes.");
                 _dbContext.SaveChanges();
             }
             catch (Exception e)
             {
-                _logger.LogError("Could not save changes.");
+                _logger.LogError("Could not add the student. :---D");
                 _logger.LogError(e.Message, e);
             }
+
+            _logger.LogInformation("Creating student profile.");
+
+            var studentProfileDto = new CreateStudentProfileDto()
+            {
+                // change and fill it
+            };
+
+            _profilesService.CreateStudentProfile(studentProfileDto);
+
+            //var studentProfile = new StudentProfile()
+            //{
+            //    Id = Guid.NewGuid(),
+            //    PhotoId = null,
+            //    ShortDescription = "",
+            //    Description = "",
+            //    EmailAddress = studentCreationDto.EmailAddress,
+            //    Rating = 0.0m,
+            //    Education = "",
+            //    Experience = "",
+            //    Country = "Poland",
+            //    Region = "Śląsk",
+            //    City = "Gliwice",
+            //    Street = "Akademicka",
+            //    Building = "2a",
+            //    ResumeFile = null,
+            //    StudentId = student.Id,
+            //};
 
             var studentEvent = new StudentRegisteredEvent()
             {
@@ -220,15 +253,6 @@ namespace W4S.RegistrationMicroservice.API.Services
                 Street = "Akademicka",
                 Building = "2a"
             };
-
-            if (studentEvent != null)
-            {
-                _logger.LogInformation("Student event is not null.");
-            }
-            else
-            {
-                _logger.LogInformation("Student event is null >:(");
-            }
 
             return studentEvent;
         }

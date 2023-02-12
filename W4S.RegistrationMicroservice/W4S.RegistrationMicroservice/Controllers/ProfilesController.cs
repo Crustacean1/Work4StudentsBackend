@@ -26,47 +26,6 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(profilesService));
         }
 
-        [BusRequestHandler("create.student")]
-        public Task<StudentProfileCreatedResponse> CreateStudentProfile([FromBody] CreateStudentProfileDto dto)
-        {
-            var response = new StudentProfileCreatedResponse();
-
-            try
-            {
-                var profileId = _profilesService.CreateStudentProfile(dto);
-                response.Id = profileId;
-                _logger.LogInformation($"Profile with Id {profileId} created.");
-            }
-            catch (Exception ex)
-            {
-                var message = ex.InnerException.Message ?? ex.Message;
-                _logger.LogError(message, ex);
-                response.ExceptionMessage = message;
-            }
-
-            return Task.FromResult(response);
-        }
-
-        [BusRequestHandler("create.employer")]
-        public Task<EmployerProfileCreatedResponse> CreateEmployerProfile([FromBody] CreateProfileDto dto)
-        {
-            var response = new EmployerProfileCreatedResponse();
-
-            try
-            {
-                var profileId = _profilesService.CreateEmployerProfile(dto);
-                _logger.LogInformation($"Profile with Id {profileId} created.");
-            }
-            catch (Exception ex)
-            {
-                var message = ex.InnerException.Message ?? ex.Message;
-                _logger.LogError(message, ex);
-                response.ExceptionMessage = message;
-            }
-
-            return Task.FromResult(response);
-        }
-
         [BusRequestHandler("update.student")]
         public Task<StudentProfileUpdatedResponse> UpdateStudentProfile([FromQuery] Guid id, [FromBody] UpdateStudentProfileDto dto)
         {
@@ -106,5 +65,44 @@ namespace W4S.RegistrationMicroservice.API.Controllers
 
             return Task.FromResult(response);
         }
+
+        [BusRequestHandler("get.student")]
+        public Task GetStudentProfile(Guid id)
+        {
+            return Task.FromResult(0);
+        }
+
+
+        [BusRequestHandler("get.students")]
+        public Task GetStudentsProfiles(Guid[] ids)
+        {
+            return Task.FromResult(0);
+        }
+
+
+        [BusRequestHandler("get.employer")]
+        public Task GetEmployerProfile(Guid id)
+        {
+            return Task.FromResult(0);
+        }
+
+        [BusRequestHandler("get.employers")]
+        public Task GetEmployersProfiles(Guid[] id)
+        {
+            return Task.FromResult(0);
+        }
+
+        [BusEventHandler("update.student.rating")]
+        public Task UpdateStudentRating(Guid studentId, decimal rating)
+        {
+            return Task.FromResult(0);
+        }
+
+        [BusEventHandler("update.employer.rating")]
+        public Task UpdateEmployerRating(Guid employerId, decimal rating)
+        {
+            return Task.FromResult(0);
+        }
+
     }
 }
