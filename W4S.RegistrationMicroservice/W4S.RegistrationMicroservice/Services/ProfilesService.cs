@@ -22,7 +22,7 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         #region Students
 
-        public Guid CreateStudentProfile(CreateStudentProfileDto dto) // CreateStudentProfileDto
+        public Guid CreateStudentProfile(CreateStudentProfileDto dto)
         {
             _logger.LogInformation("Creating a new profile for Student with Id: ...");
 

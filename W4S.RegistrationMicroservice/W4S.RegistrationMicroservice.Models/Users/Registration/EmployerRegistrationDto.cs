@@ -1,15 +1,10 @@
-﻿namespace W4S.RegistrationMicroservice.Models.Users.Creation
+﻿using W4S.RegistrationMicroservice.Models.Users.Registration;
+
+namespace W4S.RegistrationMicroservice.Models.Users.Creation
 {
-    public class EmployerRegistrationDto
+    public class EmployerRegistrationDto : BaseRegistrationDto
     {
-        public string EmailAddress { get; set; }
-        public string Password { get; set; }
-        public string FirstName { get; set; }
-        public string? SecondName { get; set; }
-        public string Surname { get; set; }
-        public string? PhoneNumber { get; set; }
         public string PositionName { get; set; }
-        public string CompanyName { get; set; }
         public string NIP { get; set; }
     }
 }
