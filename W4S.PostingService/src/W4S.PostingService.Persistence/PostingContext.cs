@@ -9,7 +9,7 @@ namespace W4S.PostingService.Persistence
         private readonly string DEFAULT_CONNECTION_STRING = "Database=offers;Host=localhost;Port=5432;Username=root;Password=root";
         private readonly Seeder seeder = new();
 
-        public DbSet<Applicant> Applicants { get; set; }
+        public DbSet<Student> Applicants { get; set; }
 
         public DbSet<Application> Applications { get; set; }
 
@@ -28,15 +28,6 @@ namespace W4S.PostingService.Persistence
         {
             builder.Entity<Company>(b =>
             {
-                b.OwnsOne(c => c.Address).HasData(new
-                {
-                    CompanyId = seeder.FakeCompany.Id,
-                    Country = "Poland",
-                    Region = "Silesia",
-                    City = "Gliwice",
-                    Street = "Wrocławska",
-                    Building = "Macdonald"
-                });
                 b.HasData(seeder.FakeCompany);
             });
 
@@ -54,7 +45,7 @@ namespace W4S.PostingService.Persistence
                 b.OwnsMany(jo => jo.WorkingHours);
             });
 
-            builder.Entity<Applicant>(b =>
+            builder.Entity<Student>(b =>
             {
                 b.OwnsOne(a => a.Address).HasData(new
                 {
@@ -63,7 +54,7 @@ namespace W4S.PostingService.Persistence
                     City = "Gliwice",
                     Street = "Street",
                     Building = "Boilding",
-                    ApplicantId = seeder.FakeApplicant.Id
+                    StudentId = seeder.FakeApplicant.Id
                 });
                 b.OwnsMany(a => a.Availability);
                 b.HasData(seeder.FakeApplicant);
@@ -71,7 +62,7 @@ namespace W4S.PostingService.Persistence
 
             builder.Entity<Application>(b =>
             {
-                b.HasOne(a => a.Applicant);
+                b.HasOne(a => a.Student);
                 b.HasOne(a => a.Offer);
             });
         }

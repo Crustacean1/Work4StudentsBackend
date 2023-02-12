@@ -7,9 +7,5 @@ namespace W4S.PostingService.Domain.Entities
         public string NIP { get; set; }
 
         public string Name { get; set; }
-
-        public Address Address { get; set; }
-
-        public string Description { get; set; }
     }
 }

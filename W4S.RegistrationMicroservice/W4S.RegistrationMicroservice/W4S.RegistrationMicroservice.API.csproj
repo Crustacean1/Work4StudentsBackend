@@ -27,6 +27,7 @@
   </ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\W4S.RegistrationMicroservice.Data\W4S.RegistrationMicroservice.Data.csproj" />
+	  <ProjectReference Include="..\W4S.RegistrationMicroservice.Models\W4S.RegistrationMicroservice.Models.csproj" />
 	</ItemGroup>
 
 </Project>

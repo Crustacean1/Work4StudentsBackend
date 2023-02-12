@@ -51,11 +51,11 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 throw;
             }
-            catch(UserAlreadyRegisteredException)
+            catch (UserAlreadyRegisteredException e)
             {
                 throw;
             }
-            catch(FormatException)
+            catch (FormatException e)
             {
                 throw;
             }
@@ -131,6 +131,12 @@ namespace W4S.RegistrationMicroservice.API.Services
                 Building = employerCreationDto.Building,
                 PositionName = employerCreationDto.PositionName,
                 CompanyId = companyId.Value,
+                Company = new CompanyDto
+                {
+                    NIP = employerCreationDto.NIP,
+                    Name = employerCreationDto.CompanyName,
+                    Id = companyId.Value,
+                },
                 PhoneNumber = employerCreationDto.PhoneNumber
             };
         }

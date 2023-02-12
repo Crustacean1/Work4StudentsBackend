@@ -1,77 +1,58 @@
-using W4S.PostingService.Domain.Abstractions;
 using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Queries;
-using W4S.PostingService.Domain.Responses;
-using W4S.PostingService.Domain.ValueType;
 using W4S.ServiceBus.Attributes;
 
 namespace W4S.PostingService.Console.Handlers
 {
-    [BusService("application")]
-    public class ApplicationHandler
+    [BusService("applications")]
+    public class ApplicationHandler : HandlerBase
     {
-        private readonly ILogger<ApplicationHandler> logger;
-        private readonly IApplicationService applicationService;
+        private readonly SubmitApplicationCommandHandler submitApplicationCommandHandler;
+        private readonly GetOfferApplicationsQueryHandler getOfferApplicationsQueryHandler;
+        private readonly GetStudentApplicationsQueryHandler getStudentApplicationQueryHandler;
 
-        public ApplicationHandler(ILogger<ApplicationHandler> logger, IApplicationService applicationService)
+        public ApplicationHandler(ILogger<ApplicationHandler> logger, SubmitApplicationCommandHandler submitApplicationCommandHandler, GetOfferApplicationsQueryHandler getOfferApplicationsQueryHandler, GetStudentApplicationsQueryHandler getStudentApplicationQueryHandler) : base(logger)
         {
-            this.logger = logger;
-            this.applicationService = applicationService;
+            this.submitApplicationCommandHandler = submitApplicationCommandHandler;
+            this.getOfferApplicationsQueryHandler = getOfferApplicationsQueryHandler;
+            this.getStudentApplicationQueryHandler = getStudentApplicationQueryHandler;
         }
 
-        [BusRequestHandler("apply")]
-        public async Task<ApplicationSubmittedDto> OnJobApplication(ApplyForJobCommand jobApplication)
+        [BusRequestHandler("submitApplication")]
+        public async Task<ResponseWrapper<Guid>> OnSubmitApplication(SubmitApplicationCommand command)
         {
-            logger.LogInformation("Applicant {Applicant} applies for {JobOffer} offer", jobApplication.ApplicantId, jobApplication.OfferId);
+            logger.LogInformation("Applicant {Applicant} applies for {JobOffer} offer", command.StudentId, command.OfferId);
 
-            Notification notification = new();
-            var newApplicationId = await applicationService.Submit(jobApplication, notification);
-
-            return new ApplicationSubmittedDto
+            return await ExecuteHandler(async () =>
             {
-                Id = newApplicationId,
-                Errors = notification.ErrorMessages.ToList()
-            };
+                var applicationId = await submitApplicationCommandHandler.HandleCommand(command);
+                return (applicationId, 201);
+            });
         }
 
-        [BusRequestHandler("accept")]
-        public async Task<ApplicationAcceptedDto> OnApplicationAccepted(AcceptApplicationDto acceptDto)
+        [BusRequestHandler("getOfferApplications")]
+        public async Task<ResponseWrapper<PaginatedList<Application>>> OnGetOfferApplications(GetOfferApplicationsQuery query)
         {
-            logger.LogInformation("Recruiter {Recruiter} accepts application {Application}", acceptDto.RecruiterId, acceptDto.ApplicationId);
+            logger.LogInformation("Lising applications for offer {Offer}", query.OfferId);
 
-            Notification notification = new();
-            applicationService.Accept(acceptDto, notification);
-            return new ApplicationAcceptedDto();
-        }
-
-        [BusRequestHandler("list.offer")]
-        public async Task<ApplicationListResponse> OnJobApplicationList(ListOfferApplicationsQuery listQuery)
-        {
-            logger.LogInformation("Lising applications for job {Job}", listQuery.OfferId);
-            Notification notification = new();
-
-            return new ApplicationListResponse
+            return await ExecuteHandler(async () =>
             {
-                Applications = (await applicationService.GetOfferApplications(listQuery.OfferId,
-                                                                              listQuery.Page,
-                                                                              listQuery.PageSize,
-                                                                              notification)).ToList()
-            };
+                var response = await getOfferApplicationsQueryHandler.HandleQuery(query);
+                return (response, 200);
+            });
         }
 
-        [BusRequestHandler("list.applicant")]
-        public async Task<ApplicationListResponse> OnApplicantApplicationList(ListApplicantApplicationsQuery listQuery)
+        [BusRequestHandler("getStudentApplications")]
+        public async Task<ResponseWrapper<PaginatedList<Application>>> OnGetStudentApplications(GetStudentApplicationsQuery query)
         {
-            logger.LogInformation("Lising applications for job {Job}", listQuery.ApplicantId);
-            Notification notification = new();
+            logger.LogInformation("Lising applications of student: {Student}", query.StudentId);
 
-            return new ApplicationListResponse
+            return await ExecuteHandler(async () =>
             {
-                Applications = (await applicationService.GetApplicantApplications(listQuery.ApplicantId,
-                                                                                  listQuery.Page,
-                                                                                  listQuery.PageSize,
-                                                                                  notification)).ToList()
-            };
+                var response = await getStudentApplicationQueryHandler.HandleQuery(query);
+                return (response, 200);
+            });
         }
     }
 }

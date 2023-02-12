@@ -8,7 +8,7 @@ namespace W4S.PostingService.Persistence
     {
         public Company FakeCompany { get; set; }
         public Recruiter FakeRecruiter { get; set; }
-        public Applicant FakeApplicant { get; set; }
+        public Student FakeApplicant { get; set; }
         public Application FakeApplication { get; set; }
         public JobOffer FakeJobOffer { get; set; }
         public Address FakeAddress { get; set; }
@@ -34,9 +34,8 @@ namespace W4S.PostingService.Persistence
             FakeCompany = new Company
             {
                 Id = Guid.NewGuid(),
-                Name = "Company",
+                Name = "Comarch",
                 NIP = "7821160955",
-                Description = "Hmmmmmm",
             };
 
             FakeRecruiter = new Recruiter
@@ -57,14 +56,13 @@ namespace W4S.PostingService.Persistence
                     RecruiterId = FakeRecruiter.Id,
                     Title = "Opening for position A",
                     Description = "Fancy job",
-                    Status = JobOffer.OfferStatus.Active,
+                    Status = OfferStatus.Active,
                     Role = "Position A",
-                    Openings = 21,
                     WorkingHours = new List<Schedule>(),
                     Applications = new List<Application>(),
                 };
 
-            FakeApplicant = new Applicant()
+            FakeApplicant = new Student()
             {
                 FirstName = "John",
                 Surname = "Smith",
@@ -80,11 +78,11 @@ namespace W4S.PostingService.Persistence
             {
                 Id = Guid.NewGuid(),
                 OfferId = FakeJobOffer.Id,
-                ApplicantId = FakeApplicant.Id,
+                StudentId = FakeApplicant.Id,
                 WorkTimeOverlap = 0.0M,
                 Proximity = 1.0M,
-                LastChange = DateTime.Now.ToUniversalTime(),
-                Status = Application.ApplicationStatus.Submitted,
+                LastChanged = DateTime.Now.ToUniversalTime(),
+                Status = ApplicationStatus.Submitted,
                 Message = "I want to work pls"
             };
         }
