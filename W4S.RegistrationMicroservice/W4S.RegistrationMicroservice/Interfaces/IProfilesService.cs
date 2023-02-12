@@ -1,13 +1,24 @@
-﻿using W4S.RegistrationMicroservice.Models.Profiles.Create;
+﻿using W4S.RegistrationMicroservice.Data.Entities.Profiles;
+using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
+using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
 
 namespace W4S.RegistrationMicroservice.API.Interfaces
 {
     public interface IProfilesService
     {
-        Guid CreateEmployerProfile(CreateProfileDto dto);
-        Guid CreateStudentProfile(CreateStudentProfileDto dto);
+        Guid CreateEmployerProfile(Employer employer);
+        Guid CreateStudentProfile(Student student);
+        StudentProfile GetStudentProfile(Guid id);
+        List<StudentProfile> GetStudentProfiles(Guid[] ids);
+        byte[]? GetStudentResume(Guid resumeId);
+        byte[]? GetUserPhoto(Guid photoId);
         void UpdateEmployerProfile(Guid Id, UpdateProfileDto dto);
-        void UpdateStudentProfile(Guid Id, UpdateStudentProfileDto dto);
+        void UpdateEmployerRating(EmployerRatingChangedEvent changedEvent);
+        void UpdateStudentProfile(Guid id, UpdateStudentProfileDto dto);
+        void UpdateStudentRating(StudentRatingChangedEvent changedEvent);
+        EmployerProfile GetEmployerProfile(Guid id);
+        List<EmployerProfile> GetEmployerProfiles(Guid[] ids);
+
     }
 }

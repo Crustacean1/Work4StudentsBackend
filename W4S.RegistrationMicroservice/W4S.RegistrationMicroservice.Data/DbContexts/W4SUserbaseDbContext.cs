@@ -23,6 +23,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
         public DbSet<Role> Roles { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<ProfilePhoto> ProfilePhotos { get; set; }
+        public DbSet<StudentResume> StudentResumes { get; set; }
         public DbSet<EmployerProfile> EmployerProfiles { get; set; }
         public DbSet<StudentProfile> StudentProfiles { get; set; }
 
@@ -77,11 +78,10 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             // ProfilePhotos
             modelBuilder.Entity<ProfilePhoto>().Property(x => x.PhotoFile).HasMaxLength(5242880);   // 5MB in bytes
 
-            // StudenProfiles
-            modelBuilder.Entity<StudentProfile>().Property(x => x.ResumeFile).HasMaxLength(5242880); // 5MB in bytes
+            // StudentResumes
+            modelBuilder.Entity<StudentResume>().Property(x => x.ResumeFile).HasMaxLength(5242880); // 5MB in bytes
 
             //Seeding values...
-
             modelBuilder.Entity<Role>().HasData(new List<Role>() { _seeder.StudentRole, _seeder.EmployerRole, _seeder.AdminRole });
             modelBuilder.Entity<Domain>().HasData(_seeder.EmailDomain);
             modelBuilder.Entity<University>().HasData(_seeder.University);

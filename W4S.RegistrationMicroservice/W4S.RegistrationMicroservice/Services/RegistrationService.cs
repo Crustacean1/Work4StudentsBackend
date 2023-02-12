@@ -11,6 +11,7 @@ using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Exceptions;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Models.Profiles.Create;
+using W4S.RegistrationMicroservice.API.Validations.Interfaces;
 
 namespace W4S.RegistrationMicroservice.API.Services
 {
@@ -23,35 +24,38 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         private readonly UserbaseDbContext _dbContext;
         private readonly ILogger _logger;
+        private readonly IDataValidator _dataValidator;
 
         public RegistrationService(
             IHasher passwordHasher,
             IProfilesService profilesService,
             UserbaseDbContext dbContext,
-            ILogger<RegistrationService> logger)
+            ILogger<RegistrationService> logger,
+            IDataValidator dataValidator)
         {
             _passwordHasher = passwordHasher;
             _profilesService = profilesService;
             _dbContext = dbContext;
             _logger = logger;
+            _dataValidator = dataValidator;
         }
 
         public EmployerRegisteredEvent RegisterEmployer(EmployerRegistrationDto employerCreationDto)
         {
             try
             {
-                ValidateEmailCorrectness(employerCreationDto.EmailAddress);
-                ValidateNIPNumber(employerCreationDto.NIP);
+                _dataValidator.ValidateEmailCorrectness(employerCreationDto.EmailAddress);
+                _dataValidator.ValidateNIPNumber(employerCreationDto.NIP);
             }
-            catch (IncorrectNIPNumberException e)
+            catch (IncorrectNIPNumberException)
             {
                 throw;
             }
-            catch(UserAlreadyRegisteredException e)
+            catch(UserAlreadyRegisteredException)
             {
                 throw;
             }
-            catch(FormatException e)
+            catch(FormatException)
             {
                 throw;
             }
@@ -81,24 +85,14 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _dbContext.Add(company);
                 _dbContext.SaveChanges();
 
-
-                try
-                {
-                    companyId = _dbContext.Companies
-                        .Select(c => new { c.Id, c.NIP })
-                        .First(c => c.NIP.Equals(employerCreationDto.NIP)).Id;
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message);
-                    throw;
-                }
+                companyId = company.Id;
             }
 
             var employer = new Employer()
             {
                 Id = Guid.NewGuid(),
                 EmailAddress = employerCreationDto.EmailAddress,
+                PhoneNumber = employerCreationDto.PhoneNumber,
                 PasswordHash = _passwordHasher.HashText(employerCreationDto.Password),
                 Name = employerCreationDto.FirstName,
                 Surname = employerCreationDto.Surname,
@@ -119,12 +113,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _logger.LogError(e.Message, e);
             }
 
-            var employerProfileDto = new CreateProfileDto()
-            {
-                // fill it with data after changes in dtos
-            };
-
-            _profilesService.CreateEmployerProfile(employerProfileDto);
+            _profilesService.CreateEmployerProfile(employer);
 
             return new EmployerRegisteredEvent()
             {
@@ -135,7 +124,12 @@ namespace W4S.RegistrationMicroservice.API.Services
                 SecondName = employerCreationDto.SecondName,
                 Surname = employerCreationDto.Surname,
                 NIP = employerCreationDto.NIP,
-                Name = employerCreationDto.CompanyName,
+                Country = employerCreationDto.Country,
+                Region = employerCreationDto.Region,
+                City = employerCreationDto.City,
+                Street = employerCreationDto.Street,
+                Building = employerCreationDto.Building,
+                PositionName = employerCreationDto.PositionName,
                 CompanyId = companyId.Value,
                 PhoneNumber = employerCreationDto.PhoneNumber
             };
@@ -147,8 +141,8 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             try
             {
-                ValidateEmailCorrectness(studentCreationDto.EmailAddress);
-                emailDomainId = ValidateUniversity(studentCreationDto.EmailAddress);
+                _dataValidator.ValidateEmailCorrectness(studentCreationDto.EmailAddress);
+                emailDomainId = _dataValidator.ValidateUniversity(studentCreationDto.EmailAddress);
                 _logger.LogInformation($"Domain Id is: {emailDomainId}");
             }
             catch (UniversityDomainNotInDatabaseException e)
@@ -190,6 +184,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 Id = Guid.NewGuid(),
                 EmailAddress = studentCreationDto.EmailAddress,
+                PhoneNumber = studentCreationDto.PhoneNumber,
                 Name = studentCreationDto.FirstName,
                 Surname = studentCreationDto.Surname,
                 PasswordHash = _passwordHasher.HashText(studentCreationDto.Password),
@@ -211,124 +206,26 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             _logger.LogInformation("Creating student profile.");
 
-            var studentProfileDto = new CreateStudentProfileDto()
-            {
-                // change and fill it
-            };
-
-            _profilesService.CreateStudentProfile(studentProfileDto);
-
-            //var studentProfile = new StudentProfile()
-            //{
-            //    Id = Guid.NewGuid(),
-            //    PhotoId = null,
-            //    ShortDescription = "",
-            //    Description = "",
-            //    EmailAddress = studentCreationDto.EmailAddress,
-            //    Rating = 0.0m,
-            //    Education = "",
-            //    Experience = "",
-            //    Country = "Poland",
-            //    Region = "Śląsk",
-            //    City = "Gliwice",
-            //    Street = "Akademicka",
-            //    Building = "2a",
-            //    ResumeFile = null,
-            //    StudentId = student.Id,
-            //};
+            _profilesService.CreateStudentProfile(student);
 
             var studentEvent = new StudentRegisteredEvent()
             {
                 Id = student.Id,
                 Date = DateTime.Now,
-                FirstName = studentCreationDto.FirstName,
-                SecondName = studentCreationDto.SecondName,
-                Surname = studentCreationDto.Surname,
-                EmailAddress = studentCreationDto.EmailAddress,
+                FirstName = student.Name,
+                SecondName = student.SecondName,
+                Surname = student.Surname,
+                EmailAddress = student.EmailAddress,
                 UniversityDomain = _dbContext.UniversitiesDomains.Where(x => x.Id == emailDomainId).First().EmailDomain,
-                PhoneNumber = studentCreationDto.PhoneNumber,
-                Country = "Poland",
-                Region = "Śląsk",
-                City = "Gliwice",
-                Street = "Akademicka",
-                Building = "2a"
+                PhoneNumber = student.PhoneNumber,
+                Country = student.Country,
+                Region = student.Region,
+                City = student.City,
+                Street = student.Street,
+                Building = student.Building
             };
 
             return studentEvent;
-        }
-
-
-        // Checks if domain is present in the database, if yes -> return the id of it 
-        private Guid ValidateUniversity(string studentEmail)
-        {
-            try
-            {
-                var domain = CheckDomain(studentEmail);
-
-                return _dbContext.UniversitiesDomains
-                    .First(x => x.EmailDomain.Equals(domain)).Id;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                throw new UniversityDomainNotInDatabaseException("The domain in the email address is not a valid university domain.");
-            }
-        }
-
-        private void ValidateEmailCorrectness(string email)
-        {
-            try
-            {
-                MailAddress mail = new MailAddress(email);
-            }
-            catch (FormatException e)
-            {
-                _logger.LogError(e.Message, e);
-                throw;
-            }
-
-            try
-            {
-                if(_dbContext.Users.Any(e => e.EmailAddress == email))
-                {
-                    throw new UserAlreadyRegisteredException("This email is already connected to an another user.");
-                }
-            }
-            catch (UserAlreadyRegisteredException e)
-            {
-                _logger.LogError(e.Message, e);
-                throw;
-            }
-
-        }
-
-        private void ValidateNIPNumber(string nipNumber)
-        {
-            _logger.LogInformation($"Checking NIP number {nipNumber}");
-            nipNumber = nipNumber.Replace("-", string.Empty);
-
-            if (nipNumber.Length != 10 || nipNumber.Any(chr => !Char.IsDigit(chr)))
-                throw new IncorrectNIPNumberException("NIP number is not supposed to have non-digit characters.");
-
-            int[] weights = { 6, 5, 7, 2, 3, 4, 5, 6, 7, 0 };
-            int sum = nipNumber.Zip(weights, (digit, weight) => (digit - '0') * weight).Sum();
-
-            if((sum % 11) != (nipNumber[9] - '0')){
-                throw new IncorrectNIPNumberException("This is not a valid NIP number.");
-            }
-        }
-
-        private string CheckDomain(string studentEmail)
-        {
-            var regex = new Regex(REGEX_DOMAIN_PATTERN);
-
-            var match = regex.Match(studentEmail);
-
-            if (match.Success)
-            {
-                return match.Value;
-            }
-            throw new UniversityDomainNotInDatabaseException("This email has no valid domain.");
         }
     }
 }
