@@ -78,7 +78,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 studentProfile.Description = dto.Description;
                 //studentProfile.Image = dto.Image;
-                studentProfile.ResumeFile = dto.ResumeFile;
+                //studentProfile.ResumeFile = dto.ResumeFile;
 
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
