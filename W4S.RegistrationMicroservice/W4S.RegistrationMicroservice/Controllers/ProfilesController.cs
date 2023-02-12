@@ -59,14 +59,12 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             {
                 _profilesService.UpdateEmployerProfile(id, dto);
                 _logger.LogInformation($"Updated profile with Id {id}.");
-                response.WasUpdated = true;
             }
             catch (Exception ex)
             {
                 var message = ex.InnerException.Message ?? ex.Message;
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
-                response.WasUpdated = false;
             }
 
             return Task.FromResult(response);
