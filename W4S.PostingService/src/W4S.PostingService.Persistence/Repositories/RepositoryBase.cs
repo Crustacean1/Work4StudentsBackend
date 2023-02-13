@@ -45,6 +45,11 @@ namespace W4S.PostingService.Persistence.Repositories
             return await context.Set<T>().SingleOrDefaultAsync(o => o.Id == id);
         }
 
+        public virtual async Task<T?> GetEntityAsync(Expression<Func<T, bool>> selector)
+        {
+            return await context.Set<T>().SingleOrDefaultAsync(selector);
+        }
+
         public virtual async Task<int> GetTotalCount(Expression<Func<T, bool>> selector)
         {
             return await context.Set<T>().CountAsync(selector);

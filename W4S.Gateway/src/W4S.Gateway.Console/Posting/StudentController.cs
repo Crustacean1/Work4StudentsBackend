@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Queries;
 using W4S.ServiceBus.Abstractions;
@@ -38,6 +39,25 @@ namespace W4S.Gateway.Console.Posting
             var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<JobOffer>>, GetStudentApplicationsQuery>("offer.getStudentApplications", query, cancellationToken);
             return UnwrapResponse(response);
         }
+
+        [HttpGet]
+        [Route("{studentId}/reviews")]
+        [Authorize]
+        public async Task<ActionResult> GetReviews([FromRoute] Guid studentId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for student {Id}", paginatedQuery.Page, paginatedQuery.PageSize, studentId);
+
+            var query = new GetStudentReviewsQuery
+            {
+                PageSize = paginatedQuery.PageSize,
+                Page = paginatedQuery.Page,
+                StudentId = studentId
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<Review>>, GetStudentReviewsQuery>("reviews.getStudentReviews", query, cancellationToken);
+            return UnwrapResponse(response);
+        }
+
 
         private ActionResult UnwrapResponse<T>(ResponseWrapper<T> wrappedResponse)
         {

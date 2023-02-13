@@ -19,6 +19,8 @@ namespace W4S.PostingService.Persistence
 
         public DbSet<JobOffer> JobOffers { get; set; }
 
+        public DbSet<Review> Reviews { get; set; }
+
         public async Task MigrateAsync(CancellationToken cancellationToken)
         {
             await Database.MigrateAsync(cancellationToken);
@@ -43,6 +45,7 @@ namespace W4S.PostingService.Persistence
                 b.OwnsOne(jo => jo.Address);
                 b.OwnsOne(jo => jo.PayRange);
                 b.OwnsMany(jo => jo.WorkingHours);
+                b.HasMany<Review>().WithOne().HasForeignKey(r => r.SubjectId);
             });
 
             builder.Entity<Student>(b =>

@@ -49,19 +49,6 @@ namespace W4S.PostingService.Persistence
                 CompanyId = FakeCompany.Id,
             };
 
-            FakeJobOffer =
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    RecruiterId = FakeRecruiter.Id,
-                    Title = "Opening for position A",
-                    Description = "Fancy job",
-                    Status = OfferStatus.Active,
-                    Role = "Position A",
-                    WorkingHours = new List<Schedule>(),
-                    Applications = new List<Application>(),
-                };
-
             FakeApplicant = new Student()
             {
                 FirstName = "John",
@@ -73,6 +60,30 @@ namespace W4S.PostingService.Persistence
                 Availability = new List<Schedule>(),
                 Applications = new List<Application>(),
             };
+
+            var fakeJobOfferId = Guid.NewGuid();
+            FakeJobOffer =
+                new()
+                {
+                    Id = fakeJobOfferId,
+                    RecruiterId = FakeRecruiter.Id,
+                    Title = "Opening for position A",
+                    Description = "Fancy job",
+                    Status = OfferStatus.Active,
+                    Role = "Position A",
+                    WorkingHours = new List<Schedule>(),
+                    Applications = new List<Application>(),
+                    Reviews = new List<Review>{
+                        new Review
+                        {
+                            Title = "Recruitment process",
+                            Message = "Went great",
+                            SubjectId = fakeJobOfferId,
+                            AuthorId = FakeApplicant.Id,
+                            Rating = 5.0m
+                        }
+                    }
+                };
 
             FakeApplication = new Application
             {

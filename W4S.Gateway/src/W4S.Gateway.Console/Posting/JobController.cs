@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace W4S.Gateway.Console.Posting
 {
     [ApiController]
-    [Route("api/offer")]
+    [Route("api/offers")]
     public class JobController : ControllerBase
     {
 
@@ -23,6 +23,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(List<string>))]
         public async Task<ActionResult> PostOffer([FromBody] PostOfferDto offer, CancellationToken cancellationToken)
@@ -40,13 +41,13 @@ namespace W4S.Gateway.Console.Posting
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(List<string>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<string>))]
-        [Route("{id}")]
-        public async Task<ActionResult> UpdateOffer([FromRoute] Guid id, [FromBody] UpdateOfferDto update, CancellationToken cancellationToken)
+        [Route("{offerId}")]
+        public async Task<ActionResult> UpdateOffer([FromRoute] Guid offerId, [FromBody] UpdateOfferDto update, CancellationToken cancellationToken)
         {
             var recruiterId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
             var command = new UpdateOfferCommand
             {
-                OfferId = id,
+                OfferId = offerId,
                 RecruiterId = Guid.Parse(recruiterId),
                 Offer = update
             };
@@ -56,16 +57,18 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Route("list")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<JobOffer>))]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOffersDto>))]
         public async Task<ActionResult> GetJobOffers([FromQuery] PaginatedQuery query, CancellationToken cancellationToken)
         {
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<JobOffer>>, PaginatedQuery>("offers.getOffers", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, PaginatedQuery>("offers.getOffers", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
         [HttpGet]
+        [Authorize]
         [Route("{offerId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JobOffer))]
         public async Task<ActionResult> GetJobOffer([FromRoute] Guid offerId, CancellationToken cancellationToken)
         {
             var query = new GetOfferQuery
@@ -76,20 +79,61 @@ namespace W4S.Gateway.Console.Posting
             return UnwrapResponse(response);
         }
 
-        [HttpPost]
-        [Route("apply/{offerId}")]
-        public async Task<ActionResult> SubmitApplication([FromRoute] Guid offerId, SubmitApplicationDto applicationDto, CancellationToken cancellationToken)
+        [HttpGet]
+        [Authorize]
+        [Route("{offerId}/applications")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<Application>))]
+        public async Task<ActionResult> GetJobApplications([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
-            var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
+            logger.LogInformation("Getting job applications for {Offer}", offerId);
 
-            var command = new SubmitApplicationCommand
+            var query = new GetOfferApplicationsQuery(paginatedQuery.Page, paginatedQuery.PageSize)
             {
                 OfferId = offerId,
-                StudentId = Guid.Parse(studentId),
-                Application = applicationDto
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<Guid>, SubmitApplicationCommand>("applications.submitApplication", command, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<Application>>, GetOfferApplicationsQuery>("applications.getOfferApplications", query, cancellationToken);
+            return UnwrapResponse(response);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("{offerId}/reviews")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<Review>))]
+        public async Task<ActionResult> GetReviews([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for recruiter {Id}", paginatedQuery.Page, paginatedQuery.PageSize, offerId);
+
+            var query = new GetRecruiterReviewsQuery
+            {
+                PageSize = paginatedQuery.PageSize,
+                Page = paginatedQuery.Page,
+                RecruiterId = offerId
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<Review>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
+            return UnwrapResponse(response);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        [Route("{offerId}/reviews")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
+        public async Task<ActionResult> SubmitReview([FromRoute] Guid offerId, [FromBody] Review review, CancellationToken cancellationToken)
+        {
+            var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
+
+            logger.LogInformation("Student {Student} reviews offer {Offer}", studentId, offerId);
+
+            var command = new ReviewOfferCommand
+            {
+                StudentId = Guid.Parse(studentId),
+                OfferId = offerId,
+                Review = review
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, ReviewOfferCommand>("reviews.reviewOffer", command, cancellationToken);
+
             return UnwrapResponse(response);
         }
 

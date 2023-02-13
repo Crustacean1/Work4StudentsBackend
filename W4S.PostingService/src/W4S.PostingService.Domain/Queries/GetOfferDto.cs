@@ -1,14 +1,10 @@
 using W4S.PostingService.Domain.Models;
 using W4S.PostingService.Domain.ValueType;
 
-namespace W4S.PostingService.Domain.Entities
+namespace W4S.PostingService.Domain.Queries
 {
-    public class JobOffer : Entity
+    public class GetOffersDto
     {
-        public Guid RecruiterId { get; set; }
-
-        public Recruiter Recruiter { get; set; }
-
         public OfferStatus Status { get; set; }
 
         public string Title { get; set; }
@@ -24,9 +20,5 @@ namespace W4S.PostingService.Domain.Entities
         public DateTime CreationDate { get; set; }
 
         public ICollection<Schedule> WorkingHours { get; set; } = new List<Schedule>();
-
-        public ICollection<Application> Applications { get; set; } = new List<Application>();
-
-        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }
