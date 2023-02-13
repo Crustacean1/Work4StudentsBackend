@@ -151,5 +151,32 @@ namespace W4S.Gateway.Console.Posting
 
             return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Response);
         }
+
+        /*[HttpGet]
+        [Route("{id}")]
+        [Authorize(Roles = "Student")]
+        public async Task<ActionResult> GetOffer([FromRoute] Guid id, [FromQuery] int page, [FromQuery] int pageSize, CancellationToken cancellationToken)
+        {
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("apply/{id}")]
+        public async Task<ActionResult> ApplyForOffer([FromRoute] Guid id)
+        {
+            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            //await busClient.SendRequest<ApplicationSubmittedDto, SubmitApplicationDto>("offer.apply", new SubmitApplicationDto { });
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        [Authorize(Roles = "Employer")]
+        public async Task<ActionResult> UpdateOffer([FromRoute] Guid id)
+        {
+            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            //await busClient.SendRequest < ApplicationUpdatedDto, 
+            return Ok();
+        }*/
     }
 }
