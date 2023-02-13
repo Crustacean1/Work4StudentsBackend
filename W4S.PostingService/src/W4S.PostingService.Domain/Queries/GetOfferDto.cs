@@ -5,6 +5,8 @@ namespace W4S.PostingService.Domain.Queries
 {
     public class GetOffersDto
     {
+        public Guid Id { get; set; }
+
         public OfferStatus Status { get; set; }
 
         public string Title { get; set; }

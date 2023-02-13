@@ -87,7 +87,7 @@ namespace W4S.Gateway.Console.Posting
         [HttpGet]
         [Authorize]
         [Route("{offerId}/applications")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<Application>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
         public async Task<ActionResult> GetJobApplications([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
             logger.LogInformation("Getting job applications for {Offer}", offerId);
@@ -97,7 +97,7 @@ namespace W4S.Gateway.Console.Posting
                 OfferId = offerId,
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<Application>>, GetOfferApplicationsQuery>("applications.getOfferApplications", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetApplicationDto>>, GetOfferApplicationsQuery>("applications.getOfferApplications", query, cancellationToken);
             return UnwrapResponse(response);
         }
 

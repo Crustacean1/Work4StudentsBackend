@@ -7,20 +7,20 @@ namespace W4S.PostingService.Domain.Commands
 {
     public class SubmitApplicationCommandHandler : CommandHandlerBase, IRequestHandler<SubmitApplicationCommand, Guid>
     {
-        private readonly IRepository<Student> applicantRepository;
+        private readonly IRepository<Student> studentRepository;
         private readonly IRepository<JobOffer> offerRepository;
         private readonly IRepository<Application> applicationRepository;
 
-        public SubmitApplicationCommandHandler(IRepository<Application> applicationRepository, IRepository<Student> applicantRepository, IRepository<JobOffer> offerRepository)
+        public SubmitApplicationCommandHandler(IRepository<Application> applicationRepository, IRepository<Student> studentRepository, IRepository<JobOffer> offerRepository)
         {
-            this.applicationRepository = applicationRepository;
-            this.applicantRepository = applicantRepository;
+            this.studentRepository = studentRepository;
+            this.studentRepository = studentRepository;
             this.offerRepository = offerRepository;
         }
 
         public async Task<Guid> Handle(SubmitApplicationCommand command, CancellationToken cancellationToken)
         {
-            var student = await GetEntity(applicationRepository, command.StudentId);
+            var student = await GetEntity(studentRepository, command.StudentId);
             var offer = await GetEntity(offerRepository, command.OfferId);
 
             var application = new Application

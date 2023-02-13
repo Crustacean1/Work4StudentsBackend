@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using W4S.PostingService.Domain.Entities;
+using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
 using W4S.PostingService.Domain.ValueType;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
@@ -24,14 +25,18 @@ namespace W4S.PostingService.Domain.Commands
             this.studentRepository = studentRepository;
         }
 
-        public async Task<Unit> Handle(RegisterStudentCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(RegisterStudentCommand request, CancellationToken cancellationToken)
         {
-            var address = mapper.Map<Address>(command.Student);
-            var student = mapper.Map<Student>(command.Student);
+            var address = mapper.Map<Address>(request.Student);
+            var student = mapper.Map<Student>(request.Student);
 
             student.Address = address;
 
-            _ = await GetEntity(studentRepository, student.Id);
+            var prevStudent = await studentRepository.GetEntityAsync(student.Id);
+            if (prevStudent != null)
+            {
+                throw new PostingException($"Student with id {student.Id} is already registered", 400);
+            }
 
             await studentRepository.AddAsync(student);
             await studentRepository.SaveAsync();

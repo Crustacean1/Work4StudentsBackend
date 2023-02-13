@@ -29,7 +29,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getOfferApplications")]
-        public async Task<ResponseWrapper<PaginatedList<Application>>> OnGetOfferApplications(GetOfferApplicationsQuery query)
+        public async Task<ResponseWrapper<PaginatedList<GetApplicationDto>>> OnGetOfferApplications(GetOfferApplicationsQuery query)
         {
             logger.LogInformation("Lising applications for offer {Offer}", query.OfferId);
 
