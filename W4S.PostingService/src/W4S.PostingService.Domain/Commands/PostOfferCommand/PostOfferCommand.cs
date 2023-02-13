@@ -1,8 +1,9 @@
+using MediatR;
 using W4S.PostingService.Domain.Entities;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class PostOfferCommand
+    public record PostOfferCommand : IRequest<Guid>
     {
         public PostOfferDto Offer { get; set; }
 

@@ -1,4 +1,5 @@
 using AutoMapper;
+using MediatR;
 using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Entities;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
@@ -10,10 +11,9 @@ namespace W4S.PostingService.Console.Handlers
     public class ProfileIntegrationHandler
     {
         private readonly ILogger<ProfileIntegrationHandler> logger;
-        private readonly RegisterStudentCommandHandler registerStudentCommandHandler;
-        private readonly RegisterRecruiterCommandHandler registerRecruiterCommandHandler;
+        private readonly ISender sender;
 
-        public ProfileIntegrationHandler(ILogger<ProfileIntegrationHandler> logger, RegisterStudentCommandHandler registerStudentCommandHandler, RegisterRecruiterCommandHandler registerRecruiterCommandHandler)
+        public ProfileIntegrationHandler(ILogger<ProfileIntegrationHandler> logger, ISender sender)
         {
             this.logger = logger;
             logger.LogInformation("Integration handler created");
@@ -23,8 +23,7 @@ namespace W4S.PostingService.Console.Handlers
                 cfg.CreateMap<StudentRegisteredEvent, Student>();
                 cfg.CreateMap<EmployerRegisteredEvent, Recruiter>();
             });
-            this.registerStudentCommandHandler = registerStudentCommandHandler;
-            this.registerRecruiterCommandHandler = registerRecruiterCommandHandler;
+            this.sender = sender;
         }
 
         [BusEventHandler("student")]
@@ -32,7 +31,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Adding new applicant with id: {Id}", student.Id);
 
-            await registerStudentCommandHandler.HandleCommand(new RegisterStudentCommand { Student = student });
+            await sender.Send(new RegisterStudentCommand { Student = student });
         }
 
         [BusEventHandler("employer")]
@@ -40,7 +39,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Adding new employer with id: {Id} from company {CompanyId}", recruiter.Id, recruiter.Company.Id);
 
-            await registerRecruiterCommandHandler.HandleCommand(new RegisterRecruiterCommand { Recruiter = recruiter });
+            await sender.Send(new RegisterRecruiterCommand { Recruiter = recruiter });
         }
     }
 }

@@ -29,7 +29,7 @@ namespace W4S.PostingService.Persistence.Repositories
             var result = context.Set<T>()
                 .Where(selector)
                 .OrderBy(comparator)
-                .Skip(page * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize);
             return await result.ToListAsync();
         }
@@ -42,7 +42,13 @@ namespace W4S.PostingService.Persistence.Repositories
 
         public virtual async Task<T?> GetEntityAsync(Guid id)
         {
-            return await context.Set<T>().SingleOrDefaultAsync(o => o.Id == id);
+            return await context.Set<T>()
+                                .SingleOrDefaultAsync(o => o.Id == id);
+        }
+
+        public virtual async Task<T?> GetEntityAsync(Expression<Func<T, bool>> selector)
+        {
+            return await context.Set<T>().SingleOrDefaultAsync(selector);
         }
 
         public virtual async Task<int> GetTotalCount(Expression<Func<T, bool>> selector)

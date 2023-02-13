@@ -1,13 +1,14 @@
+using MediatR;
 using W4S.PostingService.Domain.Entities;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class ReviewApplicationCommand
+    public record ReviewApplicationCommand : IRequest<Guid>
     {
-        public Guid OfferId { get; set; }
+        public Guid ApplicationId { get; set; }
 
-        public Guid Recruitertd { get; set; }
+        public Guid RecruiterId { get; set; }
 
-        public Review Review { get; set; }
+        public ApplicationReview Review { get; set; }
     }
 }

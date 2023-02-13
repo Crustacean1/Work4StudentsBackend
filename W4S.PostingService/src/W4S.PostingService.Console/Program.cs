@@ -8,6 +8,7 @@ using W4S.PostingService.Console.Handlers;
 using System.Globalization;
 using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Queries;
+using MediatR;
 
 namespace W4S.PostingService.Console
 {
@@ -31,39 +32,22 @@ namespace W4S.PostingService.Console
                   provider.AddScoped<IRepository<Recruiter>, RepositoryBase<Recruiter>>();
                   provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
                   provider.AddScoped<IRepository<Company>, RepositoryBase<Company>>();
+                  provider.AddScoped<IReviewRepository<OfferReview>, ReviewRepository<OfferReview>>();
+                  provider.AddScoped<IReviewRepository<ApplicationReview>, ReviewRepository<ApplicationReview>>();
+
                   provider.AddScoped<OfferHandler>();
                   provider.AddScoped<ApplicationHandler>();
+                  provider.AddScoped<ReviewHandler>();
                   provider.AddScoped<ProfileIntegrationHandler>();
                   provider.AddHostedService<MigrationHost>();
 
-                  AddCommandHandlers(provider);
-
-                  AddQueryHandlers(provider);
+                  provider.AddMediatR(typeof(PostOfferCommandHandler));
 
                   provider.AddServiceBus();
               })
             .Build();
 
             await host.RunAsync();
-        }
-
-        public static void AddCommandHandlers(IServiceCollection services)
-        {
-            services.AddScoped<PostOfferCommandHandler>();
-            services.AddScoped<UpdateOfferCommandHandler>();
-            services.AddScoped<SubmitApplicationCommandHandler>();
-            services.AddScoped<WithdrawApplicationCommandHandler>();
-        }
-
-        public static void AddQueryHandlers(IServiceCollection services)
-        {
-            services.AddScoped<GetOfferApplicationsQueryHandler>();
-            services.AddScoped<GetOfferQueryHandler>();
-            services.AddScoped<GetOffersQueryHandler>();
-            services.AddScoped<GetRecruiterOffersQueryHandler>();
-            services.AddScoped<GetStudentApplicationsQueryHandler>();
-            services.AddScoped<RegisterStudentCommandHandler>();
-            services.AddScoped<RegisterRecruiterCommandHandler>();
         }
     }
 }

@@ -1,4 +1,5 @@
 using AutoMapper;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
@@ -6,7 +7,7 @@ using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class PostOfferCommandHandler
+    public class PostOfferCommandHandler : CommandHandlerBase, IRequestHandler<PostOfferCommand, Guid>
     {
         private readonly ILogger<PostOfferCommandHandler> logger;
         private readonly IRepository<JobOffer> offerRepository;
@@ -24,14 +25,9 @@ namespace W4S.PostingService.Domain.Commands
             mapper = conf.CreateMapper();
         }
 
-        public async Task<Guid> HandleCommand(PostOfferCommand command)
+        public async Task<Guid> Handle(PostOfferCommand command, CancellationToken cancellationToken)
         {
-            var recruiter = await recruiterRepository.GetEntityAsync(command.RecruiterId);
-
-            if (recruiter is null)
-            {
-                throw new PostingException($"JobOffer needs to be created by recruiter, no recruiter with id: {command.RecruiterId}", 400);
-            }
+            var recruiter = await GetEntity(recruiterRepository, command.RecruiterId);
 
             JobOffer offer = mapper.Map<JobOffer>(command.Offer);
             offer.Id = Guid.NewGuid();
@@ -39,7 +35,6 @@ namespace W4S.PostingService.Domain.Commands
 
             try
             {
-
                 await offerRepository.AddAsync(offer);
                 await offerRepository.SaveAsync();
             }

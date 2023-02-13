@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using W4S.PostingService.Domain.Entities;
@@ -21,13 +20,11 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Route("offers")]
+        [Route("{recruiterId}/offers/")]
         [Authorize(Roles = "Recruiter")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<JobOffer>))]
-        public async Task<ActionResult> GetJobOffers([FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOffersDto>))]
+        public async Task<ActionResult> GetJobOffers([FromRoute] Guid recruiterId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
-
-            var recruiterId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
             logger.LogInformation("Getting job offers of recruiter: {RecruiterId}", recruiterId);
 
             var query = new GetRecruiterOffersQuery
@@ -35,12 +32,31 @@ namespace W4S.Gateway.Console.Posting
                 paginatedQuery.Page,
                 paginatedQuery.PageSize)
             {
-                RecrutierId = Guid.Parse(recruiterId)
+                RecrutierId = recruiterId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<JobOffer>>, GetRecruiterOffersQuery>("offer.getRecruiterOffers", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, GetRecruiterOffersQuery>("offers.getRecruiterOffers", query, cancellationToken);
             return UnwrapResponse(response);
         }
+
+        [HttpGet]
+        [Route("{recrutierId}/reviews")]
+        [Authorize]
+        public async Task<ActionResult> GetReviews([FromRoute] Guid recruiterId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for recruiter {Id}", paginatedQuery.Page, paginatedQuery.PageSize, recruiterId);
+
+            var query = new GetRecruiterReviewsQuery
+            {
+                PageSize = paginatedQuery.PageSize,
+                Page = paginatedQuery.Page,
+                RecruiterId = recruiterId
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReview>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
+            return UnwrapResponse(response);
+        }
+
 
         private ActionResult UnwrapResponse<T>(ResponseWrapper<T> wrappedResponse)
         {

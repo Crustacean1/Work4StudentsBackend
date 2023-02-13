@@ -14,6 +14,16 @@ namespace W4S.Gateway.Console
             ConfigureServices(builder.Services);
             ConfigureJwt(builder.Services, builder.Configuration);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin();
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                });
+            });
+
             builder.Services.AddControllers();
 
             builder.Services.AddServiceBus();
@@ -30,8 +40,8 @@ namespace W4S.Gateway.Console
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            //app.UseAuthorization();
-
+            app.UseAuthorization();
+            app.UseCors();
             app.MapControllers();
 
             app.Run();
@@ -44,6 +54,7 @@ namespace W4S.Gateway.Console
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
         }
 
         private static void ConfigureJwt(IServiceCollection services, IConfiguration configuration)

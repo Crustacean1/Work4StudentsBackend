@@ -1,6 +1,6 @@
 namespace W4S.PostingService.Domain.Entities
 {
-    public class Review
+    public class Review : Entity
     {
         public decimal Rating { get; set; }
 
@@ -9,5 +9,9 @@ namespace W4S.PostingService.Domain.Entities
         public string Message { get; set; }
 
         public Guid AuthorId { get; set; }
+
+        public Guid SubjectId { get; set; }
+
+        public DateTime CreationDate { get; set; }
     }
 }
