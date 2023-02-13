@@ -32,7 +32,7 @@ namespace W4S.Gateway.Console.Accounts
 
             if (response.ExceptionMessage is null)
             {
-                return Ok(response.JwtTokenValue);
+                return Ok(response);
             }
             return BadRequest(response.ExceptionMessage);
         }

@@ -11,8 +11,7 @@ namespace W4S.RegistrationMicroservice.Data.Entities.Profiles
     [Table("StudentProfiles")]
     public class StudentProfile : Profile
     {
-        public Guid ResumeId { get; set; }
-        public StudentResume Resume { get; set; }
+        public byte[]? ResumeFile { get; set; }
         public Guid StudentId { get; set; }
         public Student Student { get; set; }
     }

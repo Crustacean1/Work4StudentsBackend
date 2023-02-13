@@ -10,14 +10,16 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
         Guid CreateEmployerProfile(Employer employer);
         Guid CreateStudentProfile(Student student);
         StudentProfile GetStudentProfile(Guid id);
+        StudentProfile GetStudentProfileByStudentId(Guid studentId);
         List<StudentProfile> GetStudentProfiles(Guid[] ids);
-        byte[]? GetStudentResume(Guid resumeId);
-        byte[]? GetUserPhoto(Guid photoId);
+        byte[]? GetStudentResume(Guid profileId);
+        byte[]? GetUserPhoto(Guid profileId);
         void UpdateEmployerProfile(UpdateProfileDtoWithId dto);
         void UpdateEmployerRating(EmployerRatingChangedEvent changedEvent);
         void UpdateStudentProfile(UpdateStudentProfileDtoWithId dto);
         void UpdateStudentRating(StudentRatingChangedEvent changedEvent);
         EmployerProfile GetEmployerProfile(Guid id);
+        EmployerProfile GetEmployerProfileByEmployerId(Guid employerId);
         List<EmployerProfile> GetEmployerProfiles(Guid[] ids);
 
     }

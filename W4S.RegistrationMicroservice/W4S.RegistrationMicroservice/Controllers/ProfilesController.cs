@@ -109,13 +109,18 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("get.student")]
-        public Task GetStudentProfile(GuidPackedDto id)
+        public Task GetStudentProfile(GuidPackedDto guid)
         {
             var response = new GetStudentProfileResponse();
 
             try
             {
-                var profile = _profilesService.GetStudentProfile(id.Id);
+                var profile = _profilesService.GetStudentProfile(guid.Id);
+
+                if(profile.Student is null)
+                {
+                    _logger.LogInformation("This profile has student set as null.");
+                }
 
                 response.FirstName = profile.Student.Name;
                 response.SecondName = profile.Student.SecondName;
@@ -123,15 +128,14 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.EmailAddress = profile.EmailAddress;
                 response.PhoneNumber = profile.PhoneNumber;
                 response.StudentId = profile.StudentId;
-                response.ResumeId = profile.ResumeId;
-                response.PhotoId = profile.PhotoId;
-                response.Photo = profile.Photo.PhotoFile;
                 response.Rating = profile.Rating;
                 response.Country = profile.Country;
                 response.Region = profile.Region;
                 response.City = profile.City;
                 response.Street = profile.Street;
                 response.Building = profile.Building;
+                response.Photo = profile.PhotoFile;
+                response.Resume = profile.ResumeFile;
             }
             catch (Exception ex)
             {
@@ -142,14 +146,34 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             return Task.FromResult(response);
         }
 
-
-        [BusRequestHandler("get.students")]
-        public Task GetStudentsProfiles(GuidPackedDtoList ids)
+        [BusRequestHandler("get.student.studentId")]
+        public Task GetStudentProfileByStudentId(GuidPackedDto studentId)
         {
-            var response = new EmployerProfileCreatedResponse(); // placeholder
+            var response = new GetStudentProfileResponse();
+
             try
             {
-                _profilesService.GetStudentProfiles(ids.PackedGuids.ToArray());
+                var profile = _profilesService.GetStudentProfileByStudentId(studentId.Id);
+
+                if (profile.Student is null)
+                {
+                    _logger.LogInformation("This profile has student set as null.");
+                }
+
+                response.FirstName = profile.Student.Name;
+                response.SecondName = profile.Student.SecondName;
+                response.Surname = profile.Student.Surname;
+                response.EmailAddress = profile.EmailAddress;
+                response.PhoneNumber = profile.PhoneNumber;
+                response.StudentId = profile.StudentId;
+                response.Rating = profile.Rating;
+                response.Country = profile.Country;
+                response.Region = profile.Region;
+                response.City = profile.City;
+                response.Street = profile.Street;
+                response.Building = profile.Building;
+                response.Photo = profile.PhotoFile;
+                response.Resume = profile.ResumeFile;
             }
             catch (Exception ex)
             {
@@ -159,15 +183,33 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             return Task.FromResult(response);
         }
+
+
+        //[BusRequestHandler("get.students")]
+        //public Task GetStudentsProfiles(GuidPackedDtoList ids)
+        //{
+        //    var response = new EmployerProfileCreatedResponse(); // placeholder
+        //    try
+        //    {
+        //        _profilesService.GetStudentProfiles(ids.PackedGuids.ToArray());
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var message = ex.InnerException.Message ?? ex.Message;
+        //        _logger.LogError(message, ex);
+        //        response.ExceptionMessage = message;
+        //    }
+        //    return Task.FromResult(response);
+        //}
 
 
         [BusRequestHandler("get.employer")]
-        public Task GetEmployerProfile(GuidPackedDto id)
+        public Task GetEmployerProfile(GuidPackedDto employerId)
         {
             var response = new GetEmployerProfileResponse(); // placeholder
             try
             {
-                var profile = _profilesService.GetEmployerProfile(id.Id);
+                var profile = _profilesService.GetEmployerProfile(employerId.Id);
 
                 response.FirstName = profile.Employer.Name;
                 response.SecondName = profile.Employer.SecondName;
@@ -175,14 +217,13 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.EmailAddress = profile.EmailAddress;
                 response.PhoneNumber = profile.PhoneNumber;
                 response.EmployerId = profile.EmployerId;
-                response.PhotoId = profile.PhotoId;
-                response.Photo = profile.Photo.PhotoFile;
                 response.Rating = profile.Rating;
                 response.Country = profile.Country;
                 response.Region = profile.Region;
                 response.City = profile.City;
                 response.Street = profile.Street;
                 response.Building = profile.Building;
+                response.Photo = profile.PhotoFile;
             }
             catch (Exception ex)
             {
@@ -193,14 +234,27 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             return Task.FromResult(response);
         }
 
-        [BusRequestHandler("get.employers")]
-        public Task GetEmployersProfiles(GuidPackedDtoList ids)
+        [BusRequestHandler("get.employer.employerId")]
+        public Task GetEmployerProfileByEmployerId(GuidPackedDto guid)
         {
-            var response = new EmployerProfileCreatedResponse(); // placeholder
+            var response = new GetEmployerProfileResponse(); // placeholder
             try
             {
-                _profilesService.GetEmployerProfiles(ids.PackedGuids.ToArray());
+                var profile = _profilesService.GetEmployerProfileByEmployerId(guid.Id);
 
+                response.FirstName = profile.Employer.Name;
+                response.SecondName = profile.Employer.SecondName;
+                response.Surname = profile.Employer.Surname;
+                response.EmailAddress = profile.EmailAddress;
+                response.PhoneNumber = profile.PhoneNumber;
+                response.EmployerId = profile.EmployerId;
+                response.Rating = profile.Rating;
+                response.Country = profile.Country;
+                response.Region = profile.Region;
+                response.City = profile.City;
+                response.Street = profile.Street;
+                response.Building = profile.Building;
+                response.Photo = profile.PhotoFile;
             }
             catch (Exception ex)
             {
@@ -210,16 +264,33 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             return Task.FromResult(response);
         }
+
+        //[BusRequestHandler("get.employers")]
+        //public Task GetEmployersProfiles(GuidPackedDtoList ids)
+        //{
+        //    var response = new EmployerProfileCreatedResponse(); // placeholder
+        //    try
+        //    {
+        //        var profile = _profilesService.GetEmployerProfiles(ids.PackedGuids.ToArray());
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var message = ex.InnerException.Message ?? ex.Message;
+        //        _logger.LogError(message, ex);
+        //        response.ExceptionMessage = message;
+        //    }
+        //    return Task.FromResult(response);
+        //}
 
 
         [BusRequestHandler("get.photo")]
-        public Task GetProfilePhotoById(GuidPackedDto id)
+        public Task GetProfilePhotoById(GuidPackedDto guid)
         {
-            var response = new EmployerProfileCreatedResponse(); // placeholder, getPhotoResponse
+            var response = new GetProfilePhotoResponse(); // placeholder, getPhotoResponse
             try
             {
-                _profilesService.GetUserPhoto(id.Id);
-
+                var photo = _profilesService.GetUserPhoto(guid.Id);
+                response.Photo = photo;
             }
             catch (Exception ex)
             {
@@ -231,12 +302,13 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("get.resume")]
-        public Task GetResumeById(GuidPackedDto id)
+        public Task GetResumeById(GuidPackedDto guid)
         {
-            var response = new EmployerProfileCreatedResponse(); // placeholder, getResumeResponse
+            var response = new GetResumeResponse(); // placeholder, getResumeResponse
             try
             {
-                _profilesService.GetStudentResume(id.Id);
+                var resume = _profilesService.GetStudentResume(guid.Id);
+                response.Resume = resume;
             }
             catch (Exception ex)
             {

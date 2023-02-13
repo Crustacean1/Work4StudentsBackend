@@ -104,8 +104,14 @@ namespace W4S.RegistrationMicroservice.API.Services
                 PhoneNumber = employerCreationDto.PhoneNumber,
                 PasswordHash = _passwordHasher.HashText(employerCreationDto.Password),
                 Name = employerCreationDto.FirstName,
+                SecondName = employerCreationDto.SecondName,
                 Surname = employerCreationDto.Surname,
                 PositionName = employerCreationDto.PositionName,
+                Country = employerCreationDto.Country,
+                Region = employerCreationDto.Region,
+                City = employerCreationDto.City,
+                Street = employerCreationDto.Street,
+                Building = employerCreationDto.Building,
                 CompanyId = companyId.Value,
                 RoleId = _dbContext.Roles.First(s => s.Description.Equals("Employer")).Id
             };
@@ -120,6 +126,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 _logger.LogError("Could not add the employer. :---D");
                 _logger.LogError(e.Message, e);
+                _logger.LogError(e.InnerException.Message, e);
             }
 
             _profilesService.CreateEmployerProfile(employer);
@@ -209,8 +216,14 @@ namespace W4S.RegistrationMicroservice.API.Services
                 EmailAddress = studentCreationDto.EmailAddress,
                 PhoneNumber = studentCreationDto.PhoneNumber,
                 Name = studentCreationDto.FirstName,
+                SecondName = studentCreationDto.SecondName,
                 Surname = studentCreationDto.Surname,
                 PasswordHash = _passwordHasher.HashText(studentCreationDto.Password),
+                Country = studentCreationDto.Country,
+                Region = studentCreationDto.Region,
+                City = studentCreationDto.City,
+                Street = studentCreationDto.Street,
+                Building = studentCreationDto.Building,
                 UniversityId = universityId.Value,
                 RoleId = _dbContext.Roles.First(s => s.Description.Equals("Student")).Id
             };
@@ -225,6 +238,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 _logger.LogError("Could not add the student. :---D");
                 _logger.LogError(e.Message, e);
+                _logger.LogError(e.InnerException.Message, e);
             }
 
             _logger.LogInformation("Creating student profile.");

@@ -10,8 +10,6 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
     {
         public Guid ProfileId { get; set; }
         public Guid StudentId { get; set; }
-        public Guid PhotoId { get; set; }
-        public Guid ResumeId { get; set; }
         public string FirstName { get; set; }
         public string? SecondName { get; set; }
         public string Surname { get; set; }
@@ -19,6 +17,7 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
         public string EmailAddress { get; set; }
         public decimal Rating { get; set; }
         public byte[]? Photo { get; set; }
+        public byte[]? Resume { get; set; }
         public string Country { get; set; }
         public string Region { get; set; }
         public string City { get; set; }

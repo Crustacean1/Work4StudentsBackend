@@ -40,23 +40,11 @@ namespace W4S.RegistrationMicroservice.API.Services
         {
             _logger.LogInformation($"Creating a new profile for Student with Id: {student.Id}");
 
-            var photo = new ProfilePhoto()
-            {
-                Id = Guid.NewGuid(),
-                PhotoFile = null
-            };
-
-            var resume = new StudentResume()
-            {
-                Id = Guid.NewGuid(),
-                ResumeFile = null
-            };
 
             var profile = new StudentProfile()
             {
                 Id = Guid.NewGuid(),
-                PhotoId = photo.Id,
-                Photo = photo,
+                PhotoFile = null,
                 Description = "",
                 ShortDescription = "",
                 EmailAddress = student.EmailAddress,
@@ -69,8 +57,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 City = student.City,
                 Street = student.Street,
                 Building = student.Building,
-                ResumeId = resume.Id,
-                Resume = resume,
+                ResumeFile = null,
                 StudentId = student.Id,
                 Student = student
             };
@@ -112,8 +99,23 @@ namespace W4S.RegistrationMicroservice.API.Services
             if (studentProfile != null)
             {
                 studentProfile.Description = dto.Description;
-                studentProfile.Photo.PhotoFile = dto.Image.ExtractFileContent();
-                studentProfile.Resume.ResumeFile = dto.ResumeFile.ExtractFileContent();
+                if (dto.Image != null)
+                {
+                    studentProfile.PhotoFile = dto.Image.ExtractFileContent();
+                }
+                else
+                {
+                    studentProfile.PhotoFile = null;
+                }
+
+                if(dto.ResumeFile != null)
+                {
+                    studentProfile.ResumeFile = dto.ResumeFile.ExtractFileContent();
+                }
+                else
+                {
+                    studentProfile.ResumeFile = null;
+                }
 
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
@@ -156,6 +158,39 @@ namespace W4S.RegistrationMicroservice.API.Services
                 var studentProfile = _dbContext.StudentProfiles
                     .Where(p => p.Id == id)
                     .First();
+                _logger.LogInformation($"Found profile with id: {id}.");
+
+                var student = _dbContext.Students
+                    .Where(s => s.Id == studentProfile.StudentId)
+                    .First();
+
+                studentProfile.Student = student;
+
+                return studentProfile;
+            }
+            catch (Exception ex)
+            {
+                var message = ex.InnerException.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                throw;
+            }
+        }
+
+        public StudentProfile GetStudentProfileByStudentId(Guid studentId)
+        {
+
+            _logger.LogInformation("Getting employer profile from the database.");
+            try
+            {
+                var studentProfile = _dbContext.StudentProfiles
+                    .Where(p => p.StudentId == studentId)
+                    .First();
+
+                var student = _dbContext.Students
+                    .Where(s => s.Id == studentProfile.StudentId)
+                    .First();
+
+                studentProfile.Student = student;
                 return studentProfile;
             }
             catch (Exception ex)
@@ -183,10 +218,10 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
-        public byte[]? GetStudentResume(Guid resumeId)
+        public byte[]? GetStudentResume(Guid profileId)
         {
-            var resume = _dbContext.StudentResumes
-                .Where(r => r.Id == resumeId)
+            var resume = _dbContext.StudentProfiles
+                .Where(r => r.Id == profileId)
                 .FirstOrDefault()
                 .ResumeFile;
 
@@ -214,16 +249,9 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             _logger.LogInformation("Creating a new profile for Student with Id: ...");
 
-            var photo = new ProfilePhoto()
-            {
-                Id = Guid.NewGuid(),
-                PhotoFile = null
-            };
-
             var profile = new EmployerProfile()
             {
                 Id = Guid.NewGuid(),
-                PhotoId = photo.Id,
                 Description = "",
                 ShortDescription = "",
                 EmailAddress = employer.EmailAddress,
@@ -287,7 +315,15 @@ namespace W4S.RegistrationMicroservice.API.Services
                 employerProfile.ShortDescription = dto.ShortDescription;
                 employerProfile.EmailAddress = dto.EmailAddress;
                 employerProfile.PhoneNumber = dto.PhoneNumber;
-                employerProfile.Photo.PhotoFile = dto.Image.ExtractFileContent();
+
+                if(dto.Image != null)
+                {
+                    employerProfile.PhotoFile = dto.Image.ExtractFileContent();
+                }
+                else
+                {
+                    employerProfile.PhotoFile = null;
+                }
 
 
                 _dbContext.EmployerProfiles.Update(employerProfile);
@@ -325,13 +361,44 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public EmployerProfile GetEmployerProfile(Guid id)
         {
-            _logger.LogInformation("Getting student profile from the database.");
+            _logger.LogInformation("Getting employer profile from the database.");
             try
             {
-                var studentProfile = _dbContext.EmployerProfiles
+                var employerProfile = _dbContext.EmployerProfiles
                     .Where(p => p.Id == id)
                     .First();
-                return studentProfile;
+
+                var employer = _dbContext.Employers
+                    .Where(s => s.Id == employerProfile.EmployerId)
+                    .First();
+
+                employerProfile.Employer = employer;
+                return employerProfile;
+            }
+            catch (Exception ex)
+            {
+                var message = ex.InnerException.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                throw;
+            }
+        }
+
+        public EmployerProfile GetEmployerProfileByEmployerId(Guid employerId)
+        {
+
+            _logger.LogInformation("Getting employer profile from the database.");
+            try
+            {
+                var employerProfile = _dbContext.EmployerProfiles
+                    .Where(p => p.EmployerId == employerId)
+                    .First();
+
+                var employer = _dbContext.Employers
+                    .Where(s => s.Id == employerProfile.EmployerId)
+                    .First();
+
+                employerProfile.Employer = employer;
+                return employerProfile;
             }
             catch (Exception ex)
             {
@@ -362,12 +429,11 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         #region Common methods
 
-        public byte[]? GetUserPhoto(Guid photoId)
+        public byte[]? GetUserPhoto(Guid profileId)
         {
-            var photo = _dbContext.ProfilePhotos
-                .Where(p => p.Id == photoId)
-                .FirstOrDefault()
-                .PhotoFile;
+            var photo = _dbContext.Profiles
+                .Where(p => p.Id == profileId)
+                .FirstOrDefault().PhotoFile;
 
             if (photo == null)
             {

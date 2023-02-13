@@ -39,16 +39,16 @@ namespace W4S.Gateway.Console.Accounts
             return BadRequest(response.ExceptionMessage);
         }
 
-        [HttpGet("get/employer/{id}")]
+        [HttpGet("get/studentByStudentId/{studentId}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
-        public async Task<IActionResult> GetEmployerProfileById([FromRoute] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetStudentProfileByStudentId([FromRoute] Guid studentId, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
             {
-                Id = id
+                Id = studentId
             };
-            logger.LogInformation($"Request: Get student profile with Id: {id}.");
-            var response = await busClient.SendRequest<GetEmployerProfileResponse, GuidPackedDto>("profiles.get.student", guid, cancellationToken);
+            logger.LogInformation($"Request: Get student profile with Id: {studentId}.");
+            var response = await busClient.SendRequest<GetStudentProfileResponse, GuidPackedDto>("profiles.get.student.studentId", guid, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
@@ -57,8 +57,46 @@ namespace W4S.Gateway.Console.Accounts
             return BadRequest(response.ExceptionMessage);
         }
 
+        [HttpGet("get/employer/{id}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        public async Task<IActionResult> GetEmployerProfileById([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var guid = new GuidPackedDto()
+            {
+                Id = id
+            };
+            logger.LogInformation($"Request: Get employer profile with Id: {id}.");
+            var response = await busClient.SendRequest<GetEmployerProfileResponse, GuidPackedDto>("profiles.get.employer", guid, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+
+        [HttpGet("get/employerByEmployerId/{employerId}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        public async Task<IActionResult> GetEmployerProfileByEmployerId([FromRoute] Guid employerId, CancellationToken cancellationToken)
+        {
+            var guid = new GuidPackedDto()
+            {
+                Id = employerId
+            };
+            logger.LogInformation($"Request: Get employer profile with Id: {employerId}.");
+            var response = await busClient.SendRequest<GetEmployerProfileResponse, GuidPackedDto>("profiles.get.employer.employerId", guid, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+
         [HttpPut("update/student/{id}")]
-        [Authorize(Roles ="Student,Administrator")]
+        [Authorize(Roles = "Student,Administrator")]
         public async Task<IActionResult> UpdateStudentProfile([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
         {
             var correctedDto = new UpdateStudentProfileDtoWithId()

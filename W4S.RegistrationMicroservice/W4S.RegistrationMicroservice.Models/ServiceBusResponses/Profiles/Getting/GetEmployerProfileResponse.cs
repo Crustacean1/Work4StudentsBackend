@@ -10,7 +10,6 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
     {
         public Guid ProfileId { get; set; }
         public Guid EmployerId { get; set; }
-        public Guid PhotoId { get; set; }
         public string FirstName { get; set; }
         public string? SecondName { get; set; }
         public string Surname { get; set; }

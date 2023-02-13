@@ -9,8 +9,7 @@ namespace W4S.RegistrationMicroservice.Data.Entities.Profiles
     public class Profile
     {
         public Guid Id { get; set; }
-        public Guid PhotoId { get; set; }
-        public ProfilePhoto Photo { get; set; }
+        public byte[]? PhotoFile { get; set; }   // blob, if null -> some default photo, maybe make this a different entity with an corresponding id
         public string? ShortDescription { get; set; }
         public string? Description { get; set; }
         public string EmailAddress { get; set; }    // on change -> validate and change corresponding user

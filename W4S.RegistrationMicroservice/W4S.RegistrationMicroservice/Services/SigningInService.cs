@@ -9,6 +9,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
+using System;
+using W4S.RegistrationMicroservice.Data.Entities.Users;
 
 namespace W4SRegistrationMicroservice.API.Services
 {
@@ -31,21 +34,27 @@ namespace W4SRegistrationMicroservice.API.Services
             _logger = logger;
         }
 
-        public string SignIn(UserCredentialsDto userCredentialsDto)
+        public UserSigningResponse SignIn(UserCredentialsDto userCredentialsDto)
         {
-            ValidateCredentials(userCredentialsDto.EmailAddress, userCredentialsDto.Password);
-
+            var guid = ValidateCredentials(userCredentialsDto.EmailAddress, userCredentialsDto.Password);
+            var signingResponse = new UserSigningResponse();
 
             _logger.LogInformation($"Created JWT token for {userCredentialsDto.EmailAddress}.");
-            return GenerateJwt(userCredentialsDto);
+
+            signingResponse.UserEmail = userCredentialsDto.EmailAddress;
+            signingResponse.UserId = guid;
+            signingResponse.JwtTokenValue = GenerateJwt(userCredentialsDto);
+            signingResponse.UserType = CheckUserType(guid);
+
+            return signingResponse;
         }
 
-        private void ValidateCredentials(string email, string password)
+        private Guid ValidateCredentials(string email, string password)
         {
             try
             {
                 var emailAndPassword = _dbContext.Users
-                    .Select(x => new { x.EmailAddress, x.PasswordHash })
+                    .Select(x => new { x.EmailAddress, x.PasswordHash, x.Id })
                     .First(x => x.EmailAddress == email);
                 _logger.LogInformation("Found corresponding email and password.");
 
@@ -53,11 +62,37 @@ namespace W4SRegistrationMicroservice.API.Services
                 {
                     throw new Exception("Invalid password");// It's bad practice to throw exception and catch it right away...
                 }
+
+                return emailAndPassword.Id;
             }
             catch (Exception e)
             {
                 throw new UserNotFoundException("Given credentials could not be verified.", e);
             }
+        }
+
+        private int CheckUserType(Guid guid)
+        {
+            var student = _dbContext.Students.Where(s => s.Id == guid).FirstOrDefault();
+            if (student != null)
+            {
+                return 0;
+            }
+
+            var employer = _dbContext.Employers.Where(e => e.Id == guid).FirstOrDefault();
+
+            if (employer != null)
+            {
+                return 1;
+            }
+
+            var admin = _dbContext.Administrators.Where(a => a.Id == guid).FirstOrDefault();
+            if (admin != null)
+            {
+                return 2;
+            }
+
+            return 3;
         }
 
         private string GenerateJwt(UserCredentialsDto userCredentialsDto)
