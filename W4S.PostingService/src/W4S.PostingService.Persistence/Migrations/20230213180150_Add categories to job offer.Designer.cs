@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using W4S.PostingService.Persistence;
@@ -11,9 +12,11 @@ using W4S.PostingService.Persistence;
 namespace W4S.PostingService.Persistence.Migrations
 {
     [DbContext(typeof(PostingContext))]
-    partial class PostingContextModelSnapshot : ModelSnapshot
+    [Migration("20230213180150_Add categories to job offer")]
+    partial class Addcategoriestojoboffer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

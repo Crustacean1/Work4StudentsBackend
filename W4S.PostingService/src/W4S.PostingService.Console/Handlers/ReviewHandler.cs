@@ -1,3 +1,4 @@
+using MediatR;
 using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Queries;
@@ -8,17 +9,11 @@ namespace W4S.PostingService.Console.Handlers
     [BusService("reviews")]
     public class ReviewHandler : HandlerBase
     {
-        private readonly ReviewApplicationCommandHandler reviewApplicationCommandHandler;
-        private readonly ReviewOfferCommandHandler reviewOfferCommandHandler;
-        private readonly GetRecruiterReviewsQueryHandler getRecruiterReviewsQueryHandler;
-        private readonly GetStudentsReviewsQueryHandler getStudentsReviewsQueryHandler;
+        private readonly ISender sender;
 
-        public ReviewHandler(ReviewApplicationCommandHandler reviewApplicationCommandHandler, ILogger<ReviewHandler> logger, ReviewOfferCommandHandler reviewOfferCommandHandler, GetRecruiterReviewsQueryHandler getRecruiterReviewsQueryHandler, GetStudentsReviewsQueryHandler getStudentsReviewsQueryHandler) : base(logger)
+        public ReviewHandler(ILogger<ReviewHandler> logger, ISender sender) : base(logger)
         {
-            this.reviewApplicationCommandHandler = reviewApplicationCommandHandler;
-            this.reviewOfferCommandHandler = reviewOfferCommandHandler;
-            this.getRecruiterReviewsQueryHandler = getRecruiterReviewsQueryHandler;
-            this.getStudentsReviewsQueryHandler = getStudentsReviewsQueryHandler;
+            this.sender = sender;
         }
 
         [BusRequestHandler("reviewApplication")]
@@ -28,7 +23,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                Guid reviewId = await reviewApplicationCommandHandler.HandleCommand(command);
+                Guid reviewId = await sender.Send(command);
                 return (reviewId, 201);
             });
         }
@@ -40,7 +35,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var reviews = await getRecruiterReviewsQueryHandler.HandleQuery(query);
+                var reviews = await sender.Send(query);
                 return (reviews, 200);
             });
         }
@@ -52,7 +47,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                Guid reviewId = await reviewOfferCommandHandler.HandleCommand(command);
+                Guid reviewId = await sender.Send(command);
                 return (reviewId, 201);
             });
         }
@@ -64,7 +59,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var reviews = await getStudentsReviewsQueryHandler.HandleQuery(query);
+                var reviews = await sender.Send(query);
                 return (reviews, 200);
             });
         }

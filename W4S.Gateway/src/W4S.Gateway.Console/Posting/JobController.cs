@@ -59,9 +59,14 @@ namespace W4S.Gateway.Console.Posting
         [HttpGet]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOffersDto>))]
-        public async Task<ActionResult> GetJobOffers([FromQuery] PaginatedQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetJobOffers([FromQuery] OfferQuery query, CancellationToken cancellationToken)
         {
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, PaginatedQuery>("offers.getOffers", query, cancellationToken);
+            var offersQuery = new GetOffersQuery(query.Page, query.PageSize)
+            {
+                Keywords = query.Keywords?.Split(" ", StringSplitOptions.TrimEntries) ?? new string[] { },
+                Categories = query.Categories?.Split(" ", StringSplitOptions.TrimEntries) ?? new string[] { },
+            };
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, GetOffersQuery>("offers.getOffers", offersQuery, cancellationToken);
             return UnwrapResponse(response);
         }
 

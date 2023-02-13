@@ -2,25 +2,18 @@ using W4S.PostingService.Domain.Commands;
 using W4S.ServiceBus.Attributes;
 using W4S.PostingService.Domain.Queries;
 using W4S.PostingService.Domain.Entities;
+using MediatR;
 
 namespace W4S.PostingService.Console.Handlers
 {
     [BusService("offers")]
     public class OfferHandler : HandlerBase
     {
-        private readonly PostOfferCommandHandler postOfferHandler;
-        private readonly UpdateOfferCommandHandler updateOfferHandler;
-        private readonly GetOffersQueryHandler getOffersQueryHandler;
-        private readonly GetOfferQueryHandler getOfferQueryHandler;
-        private readonly GetRecruiterOffersQueryHandler getRecruiterOffersQuery;
+        private readonly ISender sender;
 
-        public OfferHandler(PostOfferCommandHandler postOfferHandler, ILogger<OfferHandler> logger, UpdateOfferCommandHandler updateOfferHandler, GetOffersQueryHandler getOffersQueryHandler, GetOfferQueryHandler getOfferQueryHandler, GetRecruiterOffersQueryHandler getRecruiterOffersQuery) : base(logger)
+        public OfferHandler(ILogger<OfferHandler> logger, ISender sender) : base(logger)
         {
-            this.postOfferHandler = postOfferHandler;
-            this.updateOfferHandler = updateOfferHandler;
-            this.getOffersQueryHandler = getOffersQueryHandler;
-            this.getOfferQueryHandler = getOfferQueryHandler;
-            this.getRecruiterOffersQuery = getRecruiterOffersQuery;
+            this.sender = sender;
         }
 
         [BusRequestHandler("postOffer")]
@@ -30,7 +23,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                Guid offerId = await postOfferHandler.HandleCommand(command);
+                Guid offerId = await sender.Send(command);
                 return (offerId, 201);
             });
         }
@@ -42,7 +35,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                await updateOfferHandler.HandleCommand(command);
+                _ = await sender.Send(command);
                 return (Guid.Empty, 204);
             });
         }
@@ -54,7 +47,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var offers = await getOffersQueryHandler.HandleQuery(query);
+                var offers = await sender.Send(query);
                 return (offers, 200);
             });
         }
@@ -66,7 +59,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var offer = await getOfferQueryHandler.HandleQuery(query);
+                var offer = await sender.Send(query);
                 return (offer, 200);
             });
         }
@@ -78,7 +71,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var offers = await getRecruiterOffersQuery.HandleQuery(query);
+                var offers = await sender.Send(query);
                 return (offers, 200);
             });
         }

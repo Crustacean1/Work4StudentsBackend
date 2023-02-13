@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetOffersQueryHandler
+    public class GetOffersQueryHandler : IRequestHandler<GetOffersQuery, PaginatedList<GetOffersDto>>
     {
         private readonly IRepository<JobOffer> offerRepository;
         private readonly IMapper mapper;
@@ -20,15 +21,21 @@ namespace W4S.PostingService.Domain.Queries
             mapper = mapperConfig.CreateMapper();
         }
 
-        public async Task<PaginatedList<GetOffersDto>> HandleQuery(GetOffersQuery query)
+        public async Task<PaginatedList<GetOffersDto>> Handle(GetOffersQuery request, CancellationToken cancellationToken)
         {
             Expression<Func<JobOffer, bool>> selection = (JobOffer o) => true;
-            var rawOffers = await offerRepository.GetEntitiesAsync(query.Page, query.PageSize, selection, o => o.CreationDate);
+            if (request.Keywords.Any())
+            {
+                selection = (JobOffer o) => o.Title.Split(" ", StringSplitOptions.TrimEntries)
+                                                   .Any(titlePart => request.Keywords.Any(keyword => keyword.ToLower() == titlePart.ToLower()));
+            }
+
+            var rawOffers = await offerRepository.GetEntitiesAsync(request.Page, request.PageSize, selection, o => o.CreationDate);
             var totalCount = await offerRepository.GetTotalCount(selection);
 
             var offers = rawOffers.Select(offer => mapper.Map<GetOffersDto>(offer));
 
-            return new PaginatedList<GetOffersDto>(offers.ToList(), query.Page, query.PageSize, totalCount);
+            return new PaginatedList<GetOffersDto>(offers.ToList(), request.Page, request.PageSize, totalCount);
         }
     }
 }

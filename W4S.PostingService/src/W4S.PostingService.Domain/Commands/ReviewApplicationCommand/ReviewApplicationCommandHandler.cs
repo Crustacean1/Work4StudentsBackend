@@ -1,18 +1,20 @@
 using AutoMapper;
+using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class ReviewApplicationCommandHandler
+    public class ReviewApplicationCommandHandler : CommandHandlerBase, IRequestHandler<ReviewApplicationCommand, Guid>
     {
         private readonly IRepository<Review> reviewRepository;
         private readonly IRepository<Application> applicationRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
+        private readonly IRepository<JobOffer> offerRepository;
         private readonly IMapper mapper;
 
-        public ReviewApplicationCommandHandler(IRepository<Review> reviewRepository, IRepository<Application> applicationRepository, IRepository<Recruiter> recruiterRepository)
+        public ReviewApplicationCommandHandler(IRepository<Review> reviewRepository, IRepository<Application> applicationRepository, IRepository<Recruiter> recruiterRepository, IRepository<JobOffer> offerRepository)
         {
             this.reviewRepository = reviewRepository;
             this.applicationRepository = applicationRepository;
@@ -22,20 +24,19 @@ namespace W4S.PostingService.Domain.Commands
                 b.CreateMap<Review, Review>();
             });
             this.mapper = conf.CreateMapper();
+            this.offerRepository = offerRepository;
         }
 
-        public async Task<Guid> HandleCommand(ReviewApplicationCommand command)
+        public async Task<Guid> Handle(ReviewApplicationCommand command, CancellationToken cancellationToken)
         {
-            var recruiter = await recruiterRepository.GetEntityAsync(command.RecruiterId);
-            if (recruiter is null)
-            {
-                throw new PostingException($"No recruiter with id: {command.RecruiterId}", 400);
-            }
+            var recruiter = await GetEntity(recruiterRepository, command.RecruiterId);
 
-            var application = await applicationRepository.GetEntityAsync(command.ApplicationId);
-            if (application is null)
+            var application = await GetEntity(applicationRepository, command.ApplicationId);
+            var offer = await GetEntity(offerRepository, application.OfferId);
+
+            if (offer.RecruiterId != recruiter.Id)
             {
-                throw new PostingException($"No application with id: {command.ApplicationId}", 400);
+                throw new PostingException($"Could not post review, recruiter {recruiter.Id} does not own offer {offer.Id}", 400);
             }
 
             var prevReview = await reviewRepository.GetEntityAsync(r => r.AuthorId == recruiter.Id && r.SubjectId == application.Id);

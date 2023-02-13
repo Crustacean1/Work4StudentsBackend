@@ -1,3 +1,4 @@
+using MediatR;
 using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Queries;
@@ -8,15 +9,11 @@ namespace W4S.PostingService.Console.Handlers
     [BusService("applications")]
     public class ApplicationHandler : HandlerBase
     {
-        private readonly SubmitApplicationCommandHandler submitApplicationCommandHandler;
-        private readonly GetOfferApplicationsQueryHandler getOfferApplicationsQueryHandler;
-        private readonly GetStudentApplicationsQueryHandler getStudentApplicationQueryHandler;
+        private readonly ISender sender;
 
-        public ApplicationHandler(ILogger<ApplicationHandler> logger, SubmitApplicationCommandHandler submitApplicationCommandHandler, GetOfferApplicationsQueryHandler getOfferApplicationsQueryHandler, GetStudentApplicationsQueryHandler getStudentApplicationQueryHandler) : base(logger)
+        public ApplicationHandler(ILogger<ApplicationHandler> logger, ISender sender) : base(logger)
         {
-            this.submitApplicationCommandHandler = submitApplicationCommandHandler;
-            this.getOfferApplicationsQueryHandler = getOfferApplicationsQueryHandler;
-            this.getStudentApplicationQueryHandler = getStudentApplicationQueryHandler;
+            this.sender = sender;
         }
 
         [BusRequestHandler("submitApplication")]
@@ -26,7 +23,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var applicationId = await submitApplicationCommandHandler.HandleCommand(command);
+                var applicationId = await sender.Send(command);
                 return (applicationId, 201);
             });
         }
@@ -38,7 +35,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var response = await getOfferApplicationsQueryHandler.HandleQuery(query);
+                var response = await sender.Send(query);
                 return (response, 200);
             });
         }
@@ -50,7 +47,7 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(async () =>
             {
-                var response = await getStudentApplicationQueryHandler.HandleQuery(query);
+                var response = await sender.Send(query);
                 return (response, 200);
             });
         }

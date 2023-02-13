@@ -1,10 +1,11 @@
+using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetRecruiterReviewsQueryHandler
+    public class GetRecruiterReviewsQueryHandler : IRequestHandler<GetRecruiterReviewsQuery, PaginatedList<Review>>
     {
         public readonly IRepository<Recruiter> recruiterRepository;
         public readonly IReviewRepository reviewRepository;
@@ -15,7 +16,7 @@ namespace W4S.PostingService.Domain.Queries
             this.reviewRepository = reviewRepository;
         }
 
-        public async Task<PaginatedList<Review>> HandleQuery(GetRecruiterReviewsQuery query)
+        public async Task<PaginatedList<Review>> Handle(GetRecruiterReviewsQuery query, CancellationToken cancellationToken)
         {
             var recruiter = await recruiterRepository.GetEntityAsync(query.RecruiterId);
             if (recruiter is null)

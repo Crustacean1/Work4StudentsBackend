@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
+using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetOfferApplicationsQueryHandler
+    public class GetOfferApplicationsQueryHandler : IRequestHandler<GetOfferApplicationsQuery, PaginatedList<Application>>
     {
         private readonly IRepository<Application> applicationRepository;
         private readonly IRepository<JobOffer> offerRepository;
@@ -16,7 +17,7 @@ namespace W4S.PostingService.Domain.Queries
             this.applicationRepository = applicationRepository;
         }
 
-        public async Task<PaginatedList<Application>> HandleQuery(GetOfferApplicationsQuery query)
+        public async Task<PaginatedList<Application>> Handle(GetOfferApplicationsQuery query, CancellationToken cancellationToken)
         {
             var offer = await offerRepository.GetEntityAsync(query.OfferId);
             if (offer is null)

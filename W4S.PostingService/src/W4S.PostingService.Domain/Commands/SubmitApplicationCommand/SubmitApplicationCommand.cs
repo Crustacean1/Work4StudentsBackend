@@ -1,6 +1,8 @@
+using MediatR;
+
 namespace W4S.PostingService.Domain.Commands
 {
-    public class SubmitApplicationCommand
+    public record SubmitApplicationCommand : IRequest<Guid>
     {
         public Guid StudentId { get; set; }
 

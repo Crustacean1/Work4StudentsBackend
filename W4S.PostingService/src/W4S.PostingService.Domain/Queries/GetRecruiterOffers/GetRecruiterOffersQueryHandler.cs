@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
@@ -7,7 +8,7 @@ using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetRecruiterOffersQueryHandler
+    public class GetRecruiterOffersQueryHandler : IRequestHandler<GetRecruiterOffersQuery, PaginatedList<GetOffersDto>>
     {
         private readonly ILogger<GetRecruiterOffersQueryHandler> logger;
         private readonly IRepository<Recruiter> recruiterRepository;
@@ -26,7 +27,7 @@ namespace W4S.PostingService.Domain.Queries
             mapper = mapperConfig.CreateMapper();
         }
 
-        public async Task<PaginatedList<GetOffersDto>> HandleQuery(GetRecruiterOffersQuery query)
+        public async Task<PaginatedList<GetOffersDto>> Handle(GetRecruiterOffersQuery query, CancellationToken cancellationToken)
         {
             var recruiter = await recruiterRepository.GetEntityAsync(query.RecrutierId);
             if (recruiter is null)

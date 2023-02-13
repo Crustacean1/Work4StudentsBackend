@@ -8,6 +8,7 @@ using W4S.PostingService.Console.Handlers;
 using System.Globalization;
 using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Queries;
+using MediatR;
 
 namespace W4S.PostingService.Console
 {
@@ -36,9 +37,11 @@ namespace W4S.PostingService.Console
                   provider.AddScoped<ProfileIntegrationHandler>();
                   provider.AddHostedService<MigrationHost>();
 
-                  AddCommandHandlers(provider);
+                  provider.AddMediatR(typeof(PostOfferCommandHandler));
 
-                  AddQueryHandlers(provider);
+                  //AddCommandHandlers(provider);
+
+                  //AddQueryHandlers(provider);
 
                   provider.AddServiceBus();
               })

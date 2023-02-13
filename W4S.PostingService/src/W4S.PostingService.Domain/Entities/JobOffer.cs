@@ -13,7 +13,7 @@ namespace W4S.PostingService.Domain.Entities
 
         public string Title { get; set; }
 
-        public string Description { get; set; }
+        public string Description { get; set; } = "";
 
         public string Role { get; set; }
 
@@ -22,6 +22,8 @@ namespace W4S.PostingService.Domain.Entities
         public PayRange PayRange { get; set; }
 
         public DateTime CreationDate { get; set; }
+
+        public string Categories { get; set; } = "";
 
         public ICollection<Schedule> WorkingHours { get; set; } = new List<Schedule>();
 

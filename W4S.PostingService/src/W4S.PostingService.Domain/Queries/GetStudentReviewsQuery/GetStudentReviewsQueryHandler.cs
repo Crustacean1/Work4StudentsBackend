@@ -1,10 +1,11 @@
+using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetStudentsReviewsQueryHandler
+    public class GetStudentsReviewsQueryHandler : IRequestHandler<GetStudentReviewsQuery, PaginatedList<Review>>
     {
         private readonly IReviewRepository reviewRepository;
         private readonly IRepository<Student> studentRepository;
@@ -15,7 +16,7 @@ namespace W4S.PostingService.Domain.Queries
             this.studentRepository = studentRepository;
         }
 
-        public async Task<PaginatedList<Review>> HandleQuery(GetStudentReviewsQuery query)
+        public async Task<PaginatedList<Review>> Handle(GetStudentReviewsQuery query, CancellationToken cancellationToken)
         {
             var student = await studentRepository.GetEntityAsync(query.StudentId);
             if (student is null)
