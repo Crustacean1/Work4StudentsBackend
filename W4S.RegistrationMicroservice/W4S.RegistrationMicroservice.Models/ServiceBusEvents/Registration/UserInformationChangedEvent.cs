@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration
 {
-    internal class UserInformationChangedEvent
+    public class UserInformationChangedEvent : BaseEvent
     {
+        public Guid UserId { get; set; }
+        public string EmailAddress { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace W4S.RegistrationMicroservice.Data.Entities.Profiles
     public class Profile
     {
         public Guid Id { get; set; }
-        public Guid? PhotoId { get; set; }
+        public Guid PhotoId { get; set; }
         public ProfilePhoto Photo { get; set; }
         public string? ShortDescription { get; set; }
         public string? Description { get; set; }

@@ -14,7 +14,7 @@ namespace W4S.RegistrationMicroservice.Validations
     public class DataValidator : IDataValidator
     {
         private const string REGEX_DOMAIN_PATTERN = @"@([\w\-]+)((\.(\w){2,3})+)$";
-        private const string REGEX_PHONE_NUMBER_PATTERN = @"";
+        private const string REGEX_PHONE_NUMBER_PATTERN = @"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$";
 
         private readonly UserbaseDbContext _dbContext;
         private readonly ILogger<DataValidator> _logger;
@@ -89,7 +89,15 @@ namespace W4S.RegistrationMicroservice.Validations
 
         public void ValidatePhoneNumber(string phoneNumber)
         {
+            var regex = new Regex(REGEX_PHONE_NUMBER_PATTERN);
 
+            var match = regex.Match(phoneNumber);
+
+            if(match.Success)
+            {
+                return;
+            }
+            throw new IncorrectPhoneNumberException("This is not a valid phone number.");
         }
 
         public string CheckDomain(string studentEmail)

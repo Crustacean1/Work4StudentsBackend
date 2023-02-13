@@ -8,6 +8,9 @@ using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Creation;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Updating;
+using W4S.ServiceBus.Abstractions;
 using W4SRegistrationMicroservice.API.Exceptions;
 
 namespace W4S.RegistrationMicroservice.API.Services
@@ -17,15 +20,18 @@ namespace W4S.RegistrationMicroservice.API.Services
         private readonly UserbaseDbContext _dbContext;
         private readonly ILogger<ProfilesService> _logger;
         private readonly IDataValidator _dataValidator;
+        private readonly IClient _client;
 
         public ProfilesService(
             UserbaseDbContext dbContext,
             ILogger<ProfilesService> logger,
-            IDataValidator dataValidator)
+            IDataValidator dataValidator,
+            IClient client)
         {
             _dbContext = dbContext;
             _logger = logger;
             _dataValidator = dataValidator;
+            _client = client;
         }
 
         #region Students
@@ -46,10 +52,11 @@ namespace W4S.RegistrationMicroservice.API.Services
                 ResumeFile = null
             };
 
-            var profile = new StudentProfile() // fill it with a dto
+            var profile = new StudentProfile()
             {
                 Id = Guid.NewGuid(),
                 PhotoId = photo.Id,
+                Photo = photo,
                 Description = "",
                 ShortDescription = "",
                 EmailAddress = student.EmailAddress,
@@ -62,8 +69,10 @@ namespace W4S.RegistrationMicroservice.API.Services
                 City = student.City,
                 Street = student.Street,
                 Building = student.Building,
+                ResumeId = resume.Id,
+                Resume = resume,
                 StudentId = student.Id,
-                ResumeId = resume.Id
+                Student = student
             };
 
             _logger.LogInformation($"Profile with an Id: {profile.Id} created.");
@@ -84,14 +93,14 @@ namespace W4S.RegistrationMicroservice.API.Services
             return profile.Id;
         }
 
-        public void UpdateStudentProfile(Guid id, UpdateStudentProfileDto dto)
+        public void UpdateStudentProfile(UpdateStudentProfileDtoWithId dto)
         {
             StudentProfile? studentProfile = null;
 
             try
             {
                 studentProfile = _dbContext.StudentProfiles // include photos, update photo and profile
-                    .Where(p => p.Id == id)
+                    .Where(p => p.Id == dto.Id)
                     .First();
             }
             catch (Exception ex)
@@ -108,6 +117,20 @@ namespace W4S.RegistrationMicroservice.API.Services
 
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
+
+                var newEvent = new UserInfoUpdatedEvent()
+                {
+                    UserId = studentProfile.StudentId,
+                    EmailAddress = dto.EmailAddress,
+                    PhoneNumber = dto.PhoneNumber,
+                    Country = dto.Country,
+                    Region = dto.Region,
+                    City = dto.City,
+                    Street = dto.Street,
+                    Building = dto.Building,
+                };
+
+                _client.SendEvent<UserInfoUpdatedEvent>("profiles.user.updated", newEvent);
             }
         }
 
@@ -212,7 +235,9 @@ namespace W4S.RegistrationMicroservice.API.Services
                 Region = employer.Region,
                 City = employer.City,
                 Street = employer.Street,
-                Building = employer.Building
+                Building = employer.Building,
+                EmployerId = employer.Id,
+                Employer = employer
             };
 
             _logger.LogInformation($"Profile with an Id: {profile.Id} created.");
@@ -233,15 +258,15 @@ namespace W4S.RegistrationMicroservice.API.Services
             return profile.Id;
         }
 
-        public void UpdateEmployerProfile(Guid Id, UpdateProfileDto dto) // UpdateStudentProfileDto
+        public void UpdateEmployerProfile(UpdateProfileDtoWithId dto)
         {
-            var employerProfile = _dbContext.EmployerProfiles // include photos, update photo and profile
-                    .Where(p => p.Id == Id)
+            var employerProfile = _dbContext.EmployerProfiles 
+                    .Where(p => p.Id == dto.Id)
                     .FirstOrDefault();
 
             if (employerProfile != null)
             {
-                if (employerProfile.EmailAddress != dto.EmailAddress || employerProfile.PhoneNumber != dto.PhoneNumber) // my SOLID is now OLID
+                if (employerProfile.EmailAddress != dto.EmailAddress || employerProfile.PhoneNumber != dto.PhoneNumber) 
                 {
                     _dataValidator.ValidateEmailCorrectness(dto.EmailAddress);
                     _dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
@@ -266,7 +291,21 @@ namespace W4S.RegistrationMicroservice.API.Services
 
 
                 _dbContext.EmployerProfiles.Update(employerProfile);
-                _dbContext.SaveChanges();
+                _dbContext.SaveChanges(); 
+                
+                var newEvent = new UserInfoUpdatedEvent()
+                {
+                    UserId = employerProfile.EmployerId,
+                    EmailAddress = dto.EmailAddress,
+                    PhoneNumber = dto.PhoneNumber,
+                    Country = dto.Country,
+                    Region = dto.Region,
+                    City = dto.City,
+                    Street = dto.Street,
+                    Building = dto.Building,
+                };
+
+                _client.SendEvent<UserInfoUpdatedEvent>("profiles.user.updated", newEvent);
             }
         }
 
