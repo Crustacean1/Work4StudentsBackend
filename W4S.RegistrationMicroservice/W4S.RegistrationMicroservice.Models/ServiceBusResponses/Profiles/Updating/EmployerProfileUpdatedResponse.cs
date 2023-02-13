@@ -8,6 +8,5 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Updat
 {
     public class EmployerProfileUpdatedResponse : BaseResponse
     {
-        public bool? WasUpdated { get; set; }
     }
 }

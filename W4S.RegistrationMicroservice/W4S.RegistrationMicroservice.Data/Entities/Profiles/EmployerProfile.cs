@@ -11,6 +11,8 @@ namespace W4S.RegistrationMicroservice.Data.Entities.Profiles
     [Table("EmployerProfiles")]
     public class EmployerProfile : Profile
     {
+        public string CompanyName { get; set; }
+        public string PositionName { get; set; }
         public Guid EmployerId { get; set; }
         public Employer Employer { get; set; }
     }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using W4S.RegistrationMicroservice.Data.DbContexts;
@@ -11,9 +12,11 @@ using W4S.RegistrationMicroservice.Data.DbContexts;
 namespace W4S.RegistrationMicroservice.Data.Migrations
 {
     [DbContext(typeof(UserbaseDbContext))]
-    partial class UserbaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230213202706_seeding_corrected")]
+    partial class seedingcorrected
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,7 +119,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b6afffc0-a64c-46b4-80af-47a0c44bbd4e"),
+                            Id = new Guid("49ca6967-22e2-4c79-9209-8734642faf7b"),
                             NIP = "5283121250",
                             Name = "Empty firm in Poland"
                         });
@@ -136,7 +139,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("afd4789a-e7df-436a-ba24-6d1f3a3a86f8"),
+                            Id = new Guid("f8b697a6-f852-4f5e-9f0c-debb9975c816"),
                             EmailDomain = "@polsl.pl"
                         });
                 });
@@ -160,8 +163,8 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("003d5153-bac5-45fd-b5db-408867e7bf6c"),
-                            EmailDomainId = new Guid("afd4789a-e7df-436a-ba24-6d1f3a3a86f8"),
+                            Id = new Guid("b7d7c5b5-c3f8-424e-ae90-c41bcb7cc2dd"),
+                            EmailDomainId = new Guid("f8b697a6-f852-4f5e-9f0c-debb9975c816"),
                             Name = "Politechnika Śląska"
                         });
                 });
@@ -179,17 +182,17 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0645b4a7-9592-421a-b0b5-fadd36494114"),
+                            Id = new Guid("2c0571f6-3f8b-4da5-9494-36ae9179aa5d"),
                             Description = "Student"
                         },
                         new
                         {
-                            Id = new Guid("9fdf2b41-adb4-45cd-8caa-2466022d4566"),
+                            Id = new Guid("fc29b15d-32be-4959-91f4-da740dd72f6f"),
                             Description = "Employer"
                         },
                         new
                         {
-                            Id = new Guid("69023621-9744-493e-91f0-e7958a52c2f8"),
+                            Id = new Guid("248f6a5c-231e-48b5-9c9b-a137c0001758"),
                             Description = "Administrator"
                         });
                 });
@@ -271,27 +274,6 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasIndex("EmployerId");
 
                     b.ToTable("EmployerProfiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("4adc6ddc-88dc-448a-859c-4d2e9dfacd3d"),
-                            Building = "2a",
-                            City = "Gliwice",
-                            Country = "Poland",
-                            Description = "My company is the best.",
-                            Education = "Bachelor in Milfology",
-                            EmailAddress = "someEmployer@gmail.com",
-                            Experience = "5 years as Milfhunter",
-                            PhoneNumber = "2137",
-                            Rating = 0.0m,
-                            Region = "Silesia",
-                            ShortDescription = "My company...",
-                            Street = "Akademicka",
-                            CompanyName = "Empty firm in Poland",
-                            EmployerId = new Guid("382ff617-1899-46b2-94da-ae766465d6e0"),
-                            PositionName = "Majster HR"
-                        });
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.StudentProfile", b =>
@@ -308,25 +290,6 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("StudentProfiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b35d8b44-486c-45b3-ac13-e0090a5f4256"),
-                            Building = "2a",
-                            City = "Gliwice",
-                            Country = "Poland",
-                            Description = "My university is the best.",
-                            Education = "Silesian University of Science, Informatics",
-                            EmailAddress = "someEmployer@gmail.com",
-                            Experience = "20 years in Unity",
-                            PhoneNumber = "+2137",
-                            Rating = 0.0m,
-                            Region = "Silesia",
-                            ShortDescription = "My university...",
-                            Street = "Akademicka",
-                            StudentId = new Guid("163985c8-3c69-45c8-b28b-d0adc2d95bd3")
-                        });
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Users.Administrator", b =>
@@ -338,7 +301,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1ec4373e-bdde-4c6a-b74f-f74c4abafffc"),
+                            Id = new Guid("a0b0e38f-6377-4f62-806a-a27602602070"),
                             Building = "2a",
                             City = "Gliwice",
                             Country = "Poland",
@@ -347,7 +310,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                             PasswordHash = "61646d696e31323334",
                             PhoneNumber = "2137",
                             Region = "Silesia",
-                            RoleId = new Guid("69023621-9744-493e-91f0-e7958a52c2f8"),
+                            RoleId = new Guid("248f6a5c-231e-48b5-9c9b-a137c0001758"),
                             SecondName = "Adminsky",
                             Street = "Akademicka",
                             Surname = "Administator"
@@ -372,7 +335,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("382ff617-1899-46b2-94da-ae766465d6e0"),
+                            Id = new Guid("849c45bd-40db-4abc-8bdc-f7eaaa8d13d8"),
                             Building = "2a",
                             City = "Gliwice",
                             Country = "Poland",
@@ -381,11 +344,11 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                             PasswordHash = "61646d696e",
                             PhoneNumber = "2137",
                             Region = "Silesia",
-                            RoleId = new Guid("9fdf2b41-adb4-45cd-8caa-2466022d4566"),
+                            RoleId = new Guid("fc29b15d-32be-4959-91f4-da740dd72f6f"),
                             SecondName = "Szef",
                             Street = "Akademicka",
                             Surname = "Małysz",
-                            CompanyId = new Guid("b6afffc0-a64c-46b4-80af-47a0c44bbd4e"),
+                            CompanyId = new Guid("49ca6967-22e2-4c79-9209-8734642faf7b"),
                             PositionName = "Majster HR"
                         });
                 });
@@ -404,7 +367,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("163985c8-3c69-45c8-b28b-d0adc2d95bd3"),
+                            Id = new Guid("18bc9f78-2859-4300-8dff-721798f77efc"),
                             Building = "2a",
                             City = "Gliwice",
                             Country = "Poland",
@@ -413,11 +376,11 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                             PasswordHash = "61646d696e",
                             PhoneNumber = "+2137",
                             Region = "Silesia",
-                            RoleId = new Guid("0645b4a7-9592-421a-b0b5-fadd36494114"),
+                            RoleId = new Guid("2c0571f6-3f8b-4da5-9494-36ae9179aa5d"),
                             SecondName = "Karol",
                             Street = "Akademicka",
                             Surname = "Pavulon",
-                            UniversityId = new Guid("003d5153-bac5-45fd-b5db-408867e7bf6c")
+                            UniversityId = new Guid("b7d7c5b5-c3f8-424e-ae90-c41bcb7cc2dd")
                         });
                 });
 

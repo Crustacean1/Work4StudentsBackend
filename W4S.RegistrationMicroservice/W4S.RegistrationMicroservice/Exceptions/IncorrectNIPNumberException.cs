@@ -1,4 +1,4 @@
-﻿namespace W4SRegistrationMicroservice.API.Exceptions
+﻿namespace W4S.RegistrationMicroservice.API.Exceptions
 {
     public class IncorrectNIPNumberException : Exception
     {

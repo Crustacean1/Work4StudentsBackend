@@ -28,8 +28,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
 
             try
             {
-                response.JwtTokenValue = _signingInService.SignIn(credentialsDto);
-                response.UserEmail = credentialsDto.EmailAddress;
+                response = _signingInService.SignIn(credentialsDto);
             }
             catch (UserNotFoundException ex)
             {

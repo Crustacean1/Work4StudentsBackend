@@ -22,12 +22,8 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
 
         public Domain EmailDomain { get; set; }
 
-        public Rating Rating { get; set; }
-
         public EmployerProfile EmployerProfile { get; set;}
         public StudentProfile StudentProfile { get; set;}
-        public CompanyProfile CompanyProfile { get; set;}
-
 
         public UserbaseSeeder()
         {
@@ -83,6 +79,11 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
                 SecondName = "Karol",
                 Surname = "Pavulon",
                 PhoneNumber = "+2137",
+                Country = "Poland",
+                Region = "Silesia",
+                City = "Gliwice",
+                Street = "Akademicka",
+                Building = "2a",
                 RoleId = StudentRole.Id,
                 UniversityId = University.Id
             };
@@ -96,6 +97,11 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
                 Surname = "Małysz",
                 PasswordHash = _passwordHasher.HashText("admin"),
                 PhoneNumber = "2137",
+                Country = "Poland",
+                Region = "Silesia",
+                City = "Gliwice",
+                Street = "Akademicka",
+                Building = "2a",
                 RoleId = EmployerRole.Id,
                 CompanyId = Company.Id,
                 PositionName = "Majster HR"
@@ -110,53 +116,57 @@ namespace W4S.RegistrationMicroservice.Data.Seeders
                 Surname = "Administator",
                 PasswordHash = _passwordHasher.HashText("admin1234"),
                 PhoneNumber = "2137",
+                Country = "Poland",
+                Region = "Silesia",
+                City = "Gliwice",
+                Street = "Akademicka",
+                Building = "2a",
                 RoleId = AdminRole.Id
             };
 
             EmployerProfile = new EmployerProfile()
             {
                 Id = Guid.NewGuid(),
-                EntityId = Employer.Id,
                 EmployerId = Employer.Id,
+                //Employer = Employer,
+                EmailAddress = Employer.EmailAddress,
                 Description = "My company is the best.",
-                Image = new byte[]
-                {
-                    0x00, 0x00, 0x00, 0x00
-                }
+                ShortDescription = "My company...",
+                CompanyName = Company.Name,
+                Education = "Bachelor in Milfology",
+                Experience = "5 years as Milfhunter",
+                Country = Employer.Country,
+                Region = Employer.Region,
+                City = Employer.City,
+                Street = Employer.Street,
+                Building = Employer.Building,
+                PhoneNumber = Employer.PhoneNumber,
+                PositionName = Employer.PositionName,
+                Rating = 0.0m,
+                PhotoFile = null
             };
 
 
             StudentProfile = new StudentProfile()
             {
                 Id = Guid.NewGuid(),
-                EntityId = Student.Id,
                 StudentId = Student.Id,
+                //Student = Student,
                 Description = "My university is the best.",
-                Image = new byte[]
-                {
-                    0x00, 0x00, 0x00, 0x00
-                }
+                EmailAddress = Employer.EmailAddress,
+                ShortDescription = "My university...",
+                Education = "Silesian University of Science, Informatics",
+                Experience = "20 years in Unity",
+                Country = Student.Country,
+                Region = Student.Region,
+                City = Student.City,
+                Street = Student.Street,
+                Building = Student.Building,
+                PhoneNumber = Student.PhoneNumber,
+                Rating = 0.0m,
+                PhotoFile = null,
+                ResumeFile = null,
             };
-
-            CompanyProfile = new CompanyProfile()
-            {
-                Id = Guid.NewGuid(),
-                EntityId = Company.Id,
-                CompanyId = Company.Id,
-                Description = "Greatest company there is.",
-                Image = new byte[]
-                {
-                    0x00, 0x00, 0x00, 0x00
-                }
-            };
-
-            Rating = new Rating()
-            {
-                Id = Guid.NewGuid(),
-                StudentId = Student.Id,
-                RatingValue = 5.0m
-            };
-
         }
     }
 }
