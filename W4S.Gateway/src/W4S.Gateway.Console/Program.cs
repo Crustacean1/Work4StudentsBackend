@@ -21,7 +21,6 @@ namespace W4S.Gateway.Console
                     policy.AllowAnyOrigin();
                     policy.AllowAnyHeader();
                     policy.AllowAnyMethod();
-                    //policy.AllowCredentials();
                 });
             });
 
@@ -41,7 +40,7 @@ namespace W4S.Gateway.Console
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
             app.UseCors();
             app.MapControllers();
 

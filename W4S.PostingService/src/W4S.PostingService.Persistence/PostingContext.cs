@@ -19,7 +19,9 @@ namespace W4S.PostingService.Persistence
 
         public DbSet<JobOffer> JobOffers { get; set; }
 
-        public DbSet<Review> Reviews { get; set; }
+        public DbSet<OfferReview> OfferReviews { get; set; }
+
+        public DbSet<ApplicationReview> ApplicationReviews { get; set; }
 
         public async Task MigrateAsync(CancellationToken cancellationToken)
         {
@@ -28,6 +30,14 @@ namespace W4S.PostingService.Persistence
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Ignore<Review>();
+
+            builder.Entity<OfferReview>()
+                .ToTable("OfferReviews");
+
+            builder.Entity<ApplicationReview>()
+                .ToTable("ApplicationReviews");
+
             builder.Entity<Company>(b =>
             {
                 b.HasData(seeder.FakeCompany);
@@ -45,7 +55,7 @@ namespace W4S.PostingService.Persistence
                 b.OwnsOne(jo => jo.Address);
                 b.OwnsOne(jo => jo.PayRange);
                 b.OwnsMany(jo => jo.WorkingHours);
-                b.HasMany<Review>().WithOne().HasForeignKey(r => r.SubjectId);
+                b.HasMany<OfferReview>().WithOne().HasForeignKey(r => r.SubjectId);
             });
 
             builder.Entity<Student>(b =>
@@ -67,6 +77,7 @@ namespace W4S.PostingService.Persistence
             {
                 b.HasOne(a => a.Student);
                 b.HasOne(a => a.Offer);
+                b.HasMany<ApplicationReview>().WithOne().HasForeignKey(r => r.SubjectId);
             });
         }
 

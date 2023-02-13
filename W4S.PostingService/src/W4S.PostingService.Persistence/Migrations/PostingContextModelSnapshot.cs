@@ -59,6 +59,39 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.ToTable("Applications");
                 });
 
+            modelBuilder.Entity("W4S.PostingService.Domain.Entities.ApplicationReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("ApplicationReviews", (string)null);
+                });
+
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Company", b =>
                 {
                     b.Property<Guid>("Id")
@@ -80,7 +113,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("82e51216-4e81-4c7a-93aa-a3eafa4695ad"),
+                            Id = new Guid("1202f21b-f746-4826-8cb1-7e465bd940c2"),
                             NIP = "7821160955",
                             Name = "Comarch"
                         });
@@ -124,6 +157,39 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.ToTable("JobOffers");
                 });
 
+            modelBuilder.Entity("W4S.PostingService.Domain.Entities.OfferReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("OfferReviews", (string)null);
+                });
+
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Recruiter", b =>
                 {
                     b.Property<Guid>("Id")
@@ -161,66 +227,13 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("4fa5c5d3-de0a-469b-af99-81c6ac31baf5"),
-                            CompanyId = new Guid("82e51216-4e81-4c7a-93aa-a3eafa4695ad"),
+                            Id = new Guid("0904bdd2-4227-4f7e-a7c4-134e8819852a"),
+                            CompanyId = new Guid("1202f21b-f746-4826-8cb1-7e465bd940c2"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
                             Surname = "Smith"
                         });
-                });
-
-            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Review", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AuthorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("JobOfferId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Rating")
-                        .HasColumnType("numeric");
-
-                    b.Property<Guid?>("RecruiterId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("StudentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("StudentId1")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobOfferId");
-
-                    b.HasIndex("RecruiterId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("StudentId1");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Student", b =>
@@ -255,7 +268,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6203e242-4cc5-419c-a9b8-ae4cc30334aa"),
+                            Id = new Guid("52b5c3d4-1c90-4cd2-a7ad-11adfa29c08d"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
@@ -280,6 +293,15 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.Navigation("Offer");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("W4S.PostingService.Domain.Entities.ApplicationReview", b =>
+                {
+                    b.HasOne("W4S.PostingService.Domain.Entities.Application", null)
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.JobOffer", b =>
@@ -378,6 +400,15 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.Navigation("WorkingHours");
                 });
 
+            modelBuilder.Entity("W4S.PostingService.Domain.Entities.OfferReview", b =>
+                {
+                    b.HasOne("W4S.PostingService.Domain.Entities.JobOffer", null)
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Recruiter", b =>
                 {
                     b.HasOne("W4S.PostingService.Domain.Entities.Company", "Company")
@@ -387,31 +418,6 @@ namespace W4S.PostingService.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("W4S.PostingService.Domain.Entities.Review", b =>
-                {
-                    b.HasOne("W4S.PostingService.Domain.Entities.JobOffer", null)
-                        .WithMany("Reviews")
-                        .HasForeignKey("JobOfferId");
-
-                    b.HasOne("W4S.PostingService.Domain.Entities.Recruiter", null)
-                        .WithMany("SubmitedReviews")
-                        .HasForeignKey("RecruiterId");
-
-                    b.HasOne("W4S.PostingService.Domain.Entities.Student", null)
-                        .WithMany("ReceivedReviews")
-                        .HasForeignKey("StudentId");
-
-                    b.HasOne("W4S.PostingService.Domain.Entities.Student", null)
-                        .WithMany("SubmittedReviews")
-                        .HasForeignKey("StudentId1");
-
-                    b.HasOne("W4S.PostingService.Domain.Entities.JobOffer", null)
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Student", b =>
@@ -451,7 +457,7 @@ namespace W4S.PostingService.Persistence.Migrations
                             b1.HasData(
                                 new
                                 {
-                                    StudentId = new Guid("6203e242-4cc5-419c-a9b8-ae4cc30334aa"),
+                                    StudentId = new Guid("52b5c3d4-1c90-4cd2-a7ad-11adfa29c08d"),
                                     Building = "Boilding",
                                     City = "Gliwice",
                                     Country = "Polandia",
@@ -494,24 +500,16 @@ namespace W4S.PostingService.Persistence.Migrations
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.JobOffer", b =>
                 {
                     b.Navigation("Applications");
-
-                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Recruiter", b =>
                 {
                     b.Navigation("Offers");
-
-                    b.Navigation("SubmitedReviews");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Student", b =>
                 {
                     b.Navigation("Applications");
-
-                    b.Navigation("ReceivedReviews");
-
-                    b.Navigation("SubmittedReviews");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,7 +16,7 @@ namespace W4S.PostingService.Persistence.Repositories
                 .Where(selector)
                 .Include(jo => jo.WorkingHours)
                 .OrderBy(comparator)
-                .Skip(page * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize);
             return await result.ToListAsync();
         }

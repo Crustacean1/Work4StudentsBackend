@@ -4,54 +4,55 @@ using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Persistence.Repositories
 {
-    public class ReviewRepository : RepositoryBase<Review>, IReviewRepository
+
+    public class ReviewRepository<TEntity> : RepositoryBase<TEntity>, IReviewRepository<TEntity> where TEntity : Review
     {
         public ReviewRepository(PostingContext context) : base(context)
         {
         }
 
-        public async Task<IEnumerable<Review>> GetRecruiterSubmittedReviews(Guid recruiterId, int page, int pageSize)
+        public async Task<IEnumerable<TEntity>> GetRecruiterSubmittedReviews(Guid recruiterId, int page, int pageSize)
         {
-            return await context.Set<Review>()
+            return await context.Set<TEntity>()
                 .Where(r => r.AuthorId == recruiterId)
                 .OrderBy(r => r.CreationDate)
-                .Skip(page * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
 
         public async Task<int> GetRecruiterSubmittedReviewCount(Guid recruiterId)
         {
-            return await context.Set<Review>()
+            return await context.Set<TEntity>()
                 .Where(r => r.AuthorId == recruiterId)
                 .CountAsync();
         }
 
-        public async Task<IEnumerable<Review>> GetStudentSubmittedReviews(Guid studentId, int page, int pageSize)
+        public async Task<IEnumerable<TEntity>> GetStudentSubmittedReviews(Guid studentId, int page, int pageSize)
         {
 
-            return await context.Set<Review>()
+            return await context.Set<TEntity>()
                 .Where(r => r.AuthorId == studentId)
                 .OrderBy(r => r.CreationDate)
-                .Skip(page * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
 
         public async Task<int> GetStudentSubmittedReviewCount(Guid studentId)
         {
-            return await context.Set<Review>()
+            return await context.Set<TEntity>()
                 .Where(r => r.AuthorId == studentId)
                 .CountAsync();
         }
 
-        public async Task<IEnumerable<Review>> GetRecruiterReviews(Guid recruiterId, int page, int pageSize)
+        public async Task<IEnumerable<TEntity>> GetRecruiterReviews(Guid recruiterId, int page, int pageSize)
         {
             return await context.Set<JobOffer>()
                 .Where(a => a.RecruiterId == recruiterId)
-                .Join(context.Set<Review>(), o => o.Id, r => r.SubjectId, (o, r) => new { Offer = o, Review = r })
+                .Join(context.Set<TEntity>(), o => o.Id, r => r.SubjectId, (o, r) => new { Offer = o, Review = r })
                 .OrderBy(ag => ag.Review.CreationDate)
-                .Skip(page * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(ag => ag.Review)
                 .ToListAsync();
@@ -61,17 +62,17 @@ namespace W4S.PostingService.Persistence.Repositories
         {
             return await context.Set<JobOffer>()
                 .Where(a => a.RecruiterId == recruiterId)
-                .Join(context.Set<Review>(), o => o.Id, r => r.SubjectId, (o, r) => 1)
+                .Join(context.Set<TEntity>(), o => o.Id, r => r.SubjectId, (o, r) => 1)
                 .CountAsync();
         }
 
-        public async Task<IEnumerable<Review>> GetStudentReviews(Guid studentId, int page, int pageSize)
+        public async Task<IEnumerable<TEntity>> GetStudentReviews(Guid studentId, int page, int pageSize)
         {
             return await context.Set<Application>()
                 .Where(a => a.StudentId == studentId)
-                .Join(context.Set<Review>(), a => a.Id, r => r.SubjectId, (o, r) => new { Offer = o, Review = r })
+                .Join(context.Set<TEntity>(), a => a.Id, r => r.SubjectId, (o, r) => new { Offer = o, Review = r })
                 .OrderBy(ag => ag.Review.CreationDate)
-                .Skip(page * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(ag => ag.Review)
                 .ToListAsync();
@@ -81,7 +82,7 @@ namespace W4S.PostingService.Persistence.Repositories
         {
             return await context.Set<Application>()
                 .Where(a => a.StudentId == studentId)
-                .Join(context.Set<Review>(), a => a.Id, r => r.SubjectId, (o, r) => 1)
+                .Join(context.Set<TEntity>(), a => a.Id, r => r.SubjectId, (o, r) => 1)
                 .CountAsync();
         }
     }

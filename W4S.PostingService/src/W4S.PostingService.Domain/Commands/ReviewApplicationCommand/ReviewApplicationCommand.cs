@@ -9,6 +9,6 @@ namespace W4S.PostingService.Domain.Commands
 
         public Guid RecruiterId { get; set; }
 
-        public Review Review { get; set; }
+        public ApplicationReview Review { get; set; }
     }
 }

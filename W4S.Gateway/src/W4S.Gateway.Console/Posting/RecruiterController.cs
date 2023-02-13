@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using W4S.PostingService.Domain.Entities;
@@ -54,7 +53,7 @@ namespace W4S.Gateway.Console.Posting
                 RecruiterId = recruiterId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<Review>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReview>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
             return UnwrapResponse(response);
         }
 

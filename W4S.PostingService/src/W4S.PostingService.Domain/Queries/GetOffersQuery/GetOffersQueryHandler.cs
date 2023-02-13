@@ -3,6 +3,7 @@ using AutoMapper;
 using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Repositories;
+using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Queries
 {
@@ -16,7 +17,7 @@ namespace W4S.PostingService.Domain.Queries
             this.offerRepository = offerRepository;
             var mapperConfig = new MapperConfiguration(b =>
             {
-                b.CreateMap<JobOffer, GetOffersDto>();
+                b.CreateMap<JobOffer, GetOffersDto>().ForMember(o => o.Status, config => config.MapFrom(o => Enum.GetName(typeof(OfferStatus), o.Status)));
             });
             mapper = mapperConfig.CreateMapper();
         }
@@ -26,8 +27,8 @@ namespace W4S.PostingService.Domain.Queries
             Expression<Func<JobOffer, bool>> selection = (JobOffer o) => true;
             if (request.Keywords.Any())
             {
-                selection = (JobOffer o) => o.Title.Split(" ", StringSplitOptions.TrimEntries)
-                                                   .Any(titlePart => request.Keywords.Any(keyword => keyword.ToLower() == titlePart.ToLower()));
+                //selection = (JobOffer o) => o.Title.Split(" ", StringSplitOptions.TrimEntries)
+                //.Any(titlePart => request.Keywords.Any(keyword => keyword.ToLower() == titlePart.ToLower()));
             }
 
             var rawOffers = await offerRepository.GetEntitiesAsync(request.Page, request.PageSize, selection, o => o.CreationDate);

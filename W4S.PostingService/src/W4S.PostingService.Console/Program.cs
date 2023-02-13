@@ -32,7 +32,8 @@ namespace W4S.PostingService.Console
                   provider.AddScoped<IRepository<Recruiter>, RepositoryBase<Recruiter>>();
                   provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
                   provider.AddScoped<IRepository<Company>, RepositoryBase<Company>>();
-                  provider.AddScoped<IRepository<Review>, ReviewRepository>();
+                  provider.AddScoped<IReviewRepository<OfferReview>, ReviewRepository<OfferReview>>();
+                  provider.AddScoped<IReviewRepository<ApplicationReview>, ReviewRepository<ApplicationReview>>();
 
                   provider.AddScoped<OfferHandler>();
                   provider.AddScoped<ApplicationHandler>();

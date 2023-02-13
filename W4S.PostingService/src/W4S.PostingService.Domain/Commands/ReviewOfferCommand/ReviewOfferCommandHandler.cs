@@ -8,13 +8,13 @@ namespace W4S.PostingService.Domain.Commands
 {
     public class ReviewOfferCommandHandler : CommandHandlerBase, IRequestHandler<ReviewOfferCommand, Guid>
     {
-        private readonly IRepository<Review> reviewRepository;
+        private readonly IReviewRepository<OfferReview> reviewRepository;
         private readonly IRepository<Student> studentRepository;
         private readonly IRepository<JobOffer> offerRepository;
         private readonly IRepository<Application> applicationRepository;
         private readonly IMapper mapper;
 
-        public ReviewOfferCommandHandler(IRepository<JobOffer> offerRepository, IRepository<Student> studentRepository, IRepository<Review> reviewRepository, IRepository<Application> applicationRepository)
+        public ReviewOfferCommandHandler(IRepository<JobOffer> offerRepository, IRepository<Student> studentRepository, IReviewRepository<OfferReview> reviewRepository, IRepository<Application> applicationRepository)
         {
             this.offerRepository = offerRepository;
             this.studentRepository = studentRepository;
@@ -22,7 +22,7 @@ namespace W4S.PostingService.Domain.Commands
 
             var conf = new MapperConfiguration(b =>
             {
-                b.CreateMap<Review, Review>();
+                b.CreateMap<OfferReview, OfferReview>();
             });
             this.mapper = conf.CreateMapper();
             this.applicationRepository = applicationRepository;
@@ -45,7 +45,7 @@ namespace W4S.PostingService.Domain.Commands
                 throw new PostingException($"Student {student.Id} already rated offer {offer.Id}", 400);
             }
 
-            var review = mapper.Map<Review>(command.Review);
+            var review = mapper.Map<OfferReview>(command.Review);
             review.Id = Guid.NewGuid();
             review.AuthorId = student.Id;
             review.SubjectId = offer.Id;

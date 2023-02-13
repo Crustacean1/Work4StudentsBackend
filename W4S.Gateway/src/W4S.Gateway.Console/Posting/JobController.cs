@@ -57,15 +57,15 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOffersDto>))]
         public async Task<ActionResult> GetJobOffers([FromQuery] OfferQuery query, CancellationToken cancellationToken)
         {
-            var offersQuery = new GetOffersQuery(query.Page, query.PageSize)
+            var offersQuery = new GetOffersQuery(query?.Page ?? 0, query?.PageSize ?? 10)
             {
                 Keywords = query.Keywords?.Split(" ", StringSplitOptions.TrimEntries) ?? new string[] { },
                 Categories = query.Categories?.Split(" ", StringSplitOptions.TrimEntries) ?? new string[] { },
             };
+
             var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, GetOffersQuery>("offers.getOffers", offersQuery, cancellationToken);
             return UnwrapResponse(response);
         }
@@ -104,7 +104,7 @@ namespace W4S.Gateway.Console.Posting
         [HttpGet]
         [Authorize]
         [Route("{offerId}/reviews")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<Review>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<OfferReview>))]
         public async Task<ActionResult> GetReviews([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
             logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for recruiter {Id}", paginatedQuery.Page, paginatedQuery.PageSize, offerId);
@@ -116,7 +116,7 @@ namespace W4S.Gateway.Console.Posting
                 RecruiterId = offerId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<Review>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReview>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
@@ -124,7 +124,7 @@ namespace W4S.Gateway.Console.Posting
         [Authorize(Roles = "Student")]
         [Route("{offerId}/reviews")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
-        public async Task<ActionResult> SubmitReview([FromRoute] Guid offerId, [FromBody] Review review, CancellationToken cancellationToken)
+        public async Task<ActionResult> SubmitReview([FromRoute] Guid offerId, [FromBody] OfferReview review, CancellationToken cancellationToken)
         {
             var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
 
@@ -151,32 +151,5 @@ namespace W4S.Gateway.Console.Posting
 
             return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Response);
         }
-
-        /*[HttpGet]
-        [Route("{id}")]
-        [Authorize(Roles = "Student")]
-        public async Task<ActionResult> GetOffer([FromRoute] Guid id, [FromQuery] int page, [FromQuery] int pageSize, CancellationToken cancellationToken)
-        {
-            return Ok();
-        }
-
-        [HttpPost]
-        [Route("apply/{id}")]
-        public async Task<ActionResult> ApplyForOffer([FromRoute] Guid id)
-        {
-            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            //await busClient.SendRequest<ApplicationSubmittedDto, SubmitApplicationDto>("offer.apply", new SubmitApplicationDto { });
-            return Ok();
-        }
-
-        [HttpPut]
-        [Route("{id}")]
-        [Authorize(Roles = "Employer")]
-        public async Task<ActionResult> UpdateOffer([FromRoute] Guid id)
-        {
-            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            //await busClient.SendRequest < ApplicationUpdatedDto, 
-            return Ok();
-        }*/
     }
 }

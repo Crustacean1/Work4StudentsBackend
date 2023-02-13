@@ -13,7 +13,7 @@ namespace W4S.PostingService.Domain.Commands
 
         public SubmitApplicationCommandHandler(IRepository<Application> applicationRepository, IRepository<Student> studentRepository, IRepository<JobOffer> offerRepository)
         {
-            this.studentRepository = studentRepository;
+            this.applicationRepository = applicationRepository;
             this.studentRepository = studentRepository;
             this.offerRepository = offerRepository;
         }

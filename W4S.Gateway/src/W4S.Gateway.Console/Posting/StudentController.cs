@@ -54,7 +54,7 @@ namespace W4S.Gateway.Console.Posting
                 StudentId = studentId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<Review>>, GetStudentReviewsQuery>("reviews.getStudentReviews", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<ApplicationReview>>, GetStudentReviewsQuery>("reviews.getStudentReviews", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
