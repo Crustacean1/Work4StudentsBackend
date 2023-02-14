@@ -5,7 +5,7 @@ using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetRecruiterReviewsQueryHandler : IRequestHandler<GetRecruiterReviewsQuery, PaginatedList<OfferReview>>
+    public class GetRecruiterReviewsQueryHandler : IRequestHandler<GetRecruiterReviewsQuery, PaginatedList<Review>>
     {
         public readonly IRepository<Recruiter> recruiterRepository;
         public readonly IReviewRepository<OfferReview> reviewRepository;
@@ -16,18 +16,17 @@ namespace W4S.PostingService.Domain.Queries
             this.reviewRepository = reviewRepository;
         }
 
-        public async Task<PaginatedList<OfferReview>> Handle(GetRecruiterReviewsQuery query, CancellationToken cancellationToken)
+        public async Task<PaginatedList<Review>> Handle(GetRecruiterReviewsQuery request, CancellationToken cancellationToken)
         {
-            var recruiter = await recruiterRepository.GetEntityAsync(query.RecruiterId);
+            var recruiter = await recruiterRepository.GetEntityAsync(request.RecruiterId);
             if (recruiter is null)
             {
-                throw new PostingException($"No recruiter with id {query.RecruiterId}", 400);
+                throw new PostingException($"No recruiter with id {request.RecruiterId}", 400);
             }
 
-            var reviews = await reviewRepository.GetRecruiterReviews(query.RecruiterId, query.Page, query.PageSize);
-            var reviewCount = await reviewRepository.GetRecruiterReviewCount(query.RecruiterId);
+            var reviews = await reviewRepository.GetReceivedReviews(request.RecruiterId, request);
 
-            return new PaginatedList<OfferReview>(reviews.ToList(), query.Page, query.PageSize, reviewCount);
+            return new PaginatedList<Review>(reviews.Items.ToList(), request.Page, request.PageSize, reviews.TotalCount);
         }
     }
 }

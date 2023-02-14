@@ -45,6 +45,15 @@ namespace W4S.PostingService.Persistence
 
             builder.Entity<Recruiter>(b =>
             {
+                b.OwnsOne(a => a.Address).HasData(new
+                {
+                    Country = "Polandia",
+                    Region = "Silesia",
+                    City = "Gliwice",
+                    Street = "Wrocławska",
+                    Building = "24",
+                    RecruiterId = seeder.FakeRecruiter.Id
+                });
                 b.HasData(seeder.FakeRecruiter);
                 b.HasMany(r => r.Offers);
                 b.HasOne(r => r.Company);
@@ -55,6 +64,12 @@ namespace W4S.PostingService.Persistence
                 b.OwnsOne(jo => jo.Address);
                 b.OwnsOne(jo => jo.PayRange);
                 b.OwnsMany(jo => jo.WorkingHours);
+                b.HasGeneratedTsVectorColumn(
+                    p => p.SearchVector,
+                    "english",  // Text search config
+                    p => new { p.Role, p.Description, p.Title });
+                b.HasIndex(jo => jo.SearchVector)
+                .HasMethod("GIN");
                 b.HasMany<OfferReview>().WithOne().HasForeignKey(r => r.SubjectId);
             });
 
@@ -67,17 +82,17 @@ namespace W4S.PostingService.Persistence
                     City = "Gliwice",
                     Street = "Street",
                     Building = "Boilding",
-                    StudentId = seeder.FakeApplicant.Id
+                    StudentId = seeder.FakeStudent.Id
                 });
                 b.OwnsMany(a => a.Availability);
-                b.HasData(seeder.FakeApplicant);
+                b.HasData(seeder.FakeStudent);
             });
 
             builder.Entity<Application>(b =>
             {
                 b.HasOne(a => a.Student);
                 b.HasOne(a => a.Offer);
-                b.HasMany<ApplicationReview>().WithOne().HasForeignKey(r => r.SubjectId);
+                b.HasOne<ApplicationReview>().WithOne(r => r.Application).HasForeignKey<ApplicationReview>(r => r.SubjectId);
             });
         }
 

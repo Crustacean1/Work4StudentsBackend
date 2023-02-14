@@ -67,7 +67,7 @@ namespace W4S.PostingService.Console.Handlers
         [BusRequestHandler("getRecruiterOffers")]
         public async Task<ResponseWrapper<PaginatedList<GetOffersDto>>> GetRecruiterOffers(GetRecruiterOffersQuery query)
         {
-            logger.LogInformation("Getting offers of recruiter: {RecruiterId}", query.RecrutierId);
+            logger.LogInformation("Getting offers of recruiter: {RecruiterId}", query.RecruiterId);
 
             return await ExecuteHandler(async () =>
             {

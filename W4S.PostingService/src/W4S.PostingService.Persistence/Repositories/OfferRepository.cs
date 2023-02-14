@@ -1,40 +1,60 @@
-using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
+using W4S.PostingService.Domain.Queries;
+using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Persistence.Repositories
 {
-    public class OfferRepository : RepositoryBase<JobOffer>
+    public class OfferRepository : RepositoryBase<JobOffer>, IOfferRepository
     {
-        public OfferRepository(PostingContext context) : base(context)
+        private readonly IMapper mapper;
+        private ILogger<OfferRepository> logger;
+
+        public OfferRepository(PostingContext context, ILogger<OfferRepository> logger) : base(context)
         {
+            var mapperConfiguration = new MapperConfiguration(b =>
+            {
+                b.CreateMap<JobOffer, GetOffersDto>();
+                b.CreateMap<JobOffer, GetOfferDto>()
+                .ForMember(dto => dto.Company, opts => opts.MapFrom(jo => jo.Recruiter.Company));
+            });
+            mapper = mapperConfiguration.CreateMapper();
+            this.logger = logger;
         }
 
-        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(int page, int pageSize, Expression<Func<JobOffer, bool>> selector, Expression<Func<JobOffer, object>> comparator)
+        public async Task<PaginatedRecords<GetOffersDto>> GetOffers(GetOffersQuery query)
         {
-            var result = context.Set<JobOffer>()
-                .Where(selector)
-                .Include(jo => jo.WorkingHours)
-                .OrderBy(comparator)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize);
-            return await result.ToListAsync();
-        }
+            logger.LogInformation("Most curious {Coutn}", query.Keywords);
 
-        public override async Task<IEnumerable<JobOffer>> GetEntitiesAsync(Expression<Func<JobOffer, bool>> selector)
-        {
-            IEnumerable<JobOffer> result = await context.Set<JobOffer>()
-                .Include(jo => jo.WorkingHours)
-                .Where(selector)
+            var totalCount = await context.Set<JobOffer>()
+                .Where(o => o.SearchVector.Matches(query.Keywords))
+                .CountAsync();
+
+
+            var offers = await context.Set<JobOffer>()
+                .Where(o => o.SearchVector.Matches(query.Keywords))
+                .OrderBy(jo => jo.CreationDate)
+                .Skip(query.RecordsToSkip)
+                .Take(query.PageSize)
                 .ToListAsync();
-            return result;
+
+            return new PaginatedRecords<GetOffersDto>
+            {
+                Items = offers.Select(mapper.Map<GetOffersDto>),
+                TotalCount = totalCount
+            };
         }
 
-        public override async Task<JobOffer?> GetEntityAsync(Guid id)
+        public async Task<GetOfferDto> GetOfferDetails(Guid id)
         {
-            return await context.Set<JobOffer>()
-                .Include(jo => jo.WorkingHours)
-                .SingleOrDefaultAsync(o => o.Id == id);
+            var offer = await context.Set<JobOffer>()
+                .Include(jo => jo.Recruiter)
+                .ThenInclude(r => r.Company)
+                .SingleOrDefaultAsync(jo => jo.Id == id);
+
+            return mapper.Map<GetOfferDto>(offer);
         }
     }
 }

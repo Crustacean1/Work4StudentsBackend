@@ -1,24 +1,12 @@
 using W4S.PostingService.Domain.Entities;
+using W4S.PostingService.Domain.Queries;
 
 namespace W4S.PostingService.Domain.Repositories
 {
     public interface IReviewRepository<TEntity> : IRepository<TEntity> where TEntity : Review
     {
+        Task<PaginatedRecords<Review>> GetSubmittedReviews(Guid authorId, PaginatedQuery query);
 
-        Task<IEnumerable<TEntity>> GetRecruiterSubmittedReviews(Guid recruiterId, int page, int pageSize);
-
-        Task<int> GetRecruiterSubmittedReviewCount(Guid recruiterId);
-
-        Task<IEnumerable<TEntity>> GetStudentSubmittedReviews(Guid studentId, int page, int pageSize);
-
-        Task<int> GetStudentSubmittedReviewCount(Guid studentId);
-
-        Task<IEnumerable<TEntity>> GetRecruiterReviews(Guid recruiterId, int page, int pageSize);
-
-        Task<int> GetRecruiterReviewCount(Guid recruiterId);
-
-        Task<IEnumerable<TEntity>> GetStudentReviews(Guid studentId, int page, int pageSize);
-
-        Task<int> GetStudentReviewCount(Guid studentId);
+        Task<PaginatedRecords<Review>> GetReceivedReviews(Guid subjectid, PaginatedQuery query);
     }
 }

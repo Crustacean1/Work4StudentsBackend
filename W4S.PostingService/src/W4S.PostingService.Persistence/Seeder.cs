@@ -8,7 +8,7 @@ namespace W4S.PostingService.Persistence
     {
         public Company FakeCompany { get; set; }
         public Recruiter FakeRecruiter { get; set; }
-        public Student FakeApplicant { get; set; }
+        public Student FakeStudent { get; set; }
         public Application FakeApplication { get; set; }
         public JobOffer FakeJobOffer { get; set; }
         public Address FakeAddress { get; set; }
@@ -49,7 +49,7 @@ namespace W4S.PostingService.Persistence
                 CompanyId = FakeCompany.Id,
             };
 
-            FakeApplicant = new Student()
+            FakeStudent = new Student()
             {
                 FirstName = "John",
                 Surname = "Smith",
@@ -79,7 +79,7 @@ namespace W4S.PostingService.Persistence
                             Title = "Recruitment process",
                             Message = "Went great",
                             SubjectId = fakeJobOfferId,
-                            AuthorId = FakeApplicant.Id,
+                            AuthorId = FakeStudent.Id,
                             Rating = 5.0m
                         }
                     }
@@ -89,7 +89,7 @@ namespace W4S.PostingService.Persistence
             {
                 Id = Guid.NewGuid(),
                 OfferId = FakeJobOffer.Id,
-                StudentId = FakeApplicant.Id,
+                StudentId = FakeStudent.Id,
                 WorkTimeOverlap = 0.0M,
                 Proximity = 1.0M,
                 LastChanged = DateTime.Now.ToUniversalTime(),

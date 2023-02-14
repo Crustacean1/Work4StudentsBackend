@@ -1,39 +1,19 @@
-using W4S.PostingService.Domain.Exceptions;
+using System.ComponentModel.DataAnnotations;
 
 namespace W4S.PostingService.Domain.Queries
 {
     public class PaginatedQuery
     {
-        private int pageSize;
-        private int page;
-
         const int MAX_PAGE_SIZE = 100;
 
         public PaginatedQuery() { }
 
-        public PaginatedQuery(int page, int pageSize)
-        {
-            Page = Math.Max(page, 1);
-            PageSize = pageSize;
-        }
+        [Range(1, int.MaxValue)]
+        public int Page { get; set; }
 
-        public int Page
-        {
-            get { return page; }
-            set
-            {
-                page = Math.Max(1, value);
-            }
-        }
+        [Range(1, MAX_PAGE_SIZE)]
+        public int PageSize { get; set; }
 
-        public int PageSize
-        {
-            get { return pageSize; }
-
-            set
-            {
-                pageSize = Math.Min(Math.Max(value, 1), MAX_PAGE_SIZE);
-            }
-        }
+        public int RecordsToSkip => (Page - 1) * PageSize;
     }
 }

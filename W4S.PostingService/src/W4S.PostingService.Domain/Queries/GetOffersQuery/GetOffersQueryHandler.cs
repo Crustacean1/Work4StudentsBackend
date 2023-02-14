@@ -9,34 +9,26 @@ namespace W4S.PostingService.Domain.Queries
 {
     public class GetOffersQueryHandler : IRequestHandler<GetOffersQuery, PaginatedList<GetOffersDto>>
     {
-        private readonly IRepository<JobOffer> offerRepository;
+        private readonly IOfferRepository offerRepository;
         private readonly IMapper mapper;
 
-        public GetOffersQueryHandler(IRepository<JobOffer> offerRepository)
+        public GetOffersQueryHandler(IOfferRepository offerRepository)
         {
             this.offerRepository = offerRepository;
             var mapperConfig = new MapperConfiguration(b =>
             {
-                b.CreateMap<JobOffer, GetOffersDto>().ForMember(o => o.Status, config => config.MapFrom(o => Enum.GetName(typeof(OfferStatus), o.Status)));
+                b.CreateMap<JobOffer, GetOffersDto>()
+                .ForMember(o => o.Status, config => config.MapFrom(o => Enum.GetName(typeof(OfferStatus), o.Status)))
+                .ForMember(o => o.Mode, config => config.MapFrom(o => Enum.GetName(typeof(WorkMode), o.Mode)));
             });
             mapper = mapperConfig.CreateMapper();
         }
 
         public async Task<PaginatedList<GetOffersDto>> Handle(GetOffersQuery request, CancellationToken cancellationToken)
         {
-            Expression<Func<JobOffer, bool>> selection = (JobOffer o) => true;
-            if (request.Keywords.Any())
-            {
-                //selection = (JobOffer o) => o.Title.Split(" ", StringSplitOptions.TrimEntries)
-                //.Any(titlePart => request.Keywords.Any(keyword => keyword.ToLower() == titlePart.ToLower()));
-            }
+            var offers = await offerRepository.GetOffers(request);
 
-            var rawOffers = await offerRepository.GetEntitiesAsync(request.Page, request.PageSize, selection, o => o.CreationDate);
-            var totalCount = await offerRepository.GetTotalCount(selection);
-
-            var offers = rawOffers.Select(offer => mapper.Map<GetOffersDto>(offer));
-
-            return new PaginatedList<GetOffersDto>(offers.ToList(), request.Page, request.PageSize, totalCount);
+            return new PaginatedList<GetOffersDto>(offers.Items.ToList(), request.Page, request.PageSize, offers.TotalCount);
         }
     }
 }

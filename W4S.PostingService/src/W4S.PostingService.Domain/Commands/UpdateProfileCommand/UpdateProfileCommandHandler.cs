@@ -3,6 +3,7 @@ using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
+using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Commands
 {
@@ -19,8 +20,9 @@ namespace W4S.PostingService.Domain.Commands
 
             var mapperConfig = new MapperConfiguration(b =>
             {
-                b.CreateMap<UpdateProfileCommand, Profile>();
-                //b.CreateMap<UpdateProfileCommand, Address>();
+                b.CreateMap<UpdateProfileCommand, Person>()
+                .ForMember(p => p.Id, opt => opt.Ignore());
+                b.CreateMap<UpdateProfileCommand, Address>();
             });
             mapper = mapperConfig.CreateMapper();
         }
@@ -38,6 +40,10 @@ namespace W4S.PostingService.Domain.Commands
             }
 
             mapper.Map(request.ProfileEvent, user);
+            mapper.Map(request.ProfileEvent, user.Address);
+
+            await studentRepository.SaveAsync();
+
             return Unit.Value;
         }
     }

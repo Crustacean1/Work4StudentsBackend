@@ -29,10 +29,10 @@ namespace W4S.PostingService.Domain.Queries
 
         public async Task<PaginatedList<GetOffersDto>> Handle(GetRecruiterOffersQuery query, CancellationToken cancellationToken)
         {
-            var recruiter = await recruiterRepository.GetEntityAsync(query.RecrutierId);
+            var recruiter = await recruiterRepository.GetEntityAsync(query.RecruiterId);
             if (recruiter is null)
             {
-                throw new PostingException($"No recruiter with id: {query.RecrutierId}", 400);
+                throw new PostingException($"No recruiter with id: {query.RecruiterId}", 400);
             }
 
             Expression<Func<JobOffer, bool>> selector = (JobOffer o) => o.RecruiterId == recruiter.Id;

@@ -4,10 +4,12 @@ namespace W4S.PostingService.Domain.Queries
 {
     public class GetOffersQuery : PaginatedQuery, IRequest<PaginatedList<GetOffersDto>>
     {
-        public GetOffersQuery(int page, int pageSize) : base(page, pageSize) { }
+        public string Categories { get; set; } = "";
 
-        public IEnumerable<string> Categories { get; set; }
+        public string Keywords { get; set; } = "";
 
-        public IEnumerable<string> Keywords { get; set; }
+        public string Mode { get; set; } = "";
+
+        public string Status { get; set; } = "";
     }
 }

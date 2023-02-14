@@ -26,13 +26,13 @@ namespace W4S.PostingService.Console
               .ConfigureServices(provider =>
               {
                   provider.AddDbContext<PostingContext>();
-                  provider.AddScoped<IRepository<JobOffer>, RepositoryBase<JobOffer>>();
+                  provider.AddScoped<IOfferRepository, OfferRepository>();
                   provider.AddScoped<IRepository<Student>, RepositoryBase<Student>>();
                   provider.AddScoped<IRepository<Recruiter>, RepositoryBase<Recruiter>>();
                   provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
                   provider.AddScoped<IRepository<Company>, RepositoryBase<Company>>();
-                  provider.AddScoped<IReviewRepository<OfferReview>, ReviewRepository<OfferReview>>();
-                  provider.AddScoped<IReviewRepository<ApplicationReview>, ReviewRepository<ApplicationReview>>();
+                  provider.AddScoped<IReviewRepository<OfferReview>, OfferReviewRepository>();
+                  provider.AddScoped<IReviewRepository<ApplicationReview>, ApplicationReviewRepository>();
 
                   provider.AddScoped<OfferHandler>();
                   provider.AddScoped<ApplicationHandler>();

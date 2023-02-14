@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 using W4S.PostingService.Persistence;
 
 #nullable disable
@@ -17,7 +18,7 @@ namespace W4S.PostingService.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -41,6 +42,9 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.Property<decimal>("Proximity")
                         .HasColumnType("numeric");
 
+                    b.Property<Guid?>("ReviewId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -53,6 +57,8 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("ReviewId");
 
                     b.HasIndex("StudentId");
 
@@ -87,7 +93,8 @@ namespace W4S.PostingService.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("SubjectId")
+                        .IsUnique();
 
                     b.ToTable("ApplicationReviews", (string)null);
                 });
@@ -113,7 +120,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1202f21b-f746-4826-8cb1-7e465bd940c2"),
+                            Id = new Guid("15f641b1-2823-47ca-85a8-3d9987443597"),
                             NIP = "7821160955",
                             Name = "Comarch"
                         });
@@ -136,12 +143,22 @@ namespace W4S.PostingService.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Mode")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("RecruiterId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "Role", "Description", "Title" });
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -153,6 +170,10 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RecruiterId");
+
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("JobOffers");
                 });
@@ -173,6 +194,9 @@ namespace W4S.PostingService.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uuid");
+
                     b.Property<decimal>("Rating")
                         .HasColumnType("numeric");
 
@@ -184,6 +208,8 @@ namespace W4S.PostingService.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OfferId");
 
                     b.HasIndex("SubjectId");
 
@@ -208,7 +234,6 @@ namespace W4S.PostingService.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecondName")
@@ -227,11 +252,12 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0904bdd2-4227-4f7e-a7c4-134e8819852a"),
-                            CompanyId = new Guid("1202f21b-f746-4826-8cb1-7e465bd940c2"),
+                            Id = new Guid("33fd39f4-3d59-4ca5-ab85-08cea4360451"),
+                            CompanyId = new Guid("15f641b1-2823-47ca-85a8-3d9987443597"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
+                            SecondName = "",
                             Surname = "Smith"
                         });
                 });
@@ -251,7 +277,6 @@ namespace W4S.PostingService.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecondName")
@@ -268,10 +293,11 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("52b5c3d4-1c90-4cd2-a7ad-11adfa29c08d"),
+                            Id = new Guid("ad10a94c-18cf-443d-a137-f8ecd45830e3"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
+                            SecondName = "",
                             Surname = "Smith"
                         });
                 });
@@ -284,6 +310,10 @@ namespace W4S.PostingService.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("W4S.PostingService.Domain.Entities.ApplicationReview", "Review")
+                        .WithMany()
+                        .HasForeignKey("ReviewId");
+
                     b.HasOne("W4S.PostingService.Domain.Entities.Student", "Student")
                         .WithMany("Applications")
                         .HasForeignKey("StudentId")
@@ -292,16 +322,20 @@ namespace W4S.PostingService.Persistence.Migrations
 
                     b.Navigation("Offer");
 
+                    b.Navigation("Review");
+
                     b.Navigation("Student");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.ApplicationReview", b =>
                 {
-                    b.HasOne("W4S.PostingService.Domain.Entities.Application", null)
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
+                    b.HasOne("W4S.PostingService.Domain.Entities.Application", "Application")
+                        .WithOne()
+                        .HasForeignKey("W4S.PostingService.Domain.Entities.ApplicationReview", "SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Application");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.JobOffer", b =>
@@ -402,11 +436,19 @@ namespace W4S.PostingService.Persistence.Migrations
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.OfferReview", b =>
                 {
+                    b.HasOne("W4S.PostingService.Domain.Entities.JobOffer", "Offer")
+                        .WithMany()
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("W4S.PostingService.Domain.Entities.JobOffer", null)
                         .WithMany()
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Offer");
                 });
 
             modelBuilder.Entity("W4S.PostingService.Domain.Entities.Recruiter", b =>
@@ -415,6 +457,53 @@ namespace W4S.PostingService.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("W4S.PostingService.Domain.ValueType.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("RecruiterId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Building")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Region")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("RecruiterId");
+
+                            b1.ToTable("Recruiters");
+
+                            b1.WithOwner()
+                                .HasForeignKey("RecruiterId");
+
+                            b1.HasData(
+                                new
+                                {
+                                    RecruiterId = new Guid("33fd39f4-3d59-4ca5-ab85-08cea4360451"),
+                                    Building = "24",
+                                    City = "Gliwice",
+                                    Country = "Polandia",
+                                    Region = "Silesia",
+                                    Street = "Wrocławska"
+                                });
+                        });
+
+                    b.Navigation("Address")
                         .IsRequired();
 
                     b.Navigation("Company");
@@ -457,7 +546,7 @@ namespace W4S.PostingService.Persistence.Migrations
                             b1.HasData(
                                 new
                                 {
-                                    StudentId = new Guid("52b5c3d4-1c90-4cd2-a7ad-11adfa29c08d"),
+                                    StudentId = new Guid("ad10a94c-18cf-443d-a137-f8ecd45830e3"),
                                     Building = "Boilding",
                                     City = "Gliwice",
                                     Country = "Polandia",

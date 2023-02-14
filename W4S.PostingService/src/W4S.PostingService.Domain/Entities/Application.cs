@@ -23,5 +23,7 @@ namespace W4S.PostingService.Domain.Entities
         public ApplicationStatus Status { get; set; }
 
         public string Message { get; set; }
+
+        public ApplicationReview? Review { get; set; }
     }
 }
