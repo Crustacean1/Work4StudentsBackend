@@ -83,6 +83,7 @@ namespace W4S.PostingService.Persistence
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
+            //builder.LogTo(Console.WriteLine)
             builder.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? DEFAULT_CONNECTION_STRING);
         }
 

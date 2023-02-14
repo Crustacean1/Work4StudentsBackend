@@ -7,7 +7,6 @@ using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Console.Handlers;
 using System.Globalization;
 using W4S.PostingService.Domain.Commands;
-using W4S.PostingService.Domain.Queries;
 using MediatR;
 
 namespace W4S.PostingService.Console

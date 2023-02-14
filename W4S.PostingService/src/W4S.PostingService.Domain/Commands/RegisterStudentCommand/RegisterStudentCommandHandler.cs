@@ -11,7 +11,7 @@ namespace W4S.PostingService.Domain.Commands
     public class RegisterStudentCommandHandler : CommandHandlerBase, IRequestHandler<RegisterStudentCommand, Unit>
     {
         private readonly IRepository<Student> studentRepository;
-        private IMapper mapper;
+        private readonly IMapper mapper;
 
         public RegisterStudentCommandHandler(IRepository<Student> studentRepository)
         {
