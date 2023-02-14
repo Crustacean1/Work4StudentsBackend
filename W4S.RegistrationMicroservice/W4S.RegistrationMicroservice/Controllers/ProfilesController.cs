@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Models;
+using W4S.RegistrationMicroservice.Models.Profiles;
 using W4S.RegistrationMicroservice.Models.Profiles.Create;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
@@ -142,6 +143,20 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.Building = profile.Building;
                 response.Photo = profile.PhotoFile;
                 response.Resume = profile.ResumeFile;
+
+                if (profile.Avaiability != null)
+                {
+                    var avaiability = new List<ScheduleProfile>();
+                    foreach (var schedule in profile.Avaiability)
+                    {
+                        avaiability.Add(new ScheduleProfile()
+                        {
+                            Start = schedule.Start,
+                            End = schedule.End
+                        });
+                    }
+                    response.Avaiability = avaiability;
+                }
             }
             catch (Exception ex)
             {

@@ -23,6 +23,7 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpGet("get/student/{id}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
+        [Obsolete]
         public async Task<IActionResult> GetStudentProfileById([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
@@ -59,6 +60,7 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpGet("get/employer/{id}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
+        [Obsolete]
         public async Task<IActionResult> GetEmployerProfileById([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()

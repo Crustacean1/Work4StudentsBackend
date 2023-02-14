@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using W4S.RegistrationMicroservice.Models.Profiles;
 
 namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting
 {
@@ -23,5 +24,6 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
         public string City { get; set; }
         public string Street { get; set; }
         public string Building { get; set; }
+        public List<ScheduleProfile>? Avaiability { get; set; }
     }
 }
