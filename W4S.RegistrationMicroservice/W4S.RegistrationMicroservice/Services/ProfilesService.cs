@@ -343,7 +343,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     Building = dto.Building,
                 };
 
-                _client.SendEvent<UserInfoUpdatedEvent>("profiles.user.updated", newEvent);
+                _client.SendEvent<UserInfoUpdatedEvent>("registration.user.profile.updated", newEvent);
             }
         }
 
