@@ -14,5 +14,6 @@ namespace W4S.RegistrationMicroservice.Data.Entities.Profiles
         public byte[]? ResumeFile { get; set; }
         public Guid StudentId { get; set; }
         public Student Student { get; set; }
+        public ICollection<StudentSchedule>? Avaiability { get; set; }
     }
 }

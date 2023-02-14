@@ -130,7 +130,8 @@ namespace W4S.Gateway.Console.Accounts
                 Street = dto.Street,
                 Building = dto.Building,
                 Image = image,
-                ResumeFile = resume
+                ResumeFile = resume,
+                Avaiability = dto.Avaiability
             };
             logger.LogInformation("Request: Update student profile");
             var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentProfileDtoWithId>("profiles.update.student", correctedDto, cancellationToken);

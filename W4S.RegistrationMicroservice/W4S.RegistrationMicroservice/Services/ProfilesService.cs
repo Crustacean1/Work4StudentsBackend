@@ -152,6 +152,21 @@ namespace W4S.RegistrationMicroservice.API.Services
                     student.Building = dto.Building;
                     studentProfile.Building = dto.Building;
                 }
+                if(studentProfile.Avaiability != dto.Avaiability)
+                {
+                    List<StudentSchedule> avaiability = new List<StudentSchedule>();
+                    foreach(var item in dto.Avaiability)
+                    {
+                        avaiability.Add(new StudentSchedule()
+                        {
+                            Id = Guid.NewGuid(),
+                            Start = item.Start,
+                            End = item.End,
+                        });
+                    }
+
+                    studentProfile.Avaiability = avaiability;
+                }
 
                 studentProfile.Description = dto.Description;
                 studentProfile.ShortDescription = dto.ShortDescription;
@@ -173,6 +188,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     City = dto.City,
                     Street = dto.Street,
                     Building = dto.Building,
+                    Avaiability = dto.Avaiability
                 };
 
                 _client.SendEvent<UserInfoUpdatedEvent>("profiles.user.updated", newEvent);
@@ -403,8 +419,8 @@ namespace W4S.RegistrationMicroservice.API.Services
 
                 _dbContext.Employers.Update(employer);
                 _dbContext.EmployerProfiles.Update(employerProfile);
-                _dbContext.SaveChanges(); 
-                
+                _dbContext.SaveChanges();
+
                 var newEvent = new UserInfoUpdatedEvent()
                 {
                     UserId = employerProfile.EmployerId,
@@ -415,6 +431,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     City = dto.City,
                     Street = dto.Street,
                     Building = dto.Building,
+                    Avaiability = null
                 };
 
                 _client.SendEvent<UserInfoUpdatedEvent>("registration.user.profile.updated", newEvent);

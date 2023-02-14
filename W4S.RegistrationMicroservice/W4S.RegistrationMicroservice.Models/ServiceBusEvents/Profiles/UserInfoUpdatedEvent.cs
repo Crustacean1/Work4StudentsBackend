@@ -1,4 +1,6 @@
-﻿namespace W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles
+﻿using W4S.RegistrationMicroservice.Models.Profiles;
+
+namespace W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles
 {
     public class UserInfoUpdatedEvent // send to other services
     {
@@ -10,5 +12,7 @@
         public string? City { get; set; }
         public string? Street { get; set; }
         public string? Building { get; set; }
+
+        public List<ScheduleProfile>? Avaiability { get; set; }
     }
 }

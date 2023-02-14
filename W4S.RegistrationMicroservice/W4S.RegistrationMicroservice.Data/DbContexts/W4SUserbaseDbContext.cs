@@ -66,7 +66,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
 
             // Roles
             modelBuilder.Entity<Role>().Property(e => e.Description).IsRequired();
-            
+                        
             // Profiles
             modelBuilder.Entity<Profile>().Property(x => x.Description).HasMaxLength(500);
             modelBuilder.Entity<Profile>().Property(x => x.ShortDescription).HasMaxLength(200);

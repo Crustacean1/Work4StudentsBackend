@@ -23,5 +23,6 @@ namespace W4S.RegistrationMicroservice.Models.Profiles.Update
         public string Street { get; set; }
         public string Building { get; set; }
         public byte[]? ResumeFile { get; set; }
+        public List<ScheduleProfile>? Avaiability { get; set; }
     }
 }
