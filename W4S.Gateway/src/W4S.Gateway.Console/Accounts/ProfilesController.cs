@@ -99,6 +99,22 @@ namespace W4S.Gateway.Console.Accounts
         [Authorize(Roles = "Student,Administrator")]
         public async Task<IActionResult> UpdateStudentProfile([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
         {
+            byte[]? image = null;
+            byte[]? resume = null;
+
+            if(dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+            if (dto.ResumeFile != null)
+            {
+                using var fileStream = dto.ResumeFile.OpenReadStream();
+                resume = new byte[dto.Image.Length];
+                fileStream.Read(resume, 0, (int)dto.Image.Length);
+            }
+
             var correctedDto = new UpdateStudentProfileDtoWithId()
             {
                 Id = id,
@@ -113,8 +129,8 @@ namespace W4S.Gateway.Console.Accounts
                 City = dto.City,
                 Street = dto.Street,
                 Building = dto.Building,
-                Image = dto.Image,
-                ResumeFile = dto.ResumeFile
+                Image = image,
+                ResumeFile = resume
             };
             logger.LogInformation("Request: Update student profile");
             var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentProfileDtoWithId>("profiles.update.student", correctedDto, cancellationToken);
@@ -131,6 +147,15 @@ namespace W4S.Gateway.Console.Accounts
         [Authorize(Roles = "Employer,Administrator")]
         public async Task<IActionResult> UpdateEmployerProfile([FromRoute] Guid id, [FromForm] UpdateProfileDto dto, CancellationToken cancellationToken)
         {
+            byte[]? image = null;
+
+            if (dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+
             var correctedDto = new UpdateProfileDtoWithId()
             {
                 Id = id,
@@ -145,7 +170,7 @@ namespace W4S.Gateway.Console.Accounts
                 City = dto.City,
                 Street = dto.Street,
                 Building = dto.Building,
-                Image = dto.Image
+                Image = image
             };
             logger.LogInformation("Request: Update employer profile");
             var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateProfileDtoWithId>("profiles.update.employer", correctedDto, cancellationToken);

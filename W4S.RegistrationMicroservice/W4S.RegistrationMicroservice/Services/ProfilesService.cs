@@ -98,25 +98,68 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             if (studentProfile != null)
             {
+
+                var student = _dbContext.Students
+                    .Where(e => e.Id == studentProfile.StudentId)
+                    .FirstOrDefault();
+
+                if (student == null)
+                {
+                    throw new UserNotFoundException("Couldn't find a student connected to that profile."); // not gonna happen
+                }
+
+                if (studentProfile.EmailAddress != dto.EmailAddress)
+                {
+                    _logger.LogInformation("Validating email correctness.");
+                    _dataValidator.ValidateEmailCorrectness(dto.EmailAddress, studentProfile.StudentId);
+                    _dataValidator.ValidateUniversity(dto.EmailAddress);
+                    _logger.LogInformation("Validated email correctness.");
+                    student.EmailAddress = dto.EmailAddress;
+                    studentProfile.EmailAddress = dto.EmailAddress;
+                }
+                if (studentProfile.PhoneNumber != dto.PhoneNumber)
+                {
+                    _logger.LogInformation("Validating phone number.");
+                    //_dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
+                    _logger.LogInformation("Validated phone number.");
+                    student.PhoneNumber = dto.PhoneNumber;
+                    studentProfile.PhoneNumber = dto.PhoneNumber;
+                }
+                if (studentProfile.Country != dto.Country)
+                {
+                    student.Country = dto.Country;
+                    studentProfile.Country = dto.Country;
+                }
+                if (studentProfile.Region != dto.Region)
+                {
+                    student.Region = dto.Region;
+                    studentProfile.Region = dto.Region;
+
+                }
+                if (studentProfile.City != dto.City)
+                {
+                    student.City = dto.City;
+                    studentProfile.City = dto.City;
+
+                }
+                if (studentProfile.Street != dto.Street)
+                {
+                    student.Street = dto.Street;
+                    studentProfile.Street = dto.Street;
+                }
+                if (studentProfile.Building != dto.Building)
+                {
+                    student.Building = dto.Building;
+                    studentProfile.Building = dto.Building;
+                }
+
                 studentProfile.Description = dto.Description;
-                if (dto.Image != null)
-                {
-                    studentProfile.PhotoFile = dto.Image.ExtractFileContent();
-                }
-                else
-                {
-                    studentProfile.PhotoFile = null;
-                }
+                studentProfile.ShortDescription = dto.ShortDescription;
+                studentProfile.PhotoFile = dto.Image;
+                studentProfile.ResumeFile = dto.ResumeFile;
+                studentProfile.Description = dto.Description;
 
-                if(dto.ResumeFile != null)
-                {
-                    studentProfile.ResumeFile = dto.ResumeFile.ExtractFileContent();
-                }
-                else
-                {
-                    studentProfile.ResumeFile = null;
-                }
-
+                _dbContext.Students.Update(student);
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
 
@@ -294,40 +337,71 @@ namespace W4S.RegistrationMicroservice.API.Services
                     .Where(p => p.Id == dto.Id)
                     .FirstOrDefault();
 
+            _logger.LogInformation($"Found a profile with Id: {dto.Id}");
+
             if (employerProfile != null)
             {
-                if (employerProfile.EmailAddress != dto.EmailAddress || employerProfile.PhoneNumber != dto.PhoneNumber) 
+
+                var employer = _dbContext.Employers
+                    .Where(e => e.Id == employerProfile.EmployerId)
+                    .FirstOrDefault();
+
+                if (employer == null)
                 {
-                    _dataValidator.ValidateEmailCorrectness(dto.EmailAddress);
-                    _dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
-                    var employer = _dbContext.Employers
-                        .Where(e => e.Id == employerProfile.EmployerId)
-                        .FirstOrDefault();
-
-                    if (employer == null)
-                    {
-                        throw new UserNotFoundException("Couldn't find an employer connected to that profile."); // not gonna happen
-                    }
-
-                    employer.EmailAddress = dto.EmailAddress;
-                    employer.PhoneNumber = dto.PhoneNumber;
-                    _dbContext.Employers.Update(employer);
+                    throw new UserNotFoundException("Couldn't find an employer connected to that profile."); // not gonna happen
                 }
+
+                if (employerProfile.EmailAddress != dto.EmailAddress)
+                {
+                    _logger.LogInformation("Validating email correctness.");
+                    _dataValidator.ValidateEmailCorrectness(dto.EmailAddress, employerProfile.EmployerId);
+                    _logger.LogInformation("Validated email correctness.");
+                    employer.EmailAddress = dto.EmailAddress;
+                    employerProfile.EmailAddress = dto.EmailAddress;
+                }
+                if(employerProfile.PhoneNumber != dto.PhoneNumber)
+                {
+                    _logger.LogInformation("Validating phone number.");
+                    //_dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
+                    _logger.LogInformation("Validated phone number.");
+                    employer.PhoneNumber = dto.PhoneNumber;
+                    employerProfile.PhoneNumber = dto.PhoneNumber;
+                }
+                if(employerProfile.Country != dto.Country)
+                {
+                    employer.Country = dto.Country;
+                    employerProfile.Country = dto.Country;
+                }
+                if(employerProfile.Region != dto.Region)
+                {
+                    employer.Region = dto.Region;
+                    employerProfile.Region = dto.Region;
+
+                }
+                if(employerProfile.City != dto.City)
+                {
+                    employer.City = dto.City;
+                    employerProfile.City = dto.City;
+
+                }
+                if(employerProfile.Street != dto.Street)
+                {
+                    employer.Street = dto.Street;
+                    employerProfile.Street = dto.Street;
+                }
+                if(employerProfile.Building != dto.Building)
+                {
+                    employer.Building = dto.Building;
+                    employerProfile.Building = dto.Building;
+                }
+
                 employerProfile.Description = dto.Description;
                 employerProfile.ShortDescription = dto.ShortDescription;
-                employerProfile.EmailAddress = dto.EmailAddress;
-                employerProfile.PhoneNumber = dto.PhoneNumber;
+                employerProfile.PhotoFile = dto.Image;
 
-                if(dto.Image != null)
-                {
-                    employerProfile.PhotoFile = dto.Image.ExtractFileContent();
-                }
-                else
-                {
-                    employerProfile.PhotoFile = null;
-                }
+                _logger.LogInformation("Trying to update employer and employerProfile.");
 
-
+                _dbContext.Employers.Update(employer);
                 _dbContext.EmployerProfiles.Update(employerProfile);
                 _dbContext.SaveChanges(); 
                 
@@ -344,6 +418,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 };
 
                 _client.SendEvent<UserInfoUpdatedEvent>("registration.user.profile.updated", newEvent);
+                _logger.LogInformation("Sent an event about updated user.");
             }
         }
 

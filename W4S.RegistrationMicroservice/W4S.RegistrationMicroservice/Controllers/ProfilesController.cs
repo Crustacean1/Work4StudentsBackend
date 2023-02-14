@@ -58,6 +58,8 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         {
             var response = new EmployerProfileUpdatedResponse();
 
+            _logger.LogInformation($"Got a request to update a profile with Id: {correctedDto.Id}");
+
             try
             {
                 _profilesService.UpdateEmployerProfile(correctedDto);

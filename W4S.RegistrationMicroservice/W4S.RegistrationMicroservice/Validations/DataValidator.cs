@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using W4S.RegistrationMicroservice.API.Exceptions;
 using W4S.RegistrationMicroservice.API.Validations.Interfaces;
 using W4S.RegistrationMicroservice.Data.DbContexts;
+using W4S.RegistrationMicroservice.Data.Entities.Users;
 
 namespace W4S.RegistrationMicroservice.Validations
 {
@@ -43,7 +44,7 @@ namespace W4S.RegistrationMicroservice.Validations
             }
         }
 
-        public void ValidateEmailCorrectness(string email)
+        public void ValidateEmailCorrectness(string email, Guid? userId)
         {
             try
             {
@@ -57,7 +58,15 @@ namespace W4S.RegistrationMicroservice.Validations
 
             try
             {
-                if (_dbContext.Users.Any(e => e.EmailAddress == email))
+                User? user = null;
+                if(userId != null)
+                {
+                    user = _dbContext.Users
+                        .Where(x => x.Id == userId && x.EmailAddress == email)
+                        .FirstOrDefault();
+                }
+
+                if (_dbContext.Users.Any(e => e.EmailAddress == email) && user == null)
                 {
                     throw new UserAlreadyRegisteredException("This email is already connected to an another user.");
                 }

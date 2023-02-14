@@ -37,11 +37,11 @@ namespace W4S.RegistrationMicroservice.API.Services
         {
             try
             {
-                _dataValidator.ValidateEmailCorrectness(employerCreationDto.EmailAddress);
+                _dataValidator.ValidateEmailCorrectness(employerCreationDto.EmailAddress, null);
                 _dataValidator.ValidateNIPNumber(employerCreationDto.NIP);
                 if(employerCreationDto.PhoneNumber != null) 
                 { 
-                    _dataValidator.ValidatePhoneNumber(employerCreationDto.PhoneNumber);
+                    //_dataValidator.ValidatePhoneNumber(employerCreationDto.PhoneNumber);
                 }
             }
             catch (IncorrectNIPNumberException)
@@ -157,11 +157,11 @@ namespace W4S.RegistrationMicroservice.API.Services
 
             try
             {
-                _dataValidator.ValidateEmailCorrectness(studentCreationDto.EmailAddress);
+                _dataValidator.ValidateEmailCorrectness(studentCreationDto.EmailAddress, null);
                 emailDomainId = _dataValidator.ValidateUniversity(studentCreationDto.EmailAddress);
                 if(studentCreationDto.PhoneNumber != null)
                 {
-                    _dataValidator.ValidatePhoneNumber(studentCreationDto.PhoneNumber);
+                    //_dataValidator.ValidatePhoneNumber(studentCreationDto.PhoneNumber);
                 }
             }
             catch (UniversityDomainNotInDatabaseException e)
