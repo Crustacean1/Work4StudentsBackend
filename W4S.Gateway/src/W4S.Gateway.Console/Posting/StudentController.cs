@@ -29,10 +29,9 @@ namespace W4S.Gateway.Console.Posting
         {
             var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
             var query = new GetStudentApplicationsQuery
-            (
-                paginatedQuery.Page,
-                paginatedQuery.PageSize)
             {
+                Page = paginatedQuery.Page,
+                PageSize = paginatedQuery.PageSize,
                 StudentId = Guid.Parse(studentId)
             };
 

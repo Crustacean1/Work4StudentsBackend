@@ -3,6 +3,7 @@ using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
+using W4S.PostingService.Domain.ValueType;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 
 namespace W4S.PostingService.Domain.Commands
@@ -17,8 +18,9 @@ namespace W4S.PostingService.Domain.Commands
         {
             var mapperConfig = new MapperConfiguration(builder =>
             {
-                builder.CreateMap<EmployerRegisteredEvent, Recruiter>();
-                builder.CreateMap<CompanyDto, Company>();
+                builder.CreateMap<EmployerRegisteredEvent, Recruiter>().ForAllMembers(opts => opts.Condition((src, dest, member) => member != null));
+                builder.CreateMap<CompanyDto, Company>().ForAllMembers(opts => opts.Condition((src, dest, member) => member != null));
+                builder.CreateMap<EmployerRegisteredEvent, Address>().ForAllMembers(opts => opts.Condition((src, dest, member) => member != null));
             });
 
             mapper = mapperConfig.CreateMapper();
@@ -30,9 +32,11 @@ namespace W4S.PostingService.Domain.Commands
         {
             var recruiter = mapper.Map<Recruiter>(command.Recruiter);
             var company = mapper.Map<Company>(command.Recruiter.Company);
+            var address = mapper.Map<Address>(command.Recruiter);
 
             recruiter.Company = null;
             recruiter.CompanyId = company.Id;
+            recruiter.Address = address;
 
             var prevStudent = await recruiterRepository.GetEntityAsync(recruiter.Id);
             if (prevStudent != null)

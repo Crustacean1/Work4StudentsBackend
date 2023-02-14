@@ -58,15 +58,9 @@ namespace W4S.Gateway.Console.Posting
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOffersDto>))]
-        public async Task<ActionResult> GetJobOffers([FromQuery] OfferQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetJobOffers([FromQuery] GetOffersQuery query, CancellationToken cancellationToken)
         {
-            var offersQuery = new GetOffersQuery(query?.Page ?? 0, query?.PageSize ?? 10)
-            {
-                Keywords = query.Keywords?.Split(" ", StringSplitOptions.TrimEntries) ?? new string[] { },
-                Categories = query.Categories?.Split(" ", StringSplitOptions.TrimEntries) ?? new string[] { },
-            };
-
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, GetOffersQuery>("offers.getOffers", offersQuery, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, GetOffersQuery>("offers.getOffers", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
@@ -92,8 +86,10 @@ namespace W4S.Gateway.Console.Posting
         {
             logger.LogInformation("Getting job applications for {Offer}", offerId);
 
-            var query = new GetOfferApplicationsQuery(paginatedQuery.Page, paginatedQuery.PageSize)
+            var query = new GetOfferApplicationsQuery
             {
+                Page = paginatedQuery.Page,
+                PageSize = paginatedQuery.PageSize,
                 OfferId = offerId,
             };
 
@@ -105,14 +101,14 @@ namespace W4S.Gateway.Console.Posting
         [Authorize]
         [Route("{offerId}/reviews")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<OfferReview>))]
-        public async Task<ActionResult> GetReviews([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetReviews([FromRoute] Guid offerId, [FromQuery] PaginatedQuery pagedQuery, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for recruiter {Id}", paginatedQuery.Page, paginatedQuery.PageSize, offerId);
+            logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for recruiter {Id}", pagedQuery.Page, pagedQuery.PageSize, offerId);
 
             var query = new GetRecruiterReviewsQuery
             {
-                PageSize = paginatedQuery.PageSize,
-                Page = paginatedQuery.Page,
+                PageSize = pagedQuery.PageSize,
+                Page = pagedQuery.Page,
                 RecruiterId = offerId
             };
 

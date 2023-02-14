@@ -3,7 +3,7 @@ using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetOfferDto
+    public class GetOffersDto
     {
         public Guid Id { get; set; }
 
@@ -24,7 +24,5 @@ namespace W4S.PostingService.Domain.Queries
         public DateTime CreationDate { get; set; }
 
         public ICollection<Schedule> WorkingHours { get; set; } = new List<Schedule>();
-
-        public CompanyDto Company { get; set; }
     }
 }

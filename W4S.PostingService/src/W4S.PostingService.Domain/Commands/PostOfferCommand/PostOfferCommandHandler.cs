@@ -10,12 +10,12 @@ namespace W4S.PostingService.Domain.Commands
     public class PostOfferCommandHandler : CommandHandlerBase, IRequestHandler<PostOfferCommand, Guid>
     {
         private readonly ILogger<PostOfferCommandHandler> logger;
-        private readonly IRepository<JobOffer> offerRepository;
+        private readonly IOfferRepository offerRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
 
         private readonly IMapper mapper;
 
-        public PostOfferCommandHandler(IRepository<JobOffer> offerRepository, ILogger<PostOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository = null)
+        public PostOfferCommandHandler(IOfferRepository offerRepository, ILogger<PostOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository = null)
         {
             this.offerRepository = offerRepository;
             this.logger = logger;

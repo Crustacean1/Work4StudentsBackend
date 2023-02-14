@@ -28,11 +28,10 @@ namespace W4S.Gateway.Console.Posting
             logger.LogInformation("Getting job offers of recruiter: {RecruiterId}", recruiterId);
 
             var query = new GetRecruiterOffersQuery
-            (
-                paginatedQuery.Page,
-                paginatedQuery.PageSize)
             {
-                RecrutierId = recruiterId
+                Page = paginatedQuery.Page,
+                PageSize = paginatedQuery.PageSize,
+                RecruiterId = recruiterId
             };
 
             var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, GetRecruiterOffersQuery>("offers.getRecruiterOffers", query, cancellationToken);

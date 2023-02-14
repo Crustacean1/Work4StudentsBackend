@@ -17,8 +17,8 @@ namespace W4S.PostingService.Domain.Commands
         {
             var mapperConfig = new MapperConfiguration(builder =>
             {
-                builder.CreateMap<StudentRegisteredEvent, Student>();
-                builder.CreateMap<StudentRegisteredEvent, Address>();
+                builder.CreateMap<StudentRegisteredEvent, Student>().ForAllMembers(opts => opts.Condition((src, dest, member) => member != null));
+                builder.CreateMap<StudentRegisteredEvent, Address>().ForAllMembers(opts => opts.Condition((src, dest, member) => member != null));
             });
 
             mapper = mapperConfig.CreateMapper();

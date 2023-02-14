@@ -5,7 +5,7 @@ using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Queries
 {
-    public class GetStudentsReviewsQueryHandler : IRequestHandler<GetStudentReviewsQuery, PaginatedList<ApplicationReview>>
+    public class GetStudentsReviewsQueryHandler : IRequestHandler<GetStudentReviewsQuery, PaginatedList<Review>>
     {
         private readonly IReviewRepository<ApplicationReview> reviewRepository;
         private readonly IRepository<Student> studentRepository;
@@ -16,17 +16,16 @@ namespace W4S.PostingService.Domain.Queries
             this.studentRepository = studentRepository;
         }
 
-        public async Task<PaginatedList<ApplicationReview>> Handle(GetStudentReviewsQuery query, CancellationToken cancellationToken)
+        public async Task<PaginatedList<Review>> Handle(GetStudentReviewsQuery query, CancellationToken cancellationToken)
         {
             var student = await studentRepository.GetEntityAsync(query.StudentId);
             if (student is null)
             {
                 throw new PostingException($"No student with id: {query.StudentId}", 400);
             }
-            var reviews = await reviewRepository.GetStudentReviews(student.Id, query.Page, query.PageSize);
-            var reviewCount = await reviewRepository.GetStudentReviewCount(student.Id);
+            var reviews = await reviewRepository.GetReceivedReviews(student.Id, query);
 
-            return new PaginatedList<ApplicationReview>(reviews.ToList(), query.Page, query.PageSize, reviewCount);
+            return new PaginatedList<Review>(reviews.Items.ToList(), query.Page, query.PageSize, reviews.TotalCount);
         }
     }
 }

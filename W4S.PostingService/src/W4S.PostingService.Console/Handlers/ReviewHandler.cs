@@ -29,7 +29,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getRecruiterReviews")]
-        public async Task<ResponseWrapper<PaginatedList<OfferReview>>> GetRecruiterReviews(GetRecruiterReviewsQuery query)
+        public async Task<ResponseWrapper<PaginatedList<Review>>> GetRecruiterReviews(GetRecruiterReviewsQuery query)
         {
             logger.LogInformation("Get reviews of recruiter {Recruiter}", query.RecruiterId);
 
@@ -53,7 +53,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getStudentReviews")]
-        public async Task<ResponseWrapper<PaginatedList<ApplicationReview>>> GetStudentReviews(GetStudentReviewsQuery query)
+        public async Task<ResponseWrapper<PaginatedList<Review>>> GetStudentReviews(GetStudentReviewsQuery query)
         {
             logger.LogInformation("Get reviews of student {Student}", query.StudentId);
 

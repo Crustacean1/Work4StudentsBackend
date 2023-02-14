@@ -39,7 +39,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpPost]
-        [Route("withdraw/{applicationId}")]
+        [Route("{applicationId}/withdraw")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
         public async Task<ActionResult> WithdrawApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
         {
