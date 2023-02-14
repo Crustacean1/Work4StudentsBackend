@@ -11,10 +11,10 @@ namespace W4S.PostingService.Domain.Queries
     public class GetOfferApplicationsQueryHandler : IRequestHandler<GetOfferApplicationsQuery, PaginatedList<GetApplicationDto>>
     {
         private readonly IRepository<Application> applicationRepository;
-        private readonly IRepository<JobOffer> offerRepository;
+        private readonly IOfferRepository offerRepository;
         private readonly IMapper mapper;
 
-        public GetOfferApplicationsQueryHandler(IRepository<JobOffer> offerRepository, IRepository<Application> applicationRepository)
+        public GetOfferApplicationsQueryHandler(IOfferRepository offerRepository, IRepository<Application> applicationRepository)
         {
             this.offerRepository = offerRepository;
             this.applicationRepository = applicationRepository;

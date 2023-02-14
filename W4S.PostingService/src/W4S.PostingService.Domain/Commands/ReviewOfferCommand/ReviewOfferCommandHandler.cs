@@ -22,7 +22,7 @@ namespace W4S.PostingService.Domain.Commands
 
             var conf = new MapperConfiguration(b =>
             {
-                b.CreateMap<OfferReview, OfferReview>();
+                b.CreateMap<OfferReviewDto, OfferReview>();
             });
             this.mapper = conf.CreateMapper();
             this.applicationRepository = applicationRepository;
@@ -49,6 +49,7 @@ namespace W4S.PostingService.Domain.Commands
             review.Id = Guid.NewGuid();
             review.AuthorId = student.Id;
             review.SubjectId = offer.Id;
+            review.CreationDate = DateTime.UtcNow;
 
             await reviewRepository.AddAsync(review);
             await reviewRepository.SaveAsync();

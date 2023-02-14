@@ -8,10 +8,10 @@ namespace W4S.PostingService.Domain.Commands
     public class SubmitApplicationCommandHandler : CommandHandlerBase, IRequestHandler<SubmitApplicationCommand, Guid>
     {
         private readonly IRepository<Student> studentRepository;
-        private readonly IRepository<JobOffer> offerRepository;
+        private readonly IOfferRepository offerRepository;
         private readonly IRepository<Application> applicationRepository;
 
-        public SubmitApplicationCommandHandler(IRepository<Application> applicationRepository, IRepository<Student> studentRepository, IRepository<JobOffer> offerRepository)
+        public SubmitApplicationCommandHandler(IRepository<Application> applicationRepository, IRepository<Student> studentRepository, IOfferRepository offerRepository)
         {
             this.applicationRepository = applicationRepository;
             this.studentRepository = studentRepository;

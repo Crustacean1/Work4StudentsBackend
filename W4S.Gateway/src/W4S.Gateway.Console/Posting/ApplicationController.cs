@@ -53,7 +53,7 @@ namespace W4S.Gateway.Console.Posting
         [Route("{applicationId}/reviews")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
         [Authorize]
-        public async Task<ActionResult> PostReview([FromRoute] Guid applicationId, [FromBody] ApplicationReview review, CancellationToken cancellationToken)
+        public async Task<ActionResult> PostReview([FromRoute] Guid applicationId, [FromBody] ApplicationReviewDto review, CancellationToken cancellationToken)
         {
             var recruiterId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
             logger.LogInformation("Recruiter {RecruiterId} reviews offer {Application}", recruiterId, applicationId);

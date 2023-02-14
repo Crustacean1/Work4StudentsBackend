@@ -32,7 +32,6 @@ namespace W4S.PostingService.Persistence.Repositories
                 .Where(o => o.SearchVector.Matches(query.Keywords))
                 .CountAsync();
 
-
             var offers = await context.Set<JobOffer>()
                 .Where(o => o.SearchVector.Matches(query.Keywords))
                 .OrderBy(jo => jo.CreationDate)
