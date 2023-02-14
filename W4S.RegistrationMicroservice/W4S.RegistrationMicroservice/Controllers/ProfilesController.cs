@@ -32,32 +32,14 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("update.student")]
-        public Task<StudentProfileUpdatedResponse> UpdateStudentProfile([FromQuery] Guid id, [FromBody] UpdateStudentProfileDto dto)
+        public Task<StudentProfileUpdatedResponse> UpdateStudentProfile(UpdateStudentProfileDtoWithId correctedDto)
         {
-            var correctedDto = new UpdateStudentProfileDtoWithId()
-            {
-                Id = id,
-                Description = dto.Description,
-                ShortDescription = dto.ShortDescription,
-                EmailAddress = dto.EmailAddress,
-                PhoneNumber = dto.PhoneNumber,
-                Education = dto.Education,
-                Experience = dto.Experience,
-                Country = dto.Country,
-                Region = dto.Region,
-                City = dto.City,
-                Street = dto.Street,
-                Building = dto.Building,
-                Image = dto.Image,
-                ResumeFile = dto.ResumeFile,
-            };
-
             var response = new StudentProfileUpdatedResponse();
 
             try
             {
                 _profilesService.UpdateStudentProfile(correctedDto);
-                _logger.LogInformation($"Updated profile with Id {id}.");
+                _logger.LogInformation($"Updated profile with Id {correctedDto.Id}.");
                 response.WasUpdated = true;
             }
             catch (Exception ex)
@@ -72,31 +54,14 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("update.employer")]
-        public Task<EmployerProfileUpdatedResponse> UpdateEmployerProfile([FromQuery] Guid id, [FromBody] UpdateProfileDto dto)
+        public Task<EmployerProfileUpdatedResponse> UpdateEmployerProfile(UpdateProfileDtoWithId correctedDto)
         {
-            var correctedDto = new UpdateProfileDtoWithId()
-            {
-                Id = id,
-                Description = dto.Description,
-                ShortDescription = dto.ShortDescription,
-                EmailAddress = dto.EmailAddress,
-                PhoneNumber = dto.PhoneNumber,
-                Education = dto.Education,
-                Experience = dto.Experience,
-                Country = dto.Country,
-                Region = dto.Region,
-                City = dto.City,
-                Street = dto.Street,
-                Building = dto.Building,
-                Image = dto.Image,
-            };
-
             var response = new EmployerProfileUpdatedResponse();
 
             try
             {
                 _profilesService.UpdateEmployerProfile(correctedDto);
-                _logger.LogInformation($"Updated profile with Id {id}.");
+                _logger.LogInformation($"Updated profile with Id {correctedDto.Id}.");
             }
             catch (Exception ex)
             {
@@ -160,6 +125,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                     _logger.LogInformation("This profile has student set as null.");
                 }
 
+                response.ProfileId = profile.Id;
                 response.FirstName = profile.Student.Name;
                 response.SecondName = profile.Student.SecondName;
                 response.Surname = profile.Student.Surname;
@@ -183,25 +149,6 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             return Task.FromResult(response);
         }
-
-
-        //[BusRequestHandler("get.students")]
-        //public Task GetStudentsProfiles(GuidPackedDtoList ids)
-        //{
-        //    var response = new EmployerProfileCreatedResponse(); // placeholder
-        //    try
-        //    {
-        //        _profilesService.GetStudentProfiles(ids.PackedGuids.ToArray());
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var message = ex.InnerException.Message ?? ex.Message;
-        //        _logger.LogError(message, ex);
-        //        response.ExceptionMessage = message;
-        //    }
-        //    return Task.FromResult(response);
-        //}
-
 
         [BusRequestHandler("get.employer")]
         public Task GetEmployerProfile(GuidPackedDto employerId)
@@ -242,6 +189,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             {
                 var profile = _profilesService.GetEmployerProfileByEmployerId(guid.Id);
 
+                response.ProfileId = profile.Id;
                 response.FirstName = profile.Employer.Name;
                 response.SecondName = profile.Employer.SecondName;
                 response.Surname = profile.Employer.Surname;
