@@ -26,20 +26,15 @@ namespace W4S.PostingService.Persistence.Repositories
 
         public async Task<PaginatedRecords<GetOffersDto>> GetOffers(GetOffersQuery query)
         {
-            var keywords = string.IsNullOrEmpty(query.Keywords) ? new List<string>() : query.Keywords.Split(" ", StringSplitOptions.TrimEntries).ToList();
+            logger.LogInformation("Most curious {Coutn}", query.Keywords);
 
             var totalCount = await context.Set<JobOffer>()
-
-                /*.Where(jo => keywords.Count() == 0
-                || keywords.Any(cat => jo.Description.Contains(cat))
-                || keywords.Any(cat => jo.Title.Contains(cat))
-                || keywords.Any(cat => jo.Role.Contains(cat)))*/
+                .Where(o => o.SearchVector.Matches(query.Keywords))
                 .CountAsync();
 
-            logger.LogInformation("Most curious {Coutn}", keywords.Count());
 
             var offers = await context.Set<JobOffer>()
-                .Where(o => o.SearchVector.Matches(EF.Functions.ToTsQuery(query.Keywords)))
+                .Where(o => o.SearchVector.Matches(query.Keywords))
                 .OrderBy(jo => jo.CreationDate)
                 .Skip(query.RecordsToSkip)
                 .Take(query.PageSize)
