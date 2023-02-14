@@ -12,8 +12,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="W4S.PostingService.Domain" Version="1.13.0" />
     <PackageReference Include="W4S.ServiceBus" Version="2.2.0" />
-    <PackageReference Include="W4S.PostingService.Domain" Version="1.6.0" />
-    <PackageReference Include="W4S.ServiceBus" Version="2.2.0" />
     <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="3.2.7" />
   </ItemGroup>
 

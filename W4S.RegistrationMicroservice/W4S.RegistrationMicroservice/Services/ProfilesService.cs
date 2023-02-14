@@ -236,7 +236,7 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         #region Employer
 
-        public Guid CreateEmployerProfile(Employer employer)
+        public Guid CreateEmployerProfile(Employer employer, string companyName)
         {
             try
             {
@@ -264,6 +264,8 @@ namespace W4S.RegistrationMicroservice.API.Services
                 City = employer.City,
                 Street = employer.Street,
                 Building = employer.Building,
+                PositionName = employer.PositionName,
+                CompanyName = companyName,
                 EmployerId = employer.Id,
                 Employer = employer
             };

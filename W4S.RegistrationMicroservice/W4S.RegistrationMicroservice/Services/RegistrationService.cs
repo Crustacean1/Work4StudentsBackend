@@ -1,24 +1,17 @@
-﻿using W4SRegistrationMicroservice.API.Exceptions;
+﻿using W4S.RegistrationMicroservice.API.Exceptions;
+using W4S.RegistrationMicroservice.API.Interfaces;
+using W4S.RegistrationMicroservice.API.Validations.Interfaces;
 using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4S.RegistrationMicroservice.Data.Entities;
-using System.Net.Mail;
-using System.Text.RegularExpressions;
-using W4SRegistrationMicroservice.CommonServices.Interfaces;
-using W4S.RegistrationMicroservice.Models.Users.Creation;
-using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
-using W4S.RegistrationMicroservice.API.Interfaces;
-using W4S.RegistrationMicroservice.API.Exceptions;
-using W4S.RegistrationMicroservice.Data.Entities.Profiles;
-using W4S.RegistrationMicroservice.Models.Profiles.Create;
-using W4S.RegistrationMicroservice.API.Validations.Interfaces;
+using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
+using W4S.RegistrationMicroservice.Models.Users.Creation;
+using W4SRegistrationMicroservice.CommonServices.Interfaces;
 
 namespace W4S.RegistrationMicroservice.API.Services
 {
     public class RegistrationService : IRegistrationService
     {
-        private const string REGEX_DOMAIN_PATTERN = @"@([\w\-]+)((\.(\w){2,3})+)$";
-
         private readonly IHasher _passwordHasher;
         private readonly IProfilesService _profilesService;
 
@@ -63,6 +56,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 _logger.LogError(e.Message);
                 employerCreationDto.PhoneNumber = null;
+                //throw; have to change this shiiiit
             }
             catch (FormatException e)
             {
@@ -129,7 +123,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _logger.LogError(e.InnerException.Message, e);
             }
 
-            _profilesService.CreateEmployerProfile(employer);
+            _profilesService.CreateEmployerProfile(employer, employerCreationDto.CompanyName);
 
             return new EmployerRegisteredEvent()
             {

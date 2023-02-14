@@ -7,7 +7,7 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
 {
     public interface IProfilesService
     {
-        Guid CreateEmployerProfile(Employer employer);
+        Guid CreateEmployerProfile(Employer employer, string companyName);
         Guid CreateStudentProfile(Student student);
         StudentProfile GetStudentProfile(Guid id);
         StudentProfile GetStudentProfileByStudentId(Guid studentId);
