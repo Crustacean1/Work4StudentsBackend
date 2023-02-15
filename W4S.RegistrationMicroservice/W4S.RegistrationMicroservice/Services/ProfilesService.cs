@@ -162,6 +162,10 @@ namespace W4S.RegistrationMicroservice.API.Services
                 }
                 if(dto.Availability != null)
                 {
+                    if (!dto.Availability.Any())
+                    {
+                        _logger.LogInformation("Avaiability is empty.");
+                    }
                     List<StudentSchedule> avaiability = new List<StudentSchedule>();
                     foreach(var item in dto.Availability)
                     {
@@ -194,7 +198,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     studentProfile.Avaiability = avaiability;
                 }
 
-                if(dto.Description != null) 
+                if (dto.Description != null) 
                 {
                     studentProfile.Description = dto.Description;
                 }

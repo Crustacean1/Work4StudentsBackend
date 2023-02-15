@@ -46,6 +46,14 @@ namespace W4SRegistrationMicroservice.API.Services
             signingResponse.JwtTokenValue = GenerateJwt(userCredentialsDto);
             signingResponse.UserType = CheckUserType(guid);
 
+            Guid profileGuid = _dbContext.StudentProfiles.Where(x => x.StudentId == guid).FirstOrDefault().Id;
+
+            if(profileGuid == null)
+            {
+                profileGuid = _dbContext.EmployerProfiles.Where(x => x.EmployerId == guid).FirstOrDefault().Id;
+            }
+            signingResponse.UserProfileId = guid;
+
             return signingResponse;
         }
 
