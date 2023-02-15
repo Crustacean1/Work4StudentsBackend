@@ -32,6 +32,7 @@ namespace W4S.PostingService.Domain.Commands
             LogSchedules(offer.WorkingHours);
 
             var prevApplications = await applicationRepository.GetEntityAsync(a => a.OfferId == command.OfferId && a.StudentId == command.StudentId);
+
             if (prevApplications is not null)
             {
                 throw new PostingException($"Student {command.StudentId} already applied for {command.OfferId}");

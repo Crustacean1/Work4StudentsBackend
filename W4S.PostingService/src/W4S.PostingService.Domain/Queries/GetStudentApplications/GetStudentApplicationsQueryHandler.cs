@@ -23,7 +23,9 @@ namespace W4S.PostingService.Domain.Queries
                 b.CreateMap<JobOffer, ApplicationOfferDto>()
                 .ForMember(a => a.Company, opt => opt.MapFrom(s => s.Recruiter.Company.Name));
                 b.CreateMap<Application, GetApplicationDto>()
-                .ForMember(a => a.Status, opt => opt.MapFrom(a => Enum.GetName(typeof(ApplicationStatus), a.Status)));
+                .ForMember(a => a.Status, opt => opt.MapFrom(a => Enum.GetName(typeof(ApplicationStatus), a.Status)))
+                .ForMember(a => a.Distance, opt => opt.MapFrom(a => double.IsFinite(a.Distance) ? a.Distance : 0))
+                .ForMember(a => a.WorkTimeOverlap, opt => opt.MapFrom(a => double.IsFinite(a.WorkTimeOverlap) ? a.WorkTimeOverlap : 0));
 
             });
             mapper = mapperConfig.CreateMapper();
