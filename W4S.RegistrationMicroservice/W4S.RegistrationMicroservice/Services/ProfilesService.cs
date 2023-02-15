@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using W4S.PostingService.Domain.Commands;
 using W4S.RegistrationMicroservice.API.Exceptions;
 using W4S.RegistrationMicroservice.API.Extensions;
 using W4S.RegistrationMicroservice.API.Interfaces;
@@ -257,9 +258,9 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
-        public void UpdateStudentRating(StudentRatingChangedEvent changedEvent)
+        public void UpdateStudentRating(UserRatingChangedEvent changedEvent)
         {
-            var studentProfile = _dbContext.StudentProfiles.Where(x => x.StudentId == changedEvent.StudentId).FirstOrDefault();
+            var studentProfile = _dbContext.StudentProfiles.Where(x => x.StudentId == changedEvent.UserId).FirstOrDefault();
 
             if (studentProfile == null)
             {
@@ -535,9 +536,9 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
-        public void UpdateEmployerRating(EmployerRatingChangedEvent changedEvent)
+        public void UpdateEmployerRating(UserRatingChangedEvent changedEvent)
         {
-            var employerProfile = _dbContext.EmployerProfiles.Where(x => x.EmployerId == changedEvent.EmployerId).FirstOrDefault();
+            var employerProfile = _dbContext.EmployerProfiles.Where(x => x.EmployerId == changedEvent.UserId).FirstOrDefault();
 
             if (employerProfile == null)
             {

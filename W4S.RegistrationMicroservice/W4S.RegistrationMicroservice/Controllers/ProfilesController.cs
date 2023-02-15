@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Microsoft.AspNetCore.Mvc;
+using W4S.PostingService.Domain.Commands;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Models;
@@ -320,16 +321,16 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusEventHandler("update.student.rating")]
-        public void UpdateStudentRating(StudentRatingChangedEvent changedEvent)
+        public void UpdateStudentRating(UserRatingChangedEvent changedEvent)
         {
-            _logger.LogInformation($"Got an updated rating for the student with Id: {changedEvent.StudentId}");
+            _logger.LogInformation($"Got an updated rating for the student with Id: {changedEvent.UserId}");
             _profilesService.UpdateStudentRating(changedEvent);
         }
 
         [BusEventHandler("update.employer.rating")]
-        public void UpdateEmployerRating(EmployerRatingChangedEvent changedEvent)
+        public void UpdateEmployerRating(UserRatingChangedEvent changedEvent)
         {
-            _logger.LogInformation($"Got an updated rating for the student with Id: {changedEvent.EmployerId}");
+            _logger.LogInformation($"Got an updated rating for the student with Id: {changedEvent.UserId}");
             _profilesService.UpdateEmployerRating(changedEvent);
         }
 

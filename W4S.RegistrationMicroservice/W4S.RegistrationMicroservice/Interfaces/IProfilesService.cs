@@ -1,4 +1,5 @@
-﻿using W4S.RegistrationMicroservice.Data.Entities.Profiles;
+﻿using W4S.PostingService.Domain.Commands;
+using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
@@ -15,9 +16,9 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
         byte[]? GetStudentResume(Guid profileId);
         byte[]? GetUserPhoto(Guid profileId);
         void UpdateEmployerProfile(UpdateProfileDtoWithId dto);
-        void UpdateEmployerRating(EmployerRatingChangedEvent changedEvent);
+        void UpdateEmployerRating(UserRatingChangedEvent changedEvent);
         void UpdateStudentProfile(UpdateStudentProfileDtoWithId dto);
-        void UpdateStudentRating(StudentRatingChangedEvent changedEvent);
+        void UpdateStudentRating(UserRatingChangedEvent changedEvent);
         EmployerProfile GetEmployerProfile(Guid id);
         EmployerProfile GetEmployerProfileByEmployerId(Guid employerId);
         List<EmployerProfile> GetEmployerProfiles(Guid[] ids);
