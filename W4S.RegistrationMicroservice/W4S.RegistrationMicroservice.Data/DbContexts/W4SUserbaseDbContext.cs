@@ -85,6 +85,10 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<University>().HasData(_seeder.University);
             modelBuilder.Entity<Company>().HasData(_seeder.Company);
 
+            //modelBuilder.Entity<Domain>().HasData(_seeder.UniversityDomains);
+            //modelBuilder.Entity<University>().HasData(_seeder.Universities);
+            //modelBuilder.Entity<Company>().HasData(_seeder.Companies);
+
             modelBuilder.Entity<Student>().HasData(_seeder.Student);
             modelBuilder.Entity<Employer>().HasData(_seeder.Employer);
             modelBuilder.Entity<Administrator>().HasData(_seeder.Admin);
