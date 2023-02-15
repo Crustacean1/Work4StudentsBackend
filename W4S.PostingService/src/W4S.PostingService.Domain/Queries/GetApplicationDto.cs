@@ -8,9 +8,9 @@ namespace W4S.PostingService.Domain.Queries
 
         public Guid StudentId { get; set; }
 
-        public decimal WorkTimeOverlap { get; set; }
+        public double WorkTimeOverlap { get; set; }
 
-        public decimal Proximity { get; set; }
+        public double Distance { get; set; }
 
         public DateTime LastChanged { get; set; }
 
