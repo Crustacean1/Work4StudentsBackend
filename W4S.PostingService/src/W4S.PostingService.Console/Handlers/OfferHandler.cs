@@ -41,7 +41,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getOffers")]
-        public async Task<ResponseWrapper<PaginatedList<GetOffersDto>>> GetOfferListing(GetOffersQuery query)
+        public async Task<ResponseWrapper<PaginatedList<GetOfferDto>>> GetOfferListing(GetOffersQuery query)
         {
             logger.LogInformation("Getting all job offers");
 
@@ -53,7 +53,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getOffer")]
-        public async Task<ResponseWrapper<JobOffer>> GetOffer(GetOfferQuery query)
+        public async Task<ResponseWrapper<GetOfferDto>> GetOffer(GetOfferQuery query)
         {
             logger.LogInformation("Getting job offer {Id}", query.OfferId);
 
@@ -65,7 +65,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getRecruiterOffers")]
-        public async Task<ResponseWrapper<PaginatedList<GetOffersDto>>> GetRecruiterOffers(GetRecruiterOffersQuery query)
+        public async Task<ResponseWrapper<PaginatedList<GetOfferDto>>> GetRecruiterOffers(GetRecruiterOffersQuery query)
         {
             logger.LogInformation("Getting offers of recruiter: {RecruiterId}", query.RecruiterId);
 

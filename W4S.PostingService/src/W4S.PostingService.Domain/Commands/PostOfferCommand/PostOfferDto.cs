@@ -15,8 +15,6 @@ namespace W4S.PostingService.Domain.Commands
 
         public PayRange PayRange { get; set; }
 
-        public DateTime CreationDate { get; set; }
-
         public ICollection<Schedule> WorkingHours { get; set; } = new List<Schedule>();
     }
 }

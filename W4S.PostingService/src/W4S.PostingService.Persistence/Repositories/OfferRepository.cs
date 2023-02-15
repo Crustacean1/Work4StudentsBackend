@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Queries;
 using W4S.PostingService.Domain.Repositories;
+using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Persistence.Repositories
 {
@@ -16,7 +17,7 @@ namespace W4S.PostingService.Persistence.Repositories
         {
             var mapperConfiguration = new MapperConfiguration(b =>
             {
-                b.CreateMap<JobOffer, GetOffersDto>();
+                b.CreateMap<Company, CompanyDto>();
                 b.CreateMap<JobOffer, GetOfferDto>()
                 .ForMember(dto => dto.Company, opts => opts.MapFrom(jo => jo.Recruiter.Company));
             });
@@ -24,24 +25,34 @@ namespace W4S.PostingService.Persistence.Repositories
             this.logger = logger;
         }
 
-        public async Task<PaginatedRecords<GetOffersDto>> GetOffers(GetOffersQuery query)
+        public async Task<PaginatedRecords<GetOfferDto>> GetOffers(GetOffersQuery query)
         {
-            logger.LogInformation("Most curious {Coutn}", query.Keywords);
+            logger.LogInformation("Most curious {Count}", query.Keywords);
+
+            var keywordsArNull = string.IsNullOrEmpty(query.Keywords);
+            var modeIsNull = Enum.TryParse(query.Mode, out WorkMode mode);
+            var statusIsNull = Enum.TryParse(query.Status, out OfferStatus status);
 
             var totalCount = await context.Set<JobOffer>()
-                .Where(o => o.SearchVector.Matches(query.Keywords))
+                .Where(o => keywordsArNull || o.SearchVector.Matches(query.Keywords))
+                .Where(o => modeIsNull || o.Mode == mode)
+                .Where(o => statusIsNull || o.Status == status)
                 .CountAsync();
 
             var offers = await context.Set<JobOffer>()
-                .Where(o => o.SearchVector.Matches(query.Keywords))
+                .Where(o => keywordsArNull || o.SearchVector.Matches(query.Keywords))
+                .Where(o => modeIsNull || o.Mode == mode)
+                .Where(o => statusIsNull || o.Status == status)
+                .Include(jo => jo.Recruiter)
+                .ThenInclude(r => r.Company)
                 .OrderBy(jo => jo.CreationDate)
                 .Skip(query.RecordsToSkip)
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            return new PaginatedRecords<GetOffersDto>
+            return new PaginatedRecords<GetOfferDto>
             {
-                Items = offers.Select(mapper.Map<GetOffersDto>),
+                Items = offers.Select(mapper.Map<GetOfferDto>),
                 TotalCount = totalCount
             };
         }

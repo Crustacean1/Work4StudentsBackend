@@ -57,24 +57,24 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOffersDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOfferDto>))]
         public async Task<ActionResult> GetJobOffers([FromQuery] GetOffersQuery query, CancellationToken cancellationToken)
         {
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOffersDto>>, GetOffersQuery>("offers.getOffers", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetOfferDto>>, GetOffersQuery>("offers.getOffers", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
         [HttpGet]
         [Authorize]
         [Route("{offerId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JobOffer))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOfferDto))]
         public async Task<ActionResult> GetJobOffer([FromRoute] Guid offerId, CancellationToken cancellationToken)
         {
             var query = new GetOfferQuery
             {
                 OfferId = offerId
             };
-            var response = await busClient.SendRequest<ResponseWrapper<JobOffer>, GetOfferQuery>("offers.getOffer", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<GetOfferDto>, GetOfferQuery>("offers.getOffer", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
@@ -84,7 +84,7 @@ namespace W4S.Gateway.Console.Posting
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
         public async Task<ActionResult> GetJobApplications([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Getting job applications for {Offer}", offerId);
+            logger.LogInformation("Getting job applications for {Offer} {Tragedy}", offerId, busClient == null);
 
             var query = new GetOfferApplicationsQuery
             {

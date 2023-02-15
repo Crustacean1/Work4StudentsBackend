@@ -24,7 +24,7 @@ namespace W4S.Gateway.Console.Posting
         [HttpGet]
         [Route("applications")]
         [Authorize(Roles = "Student")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<JobOffer>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
         public async Task<ActionResult> GetJobOffers([FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
             var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
@@ -35,7 +35,7 @@ namespace W4S.Gateway.Console.Posting
                 StudentId = Guid.Parse(studentId)
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<JobOffer>>, GetStudentApplicationsQuery>("offer.getStudentApplications", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetApplicationDto>>, GetStudentApplicationsQuery>("applications.getStudentApplications", query, cancellationToken);
             return UnwrapResponse(response);
         }
 

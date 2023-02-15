@@ -41,7 +41,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getStudentApplications")]
-        public async Task<ResponseWrapper<PaginatedList<Application>>> OnGetStudentApplications(GetStudentApplicationsQuery query)
+        public async Task<ResponseWrapper<PaginatedList<GetApplicationDto>>> OnGetStudentApplications(GetStudentApplicationsQuery query)
         {
             logger.LogInformation("Lising applications of student: {Student}", query.StudentId);
 

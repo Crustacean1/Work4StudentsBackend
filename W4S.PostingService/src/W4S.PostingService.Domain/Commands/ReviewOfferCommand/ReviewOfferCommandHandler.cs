@@ -10,11 +10,11 @@ namespace W4S.PostingService.Domain.Commands
     {
         private readonly IReviewRepository<OfferReview> reviewRepository;
         private readonly IRepository<Student> studentRepository;
-        private readonly IRepository<JobOffer> offerRepository;
+        private readonly IOfferRepository offerRepository;
         private readonly IRepository<Application> applicationRepository;
         private readonly IMapper mapper;
 
-        public ReviewOfferCommandHandler(IRepository<JobOffer> offerRepository, IRepository<Student> studentRepository, IReviewRepository<OfferReview> reviewRepository, IRepository<Application> applicationRepository)
+        public ReviewOfferCommandHandler(IOfferRepository offerRepository, IRepository<Student> studentRepository, IReviewRepository<OfferReview> reviewRepository, IRepository<Application> applicationRepository)
         {
             this.offerRepository = offerRepository;
             this.studentRepository = studentRepository;
