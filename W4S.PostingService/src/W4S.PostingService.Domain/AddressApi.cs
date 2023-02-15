@@ -28,7 +28,7 @@ namespace W4S.PostingService.Domain
 
             if (response is not null)
             {
-                logger.LogInformation("Some success {lon} {lat}", response.lon, response.lat);
+                logger.LogInformation("Found location at coordinates: Lon: {lon} Lat: {lat}", response.lon, response.lat);
                 address.Longitude = Convert.ToDouble(response.lon);
                 address.Latitude = Convert.ToDouble(response.lat);
             }

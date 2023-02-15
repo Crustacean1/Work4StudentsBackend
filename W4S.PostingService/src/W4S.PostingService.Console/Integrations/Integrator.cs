@@ -1,5 +1,4 @@
 using W4S.PostingService.Domain.Commands;
-using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Integrations;
 using W4S.ServiceBus.Abstractions;
 
@@ -16,12 +15,12 @@ namespace W4S.PostingService.Console.Integrators
 
         public void OnStudentRatingUpdated(UserRatingChangedEvent ratingEvent)
         {
-            busClient.SendEvent<UserRatingChangedEvent>("profiles.update.student.rating", ratingEvent);
+            busClient.SendEvent("profiles.update.student.rating", ratingEvent);
         }
 
         public void OnRecruiterRatingUpdated(UserRatingChangedEvent ratingEvent)
         {
-            busClient.SendEvent<UserRatingChangedEvent>("profiles.update.employer.rating", ratingEvent);
+            busClient.SendEvent("profiles.update.employer.rating", ratingEvent);
         }
     }
 }

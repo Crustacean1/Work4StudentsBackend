@@ -104,7 +104,7 @@ namespace W4S.Gateway.Console.Accounts
             byte[]? image = null;
             byte[]? resume = null;
 
-            if(dto.Image != null)
+            if (dto.Image != null)
             {
                 using var fileStream = dto.Image.OpenReadStream();
                 image = new byte[dto.Image.Length];
@@ -193,7 +193,7 @@ namespace W4S.Gateway.Console.Accounts
 
             var response = await busClient.SendRequest<GetProfilePhotoResponse, GuidPackedDto>("profiles.get.photo", guid, cancellationToken);
 
-            if(response.ExceptionMessage is null)
+            if (response.ExceptionMessage is null)
             {
                 return Ok(response);
             }
