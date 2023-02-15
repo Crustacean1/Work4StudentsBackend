@@ -32,8 +32,17 @@ namespace W4SRegistrationMicroservice.API.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                _logger.LogError(ex.Message, ex);
-                response.ExceptionMessage = ex.Message;
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
             }
 
             return Task.FromResult(response);

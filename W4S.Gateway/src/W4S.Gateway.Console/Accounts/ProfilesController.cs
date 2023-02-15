@@ -123,7 +123,6 @@ namespace W4S.Gateway.Console.Accounts
                 EmailAddress = dto.EmailAddress,
                 PhoneNumber = dto.PhoneNumber,
                 Description = dto.Description,
-                ShortDescription = dto.ShortDescription,
                 Education = dto.Education,
                 Experience = dto.Experience,
                 Country = dto.Country,
@@ -133,14 +132,14 @@ namespace W4S.Gateway.Console.Accounts
                 Building = dto.Building,
                 Image = image,
                 ResumeFile = resume,
-                Avaiability = dto.Avaiability
+                Availability = dto.Availability
             };
             logger.LogInformation("Request: Update student profile");
             var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentProfileDtoWithId>("profiles.update.student", correctedDto, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
-                return Ok(response.WasUpdated);
+                return Ok(response);
             }
             return BadRequest(response.ExceptionMessage);
         }
@@ -165,9 +164,6 @@ namespace W4S.Gateway.Console.Accounts
                 EmailAddress = dto.EmailAddress,
                 PhoneNumber = dto.PhoneNumber,
                 Description = dto.Description,
-                ShortDescription = dto.ShortDescription,
-                Education = dto.Education,
-                Experience = dto.Experience,
                 Country = dto.Country,
                 Region = dto.Region,
                 City = dto.City,
@@ -187,13 +183,13 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpGet("get/photo/{id}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
-        public async Task<IActionResult> GetPhotoById([FromRoute] Guid photoId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPhotoByProfileId([FromRoute] Guid profileId, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
             {
-                Id = photoId,
+                Id = profileId,
             };
-            logger.LogInformation($"Request: Get photo with Id: {photoId}.");
+            logger.LogInformation($"Request: Get photo with Id: {profileId}.");
 
             var response = await busClient.SendRequest<GetProfilePhotoResponse, GuidPackedDto>("profiles.get.photo", guid, cancellationToken);
 
@@ -207,13 +203,13 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpGet("get/resume/{id}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
-        public async Task<IActionResult> GetResumeById([FromRoute] Guid resumeId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetResumeByStudentId([FromRoute] Guid studentId, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
             {
-                Id = resumeId,
+                Id = studentId,
             };
-            logger.LogInformation($"Request: Get resume with Id: {resumeId}.");
+            logger.LogInformation($"Request: Get resume with Id: {studentId}.");
 
             var response = await busClient.SendRequest<GetProfilePhotoResponse, GuidPackedDto>("profiles.get.resume", guid, cancellationToken);
 

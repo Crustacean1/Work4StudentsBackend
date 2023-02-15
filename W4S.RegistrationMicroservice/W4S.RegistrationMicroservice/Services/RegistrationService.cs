@@ -227,6 +227,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _logger.LogInformation("Trying to add the student to the db.");
                 _dbContext.Students.Add(student);
                 _dbContext.SaveChanges();
+                _logger.LogInformation($"Added student with id: {student.Id}.");
             }
             catch (Exception e)
             {

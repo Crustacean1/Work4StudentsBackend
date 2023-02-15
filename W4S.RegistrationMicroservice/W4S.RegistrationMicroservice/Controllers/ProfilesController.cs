@@ -41,14 +41,12 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             {
                 _profilesService.UpdateStudentProfile(correctedDto);
                 _logger.LogInformation($"Updated profile with Id {correctedDto.Id}.");
-                response.WasUpdated = true;
             }
             catch (Exception ex)
             {
                 var message = ex.InnerException.Message ?? ex.Message;
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
-                response.WasUpdated = false;
             }
 
             return Task.FromResult(response);
@@ -68,7 +66,15 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                string message;
+                if(ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }
@@ -77,6 +83,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("get.student")]
+        [Obsolete]
         public Task GetStudentProfile(GuidPackedDto guid)
         {
             var response = new GetStudentProfileResponse();
@@ -104,6 +111,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.Building = profile.Building;
                 response.Photo = profile.PhotoFile;
                 response.Resume = profile.ResumeFile;
+                //response.Avaiability
             }
             catch (Exception ex)
             {
@@ -122,6 +130,8 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var profile = _profilesService.GetStudentProfileByStudentId(studentId.Id);
+                _logger.LogInformation($"Every field: Id: {profile.Id}, FirstName: {profile.Student.Name}, SecondName?: {profile.Student.SecondName}," +
+                    $" Description?: {profile.Description}, Surname: {profile.Student.Surname}, Email: {profile.EmailAddress}");
 
                 if (profile.Student is null)
                 {
@@ -143,24 +153,35 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.Building = profile.Building;
                 response.Photo = profile.PhotoFile;
                 response.Resume = profile.ResumeFile;
+                response.Description = profile.Description;
+                response.Education = profile.Education;
+                response.Experience = profile.Experience;
 
                 if (profile.Avaiability != null)
                 {
-                    var avaiability = new List<ScheduleProfile>();
+                    var availability = new List<ScheduleProfile>();
                     foreach (var schedule in profile.Avaiability)
                     {
-                        avaiability.Add(new ScheduleProfile()
+                        availability.Add(new ScheduleProfile()
                         {
                             Start = schedule.Start,
                             End = schedule.End
                         });
                     }
-                    response.Avaiability = avaiability;
+                    response.Availability = availability;
                 }
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }
@@ -168,6 +189,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("get.employer")]
+        [Obsolete]
         public Task GetEmployerProfile(GuidPackedDto employerId)
         {
             var response = new GetEmployerProfileResponse(); // placeholder
@@ -206,9 +228,13 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             {
                 var profile = _profilesService.GetEmployerProfileByEmployerId(guid.Id);
 
+                _logger.LogInformation($"Every field: Id: {profile.Id}, FirstName: {profile.Employer.Name}, SecondName?: {profile.Employer.SecondName}," +
+                    $" Description?: {profile.Description}, Surname: {profile.Employer.Surname}, Email: {profile.EmailAddress}");
+
                 response.ProfileId = profile.Id;
                 response.FirstName = profile.Employer.Name;
                 response.SecondName = profile.Employer.SecondName;
+                response.Description = profile.Description;
                 response.Surname = profile.Employer.Surname;
                 response.EmailAddress = profile.EmailAddress;
                 response.PhoneNumber = profile.PhoneNumber;
@@ -220,32 +246,25 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.Street = profile.Street;
                 response.Building = profile.Building;
                 response.Photo = profile.PhotoFile;
+                response.CompanyName = profile.CompanyName;
+                response.PositionName = profile.PositionName;
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }
             return Task.FromResult(response);
         }
-
-        //[BusRequestHandler("get.employers")]
-        //public Task GetEmployersProfiles(GuidPackedDtoList ids)
-        //{
-        //    var response = new EmployerProfileCreatedResponse(); // placeholder
-        //    try
-        //    {
-        //        var profile = _profilesService.GetEmployerProfiles(ids.PackedGuids.ToArray());
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var message = ex.InnerException.Message ?? ex.Message;
-        //        _logger.LogError(message, ex);
-        //        response.ExceptionMessage = message;
-        //    }
-        //    return Task.FromResult(response);
-        //}
 
 
         [BusRequestHandler("get.photo")]
@@ -259,7 +278,15 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }
@@ -267,7 +294,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("get.resume")]
-        public Task GetResumeById(GuidPackedDto guid)
+        public Task GetResumeByStudentId(GuidPackedDto guid)
         {
             var response = new GetResumeResponse(); // placeholder, getResumeResponse
             try
@@ -277,7 +304,15 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }

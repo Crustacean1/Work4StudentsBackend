@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting
+﻿namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting
 {
     public class GetEmployerProfileResponse : BaseResponse
     {
@@ -15,6 +9,7 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
         public string Surname { get; set; }
         public string? PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
+        public string? Description { get; set; }
         public decimal Rating { get; set; }
         public byte[]? Photo { get; set; }
         public string Country { get; set; }
@@ -22,5 +17,7 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
         public string City { get; set; }
         public string Street { get; set; }
         public string Building { get; set; }
+        public string CompanyName { get; set; }
+        public string PositionName { get; set; }
     }
 }

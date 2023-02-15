@@ -46,7 +46,6 @@ namespace W4S.RegistrationMicroservice.API.Services
                 Id = Guid.NewGuid(),
                 PhotoFile = null,
                 Description = "",
-                ShortDescription = "",
                 EmailAddress = student.EmailAddress,
                 PhoneNumber = student.PhoneNumber,
                 Rating = 0.0m,
@@ -92,13 +91,14 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError("Could not find a user with this Id.");
+                _logger.LogError("Could not find a profile with this Id.");
                 _logger.LogError(ex.Message, ex);
+                throw;
             }
 
             if (studentProfile != null)
             {
-
+                _logger.LogInformation($"Found a profile with id: {studentProfile.Id}");
                 var student = _dbContext.Students
                     .Where(e => e.Id == studentProfile.StudentId)
                     .FirstOrDefault();
@@ -108,16 +108,24 @@ namespace W4S.RegistrationMicroservice.API.Services
                     throw new UserNotFoundException("Couldn't find a student connected to that profile."); // not gonna happen
                 }
 
-                if (studentProfile.EmailAddress != dto.EmailAddress)
+                if (dto.EmailAddress != null)
                 {
-                    _logger.LogInformation("Validating email correctness.");
-                    _dataValidator.ValidateEmailCorrectness(dto.EmailAddress, studentProfile.StudentId);
-                    _dataValidator.ValidateUniversity(dto.EmailAddress);
-                    _logger.LogInformation("Validated email correctness.");
+                    try
+                    {
+                        _logger.LogInformation("Validating email correctness.");
+                        _dataValidator.ValidateEmailCorrectness(dto.EmailAddress, studentProfile.StudentId);
+                        _dataValidator.ValidateUniversity(dto.EmailAddress);
+                        _logger.LogInformation("Validated email correctness.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex.Message, ex);
+                        throw;
+                    }
                     student.EmailAddress = dto.EmailAddress;
                     studentProfile.EmailAddress = dto.EmailAddress;
                 }
-                if (studentProfile.PhoneNumber != dto.PhoneNumber)
+                if (dto.PhoneNumber != null)
                 {
                     _logger.LogInformation("Validating phone number.");
                     //_dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
@@ -125,37 +133,37 @@ namespace W4S.RegistrationMicroservice.API.Services
                     student.PhoneNumber = dto.PhoneNumber;
                     studentProfile.PhoneNumber = dto.PhoneNumber;
                 }
-                if (studentProfile.Country != dto.Country)
+                if (dto.Country != null)
                 {
                     student.Country = dto.Country;
                     studentProfile.Country = dto.Country;
                 }
-                if (studentProfile.Region != dto.Region)
+                if (dto.Region != null)
                 {
                     student.Region = dto.Region;
                     studentProfile.Region = dto.Region;
 
                 }
-                if (studentProfile.City != dto.City)
+                if (dto.City != null)
                 {
                     student.City = dto.City;
                     studentProfile.City = dto.City;
 
                 }
-                if (studentProfile.Street != dto.Street)
+                if (dto.Street != null)
                 {
                     student.Street = dto.Street;
                     studentProfile.Street = dto.Street;
                 }
-                if (studentProfile.Building != dto.Building)
+                if (dto.Building != null)
                 {
                     student.Building = dto.Building;
                     studentProfile.Building = dto.Building;
                 }
-                if(studentProfile.Avaiability != dto.Avaiability)
+                if(dto.Availability != null)
                 {
                     List<StudentSchedule> avaiability = new List<StudentSchedule>();
-                    foreach(var item in dto.Avaiability)
+                    foreach(var item in dto.Availability)
                     {
                         avaiability.Add(new StudentSchedule()
                         {
@@ -163,20 +171,70 @@ namespace W4S.RegistrationMicroservice.API.Services
                             Start = item.Start,
                             End = item.End,
                         });
+                        _logger.LogInformation($"Added availability with start: {item.Start}, and end: {item.End}.");
+                    }
+
+                    foreach(var item in dto.Availability)
+                    {
+                        if(item.Start > item.End)
+                        {
+                            throw new Exception($"Start value cannot be bigger than End value. Start: {item.Start} End: {item.End}");
+                        }
+
+                        if (dto.Availability.Any(x => item.Start > x.Start && item.Start < x.End))
+                        {
+                            throw new Exception($"Overlapping with another avaiability.");
+                        }
+                        if (dto.Availability.Any(x => item.End > x.Start && item.End < x.End))
+                        {
+                            throw new Exception($"Overlapping with another avaiability.");
+                        }
                     }
 
                     studentProfile.Avaiability = avaiability;
                 }
 
-                studentProfile.Description = dto.Description;
-                studentProfile.ShortDescription = dto.ShortDescription;
-                studentProfile.PhotoFile = dto.Image;
-                studentProfile.ResumeFile = dto.ResumeFile;
-                studentProfile.Description = dto.Description;
+                if(dto.Description != null) 
+                {
+                    studentProfile.Description = dto.Description;
+                }
+                //if(dto.Image != null)
+                //{
+                //    studentProfile.PhotoFile = dto.Image;
+                //}
+                //if(dto.ResumeFile != null)
+                //{
+                //    studentProfile.ResumeFile = dto.ResumeFile;
+                //}
+                if(dto.Description != null)
+                {
+                    studentProfile.Description = dto.Description;
+                }
 
                 _dbContext.Students.Update(student);
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
+
+                if(dto.ResumeFile != null)
+                {
+                    studentProfile.ResumeFile = null;
+                    _dbContext.StudentProfiles.Update(studentProfile);
+                    _dbContext.SaveChanges();
+
+                    studentProfile.ResumeFile = dto.ResumeFile;
+                    _dbContext.StudentProfiles.Update(studentProfile);
+                    _dbContext.SaveChanges();
+                }
+                if (dto.Image != null)
+                {
+                    studentProfile.PhotoFile = null;
+                    _dbContext.StudentProfiles.Update(studentProfile);
+                    _dbContext.SaveChanges();
+
+                    studentProfile.PhotoFile = dto.Image;
+                    _dbContext.StudentProfiles.Update(studentProfile);
+                    _dbContext.SaveChanges();
+                }
 
                 var newEvent = new UserInfoUpdatedEvent()
                 {
@@ -188,7 +246,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     City = dto.City,
                     Street = dto.Street,
                     Building = dto.Building,
-                    Avaiability = dto.Avaiability
+                    Avaiability = dto.Availability
                 };
 
                 _client.SendEvent<UserInfoUpdatedEvent>("profiles.user.updated", newEvent);
@@ -238,16 +296,20 @@ namespace W4S.RegistrationMicroservice.API.Services
         public StudentProfile GetStudentProfileByStudentId(Guid studentId)
         {
 
-            _logger.LogInformation("Getting employer profile from the database.");
+            _logger.LogInformation("Getting student profile from the database.");
             try
             {
                 var studentProfile = _dbContext.StudentProfiles
                     .Where(p => p.StudentId == studentId)
                     .First();
 
+                _logger.LogInformation($"Found a profile with student id: {studentProfile.StudentId}");
+
                 var student = _dbContext.Students
                     .Where(s => s.Id == studentProfile.StudentId)
                     .First();
+
+                _logger.LogInformation($"Found a student with student id: {studentProfile.StudentId}");
 
                 studentProfile.Student = student;
                 return studentProfile;
@@ -277,10 +339,10 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
-        public byte[]? GetStudentResume(Guid profileId)
+        public byte[]? GetStudentResume(Guid studentId)
         {
             var resume = _dbContext.StudentProfiles
-                .Where(r => r.Id == profileId)
+                .Where(r => r.StudentId == studentId)
                 .FirstOrDefault()
                 .ResumeFile;
 
@@ -312,12 +374,9 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 Id = Guid.NewGuid(),
                 Description = "",
-                ShortDescription = "",
                 EmailAddress = employer.EmailAddress,
                 PhoneNumber = employer.PhoneNumber,
                 Rating = 0.0m,
-                Education = "",
-                Experience = "",
                 Country = employer.Country,
                 Region = employer.Region,
                 City = employer.City,
@@ -349,14 +408,23 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public void UpdateEmployerProfile(UpdateProfileDtoWithId dto)
         {
-            var employerProfile = _dbContext.EmployerProfiles 
-                    .Where(p => p.Id == dto.Id)
-                    .FirstOrDefault();
-
-            _logger.LogInformation($"Found a profile with Id: {dto.Id}");
+            EmployerProfile? employerProfile = null;
+            try
+            {
+                employerProfile = _dbContext.EmployerProfiles
+                        .Where(p => p.Id == dto.Id)
+                        .First();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Could not find a profile with this Id.");
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
 
             if (employerProfile != null)
             {
+                _logger.LogInformation($"Found a profile with id: {employerProfile.Id}");
 
                 var employer = _dbContext.Employers
                     .Where(e => e.Id == employerProfile.EmployerId)
@@ -367,15 +435,24 @@ namespace W4S.RegistrationMicroservice.API.Services
                     throw new UserNotFoundException("Couldn't find an employer connected to that profile."); // not gonna happen
                 }
 
-                if (employerProfile.EmailAddress != dto.EmailAddress)
+                if (dto.EmailAddress != null)
                 {
-                    _logger.LogInformation("Validating email correctness.");
-                    _dataValidator.ValidateEmailCorrectness(dto.EmailAddress, employerProfile.EmployerId);
-                    _logger.LogInformation("Validated email correctness.");
+                    try
+                    {
+                        _logger.LogInformation("Validating email correctness.");
+                        _dataValidator.ValidateEmailCorrectness(dto.EmailAddress, employerProfile.EmployerId);
+                        _dataValidator.ValidateUniversity(dto.EmailAddress);
+                        _logger.LogInformation("Validated email correctness.");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex.Message, ex);
+                        throw;
+                    }
                     employer.EmailAddress = dto.EmailAddress;
                     employerProfile.EmailAddress = dto.EmailAddress;
                 }
-                if(employerProfile.PhoneNumber != dto.PhoneNumber)
+                if(dto.PhoneNumber != null)
                 {
                     _logger.LogInformation("Validating phone number.");
                     //_dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
@@ -383,43 +460,58 @@ namespace W4S.RegistrationMicroservice.API.Services
                     employer.PhoneNumber = dto.PhoneNumber;
                     employerProfile.PhoneNumber = dto.PhoneNumber;
                 }
-                if(employerProfile.Country != dto.Country)
+                if(dto.Country != null)
                 {
                     employer.Country = dto.Country;
                     employerProfile.Country = dto.Country;
                 }
-                if(employerProfile.Region != dto.Region)
+                if(dto.Region != null)
                 {
                     employer.Region = dto.Region;
                     employerProfile.Region = dto.Region;
 
                 }
-                if(employerProfile.City != dto.City)
+                if(dto.City != null)
                 {
                     employer.City = dto.City;
                     employerProfile.City = dto.City;
 
                 }
-                if(employerProfile.Street != dto.Street)
+                if(dto.Street != null)
                 {
                     employer.Street = dto.Street;
                     employerProfile.Street = dto.Street;
                 }
-                if(employerProfile.Building != dto.Building)
+                if(dto.Building != null)
                 {
                     employer.Building = dto.Building;
                     employerProfile.Building = dto.Building;
                 }
-
-                employerProfile.Description = dto.Description;
-                employerProfile.ShortDescription = dto.ShortDescription;
-                employerProfile.PhotoFile = dto.Image;
+                if(dto.Description != null)
+                {
+                    employerProfile.Description = dto.Description;
+                }
+                //if(dto.Image != null)
+                //{
+                //    employerProfile.PhotoFile = dto.Image;
+                //}
 
                 _logger.LogInformation("Trying to update employer and employerProfile.");
 
                 _dbContext.Employers.Update(employer);
                 _dbContext.EmployerProfiles.Update(employerProfile);
                 _dbContext.SaveChanges();
+
+                if (dto.Image != null)
+                {
+                    employerProfile.PhotoFile = null;
+                    _dbContext.EmployerProfiles.Update(employerProfile);
+                    _dbContext.SaveChanges();
+
+                    employerProfile.PhotoFile = dto.Image;
+                    _dbContext.EmployerProfiles.Update(employerProfile);
+                    _dbContext.SaveChanges();
+                }
 
                 var newEvent = new UserInfoUpdatedEvent()
                 {
