@@ -90,7 +90,7 @@ namespace W4S.PostingService.Persistence
                 Id = Guid.NewGuid(),
                 OfferId = FakeJobOffer.Id,
                 StudentId = FakeStudent.Id,
-                WorkTimeOverlap = 0.0M,
+                WorkTimeOverlap = 0.0,
                 Distance = 0.0,
                 LastChanged = DateTime.Now.ToUniversalTime(),
                 Status = ApplicationStatus.Submitted,

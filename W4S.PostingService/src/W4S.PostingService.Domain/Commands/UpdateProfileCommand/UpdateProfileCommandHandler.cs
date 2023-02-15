@@ -4,6 +4,7 @@ using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
 using W4S.PostingService.Domain.ValueType;
+using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
 
 namespace W4S.PostingService.Domain.Commands
 {
@@ -21,9 +22,9 @@ namespace W4S.PostingService.Domain.Commands
 
             var mapperConfig = new MapperConfiguration(b =>
             {
-                b.CreateMap<UpdateProfileCommand, Person>()
+                b.CreateMap<UserInfoUpdatedEvent, Person>()
                 .ForMember(p => p.Id, opt => opt.Ignore());
-                b.CreateMap<UpdateProfileCommand, Address>();
+                b.CreateMap<UserInfoUpdatedEvent, Address>();
             });
             mapper = mapperConfig.CreateMapper();
             this.addressApi = addressApi;

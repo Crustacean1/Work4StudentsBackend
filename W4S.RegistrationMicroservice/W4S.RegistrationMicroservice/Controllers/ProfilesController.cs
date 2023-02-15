@@ -23,8 +23,8 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         private readonly ILogger<ProfilesController> _logger;
 
         public ProfilesController(
-            IProfilesService profilesService, 
-            IClient busClient, 
+            IProfilesService profilesService,
+            IClient busClient,
             ILogger<ProfilesController> logger)
         {
             _profilesService = profilesService ?? throw new ArgumentNullException(nameof(profilesService));
@@ -44,7 +44,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                var message = ex?.InnerException?.Message ?? ex.Message;
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }
@@ -67,9 +67,9 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             catch (Exception ex)
             {
                 string message;
-                if(ex.InnerException != null)
+                if (ex.InnerException != null)
                 {
-                    message = ex.InnerException.Message;
+                    message = ex?.InnerException.Message;
                 }
                 else
                 {
@@ -92,7 +92,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             {
                 var profile = _profilesService.GetStudentProfile(guid.Id);
 
-                if(profile.Student is null)
+                if (profile.Student is null)
                 {
                     _logger.LogInformation("This profile has student set as null.");
                 }
@@ -115,7 +115,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                var message = ex?.InnerException.Message ?? ex.Message;
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }
@@ -213,7 +213,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                var message = ex?.InnerException.Message ?? ex.Message;
                 _logger.LogError(message, ex);
                 response.ExceptionMessage = message;
             }

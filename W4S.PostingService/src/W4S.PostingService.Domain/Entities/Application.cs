@@ -14,7 +14,7 @@ namespace W4S.PostingService.Domain.Entities
 
         public Student Student { get; set; }
 
-        public decimal WorkTimeOverlap { get; set; }
+        public double WorkTimeOverlap { get; set; }
 
         public double Distance { get; set; }
 

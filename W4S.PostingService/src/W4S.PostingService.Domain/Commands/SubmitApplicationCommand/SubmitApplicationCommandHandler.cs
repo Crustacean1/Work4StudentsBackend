@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
+using W4S.PostingService.Domain.Models;
 using W4S.PostingService.Domain.Repositories;
 using W4S.PostingService.Domain.ValueType;
 
@@ -27,6 +28,9 @@ namespace W4S.PostingService.Domain.Commands
             var student = await GetEntity(studentRepository, command.StudentId);
             var offer = await GetEntity(offerRepository, command.OfferId);
 
+            LogSchedules(student.Availability);
+            LogSchedules(offer.WorkingHours);
+
             var prevApplications = await applicationRepository.GetEntityAsync(a => a.OfferId == command.OfferId && a.StudentId == command.StudentId);
             if (prevApplications is not null)
             {
@@ -41,7 +45,8 @@ namespace W4S.PostingService.Domain.Commands
                 LastChanged = DateTime.UtcNow,
                 Status = ApplicationStatus.Submitted,
                 Message = command.Application.Message,
-                Distance = GetDistance(student.Address, offer.Address)
+                Distance = GetDistance(student.Address, offer.Address),
+                WorkTimeOverlap = GetCoverage(student.Availability, offer.WorkingHours)
             };
 
             await applicationRepository.AddAsync(application);
@@ -56,20 +61,53 @@ namespace W4S.PostingService.Domain.Commands
             if (addA.Latitude is null || addA.Longitude is null) { return 0; }
             if (addB.Latitude is null || addB.Longitude is null) { return 0; }
 
-            var lonDelta = (Math.PI * (addA.Longitude - addB.Longitude / 180)) ?? 0;
-            var latDelta = (Math.PI * (addA.Latitude - addB.Latitude / 180)) ?? 0;
+            var lonDelta = (Math.PI * (addA.Longitude - addB.Longitude) / 180) ?? 0;
+            var latDelta = (Math.PI * (addA.Latitude - addB.Latitude) / 180) ?? 0;
 
-            var latA = (Math.PI * (addA.Latitude / 180)) ?? 0;
-            var latB = (Math.PI * (addB.Latitude / 180)) ?? 0;
+            var latA = (Math.PI * (addA.Latitude / 180.0)) ?? 0;
+            var latB = (Math.PI * (addB.Latitude / 180.0)) ?? 0;
 
 
-            var a = Math.Pow(Math.Sin(latDelta / 2), 2) + (Math.Cos(latA) * Math.Cos(latB) * Math.Pow(Math.Cos(lonDelta / 2), 2));
+            var a = Math.Pow(Math.Sin(latDelta / 2), 2) + (Math.Cos(latA) * Math.Cos(latB) * Math.Pow(Math.Sin(lonDelta / 2), 2));
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            var d = 6_371 * c;
+            var d = 6371 * c;
 
-            logger.LogInformation("Getting distance, computaion results: {A} {B} {C}", a, c, d);
+            logger.LogInformation("Getting distance, computation results: {A} {B} {C}", a, c, d);
 
             return d;
+        }
+
+        private double GetCoverage(IEnumerable<Schedule> availability, IEnumerable<Schedule> workTime)
+        {
+            var matchingTime = workTime.Aggregate(0.0, (total, work) => total + availability.Sum(av => GetCoverage(av, work)));
+            var totalTime = workTime.Sum(w => (w.End - w.Start).Duration().TotalHours);
+
+            logger.LogInformation("Matching time {MatchingTime} TotalTime: {TotalTime}", matchingTime, totalTime);
+            return matchingTime / totalTime;
+        }
+
+        private double GetCoverage(Schedule availability, Schedule workTime)
+        {
+            var start = new[] { availability.Start, workTime.Start }.Max();
+            var end = new[] { availability.End, workTime.End }.Min();
+
+            logger.LogInformation("Time piece  {start} TotalTime: {end}", start, end);
+
+            if (start < end)
+            {
+                return (end - start).Duration().TotalHours;
+            }
+
+            return 0;
+        }
+
+        private void LogSchedules(IEnumerable<Schedule> schedules)
+        {
+            logger.LogInformation("Schedule: ");
+            foreach (var schedule in schedules)
+            {
+                logger.LogInformation("In schedule: {Start} {End}", schedule.Start, schedule.End);
+            }
         }
     }
 }
