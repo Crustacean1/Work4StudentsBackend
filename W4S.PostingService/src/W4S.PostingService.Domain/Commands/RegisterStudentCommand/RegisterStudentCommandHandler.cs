@@ -11,9 +11,10 @@ namespace W4S.PostingService.Domain.Commands
     public class RegisterStudentCommandHandler : CommandHandlerBase, IRequestHandler<RegisterStudentCommand, Unit>
     {
         private readonly IRepository<Student> studentRepository;
+        private readonly AddressApi addressApi;
         private readonly IMapper mapper;
 
-        public RegisterStudentCommandHandler(IRepository<Student> studentRepository)
+        public RegisterStudentCommandHandler(IRepository<Student> studentRepository, AddressApi addressApi)
         {
             var mapperConfig = new MapperConfiguration(builder =>
             {
@@ -23,6 +24,7 @@ namespace W4S.PostingService.Domain.Commands
 
             mapper = mapperConfig.CreateMapper();
             this.studentRepository = studentRepository;
+            this.addressApi = addressApi;
         }
 
         public async Task<Unit> Handle(RegisterStudentCommand request, CancellationToken cancellationToken)
@@ -37,6 +39,8 @@ namespace W4S.PostingService.Domain.Commands
             {
                 throw new PostingException($"Student with id {student.Id} is already registered", 400);
             }
+
+            await addressApi.UpdateAddress(student.Address);
 
             await studentRepository.AddAsync(student);
             await studentRepository.SaveAsync();

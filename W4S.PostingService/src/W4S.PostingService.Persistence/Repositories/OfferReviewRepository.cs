@@ -54,5 +54,12 @@ namespace W4S.PostingService.Persistence.Repositories
             };
         }
 
+        public async Task<decimal> GetRatingAverage(Guid subjectId)
+        {
+            return await context.Set<OfferReview>()
+                .Include(r => r.Offer)
+                .Where(r => r.Offer.Recruiter.Id == subjectId)
+                .AverageAsync(r => r.Rating);
+        }
     }
 }

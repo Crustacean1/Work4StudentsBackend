@@ -6,7 +6,7 @@ namespace W4S.PostingService.Domain.Entities
     {
         public string FirstName { get; set; }
 
-        public decimal Rating { get; set; } = 0;
+        public decimal Rating { get; set; } = 0.0M;
 
         public string? SecondName { get; set; } = "";
 

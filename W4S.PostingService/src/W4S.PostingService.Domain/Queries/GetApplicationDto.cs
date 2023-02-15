@@ -17,5 +17,7 @@ namespace W4S.PostingService.Domain.Queries
         public string Status { get; set; }
 
         public string Message { get; set; }
+
+        public ApplicationOfferDto Offer { get; set; }
     }
 }

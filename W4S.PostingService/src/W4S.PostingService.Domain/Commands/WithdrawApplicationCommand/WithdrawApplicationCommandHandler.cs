@@ -6,7 +6,7 @@ using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class WithdrawApplicationCommandHandler : CommandHandlerBase, IRequestHandler<WithdrawApplicationCommand, Unit>
+    public class WithdrawApplicationCommandHandler : CommandHandlerBase, IRequestHandler<WithdrawApplicationCommand, Guid>
     {
         private readonly IRepository<Application> applicationRepository;
         private readonly IRepository<Student> studentRepository;
@@ -17,10 +17,10 @@ namespace W4S.PostingService.Domain.Commands
             this.studentRepository = studentApplication;
         }
 
-        public async Task<Unit> Handle(WithdrawApplicationCommand command, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(WithdrawApplicationCommand request, CancellationToken cancellationToken)
         {
-            var application = await GetEntity(applicationRepository, command.ApplicationId);
-            var student = await GetEntity(studentRepository, command.StudentId);
+            var application = await GetEntity(applicationRepository, request.ApplicationId);
+            var student = await GetEntity(studentRepository, request.StudentId);
 
             if (application.StudentId != student.Id)
             {
@@ -34,7 +34,7 @@ namespace W4S.PostingService.Domain.Commands
             application.Status = ApplicationStatus.Withdrawn;
             await applicationRepository.SaveAsync();
 
-            return Unit.Value;
+            return application.Id;
         }
     }
 }

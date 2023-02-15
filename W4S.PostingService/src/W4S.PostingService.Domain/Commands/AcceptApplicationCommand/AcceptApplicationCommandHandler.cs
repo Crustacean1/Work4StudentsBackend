@@ -6,7 +6,7 @@ using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class AcceptApplicationCommandHandler : CommandHandlerBase, IRequestHandler<AcceptApplicationCommand, Unit>
+    public class AcceptApplicationCommandHandler : CommandHandlerBase, IRequestHandler<AcceptApplicationCommand, Guid>
     {
         private readonly IRepository<Application> applicationRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
@@ -18,7 +18,7 @@ namespace W4S.PostingService.Domain.Commands
             this.applicationRepository = applicationRepository;
         }
 
-        public async Task<Unit> Handle(AcceptApplicationCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(AcceptApplicationCommand request, CancellationToken cancellationToken)
         {
 
             var recruiter = await GetEntity(recruiterRepository, request.RecruiterId);
@@ -39,7 +39,7 @@ namespace W4S.PostingService.Domain.Commands
 
             await applicationRepository.SaveAsync();
 
-            return Unit.Value;
+            return application.Id;
         }
     }
 }

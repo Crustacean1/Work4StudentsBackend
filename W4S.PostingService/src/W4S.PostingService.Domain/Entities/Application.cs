@@ -16,7 +16,7 @@ namespace W4S.PostingService.Domain.Entities
 
         public decimal WorkTimeOverlap { get; set; }
 
-        public decimal Proximity { get; set; }
+        public double Distance { get; set; }
 
         public DateTime LastChanged { get; set; }
 

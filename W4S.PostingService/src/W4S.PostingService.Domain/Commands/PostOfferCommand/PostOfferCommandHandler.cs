@@ -2,8 +2,8 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
-using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
+using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Commands
 {
@@ -12,10 +12,11 @@ namespace W4S.PostingService.Domain.Commands
         private readonly ILogger<PostOfferCommandHandler> logger;
         private readonly IOfferRepository offerRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
+        private readonly AddressApi addressApi;
 
         private readonly IMapper mapper;
 
-        public PostOfferCommandHandler(IOfferRepository offerRepository, ILogger<PostOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository = null)
+        public PostOfferCommandHandler(IOfferRepository offerRepository, ILogger<PostOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository, AddressApi addressApi)
         {
             this.offerRepository = offerRepository;
             this.logger = logger;
@@ -23,6 +24,7 @@ namespace W4S.PostingService.Domain.Commands
 
             var conf = new MapperConfiguration(builder => builder.CreateMap<PostOfferDto, JobOffer>());
             mapper = conf.CreateMapper();
+            this.addressApi = addressApi;
         }
 
         public async Task<Guid> Handle(PostOfferCommand command, CancellationToken cancellationToken)
@@ -32,6 +34,9 @@ namespace W4S.PostingService.Domain.Commands
             JobOffer offer = mapper.Map<JobOffer>(command.Offer);
             offer.Id = Guid.NewGuid();
             offer.RecruiterId = recruiter.Id;
+            offer.CreationDate = DateTime.UtcNow;
+
+            await addressApi.UpdateAddress(offer.Address);
 
             try
             {

@@ -11,5 +11,7 @@ namespace W4S.PostingService.Domain.Queries
         public string? Mode { get; set; } = "";
 
         public string? Status { get; set; } = "";
+
+        public Guid UserId { get; set; }
     }
 }

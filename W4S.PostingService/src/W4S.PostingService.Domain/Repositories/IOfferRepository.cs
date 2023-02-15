@@ -6,6 +6,6 @@ namespace W4S.PostingService.Domain.Repositories
     public interface IOfferRepository : IRepository<JobOffer>
     {
         public Task<PaginatedRecords<GetOfferDto>> GetOffers(GetOffersQuery query);
-        public Task<GetOfferDto> GetOfferDetails(Guid id);
+        public Task<GetOfferDetailsDto?> GetOfferDetails(Guid id, Guid userId);
     }
 }

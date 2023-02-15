@@ -20,6 +20,8 @@ namespace W4S.PostingService.Persistence.Repositories
                 b.CreateMap<Company, CompanyDto>();
                 b.CreateMap<JobOffer, GetOfferDto>()
                 .ForMember(dto => dto.Company, opts => opts.MapFrom(jo => jo.Recruiter.Company));
+                b.CreateMap<JobOffer, GetOfferDetailsDto>()
+                .ForMember(dto => dto.Company, opts => opts.MapFrom(jo => jo.Recruiter.Company));
             });
             mapper = mapperConfiguration.CreateMapper();
             this.logger = logger;
@@ -27,8 +29,6 @@ namespace W4S.PostingService.Persistence.Repositories
 
         public async Task<PaginatedRecords<GetOfferDto>> GetOffers(GetOffersQuery query)
         {
-            logger.LogInformation("Most curious {Count}", query.Keywords);
-
             var keywordsArNull = string.IsNullOrEmpty(query.Keywords);
             var modeIsNull = Enum.TryParse(query.Mode, out WorkMode mode);
             var statusIsNull = Enum.TryParse(query.Status, out OfferStatus status);
@@ -52,19 +52,36 @@ namespace W4S.PostingService.Persistence.Repositories
 
             return new PaginatedRecords<GetOfferDto>
             {
-                Items = offers.Select(mapper.Map<GetOfferDto>),
+                Items = offers.Select(mapper.Map<JobOffer, GetOfferDto>),
                 TotalCount = totalCount
             };
         }
 
-        public async Task<GetOfferDto> GetOfferDetails(Guid id)
+        public async Task<GetOfferDetailsDto?> GetOfferDetails(Guid id, Guid userId)
         {
             var offer = await context.Set<JobOffer>()
                 .Include(jo => jo.Recruiter)
                 .ThenInclude(r => r.Company)
                 .SingleOrDefaultAsync(jo => jo.Id == id);
 
-            return mapper.Map<GetOfferDto>(offer);
+            if (offer is null)
+            {
+                return null;
+            }
+
+            var applied = false;
+
+            var application = await context.Set<Application>()
+                .SingleOrDefaultAsync(a => a.OfferId == id && a.StudentId == userId);
+
+            applied = application is not null;
+
+
+            return mapper.Map<JobOffer, GetOfferDetailsDto>(offer, opt => opt.AfterMap((src, dst) =>
+                        {
+                            dst.Created = src.RecruiterId == userId;
+                            dst.Applied = applied;
+                        }));
         }
     }
 }

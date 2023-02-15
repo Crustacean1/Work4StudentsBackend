@@ -8,5 +8,7 @@ namespace W4S.PostingService.Domain.Repositories
         Task<PaginatedRecords<Review>> GetSubmittedReviews(Guid authorId, PaginatedQuery query);
 
         Task<PaginatedRecords<Review>> GetReceivedReviews(Guid subjectid, PaginatedQuery query);
+
+        Task<decimal> GetRatingAverage(Guid subjectId);
     }
 }

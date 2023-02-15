@@ -91,7 +91,7 @@ namespace W4S.PostingService.Persistence
                 OfferId = FakeJobOffer.Id,
                 StudentId = FakeStudent.Id,
                 WorkTimeOverlap = 0.0M,
-                Proximity = 1.0M,
+                Distance = 0.0,
                 LastChanged = DateTime.Now.ToUniversalTime(),
                 Status = ApplicationStatus.Submitted,
                 Message = "I want to work pls"

@@ -11,5 +11,9 @@ namespace W4S.PostingService.Domain.ValueType
         public string Street { get; init; }
 
         public string Building { get; init; }
+
+        public Double? Latitude { get; set; } = 0;
+
+        public Double? Longitude { get; set; } = 0;
     }
 }

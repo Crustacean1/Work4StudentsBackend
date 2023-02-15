@@ -23,7 +23,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Employer")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(List<string>))]
         public async Task<ActionResult> PostOffer([FromBody] PostOfferDto offer, CancellationToken cancellationToken)
@@ -33,6 +33,21 @@ namespace W4S.Gateway.Console.Posting
             var command = new PostOfferCommand { Offer = offer, RecruiterId = Guid.Parse(recruiterId) };
 
             var response = await busClient.SendRequest<ResponseWrapper<Guid>, PostOfferCommand>("offers.postOffer", command, cancellationToken);
+            return UnwrapResponse(response);
+        }
+
+        [HttpPost]
+        [Route("{offerId}/close")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(List<string>))]
+        public async Task<ActionResult> CloseOffer([FromRoute] Guid offerId, CancellationToken cancellationToken)
+        {
+            var recruiterId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
+
+            var command = new CloseOfferCommand { OfferId = offerId, RecruiterId = Guid.Parse(recruiterId) };
+
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, CloseOfferCommand>("offers.closeOffer", command, cancellationToken);
             return UnwrapResponse(response);
         }
 
@@ -56,6 +71,21 @@ namespace W4S.Gateway.Console.Posting
             return UnwrapResponse(response);
         }
 
+        [HttpDelete]
+        [Authorize(Roles = "Administrator")]
+        [Route("{offerId}")]
+        public async Task<ActionResult> DeleteOffer([FromRoute] Guid offerId, CancellationToken cancellationToken)
+        {
+            var command = new DeleteOfferCommand
+            {
+                OfferId = offerId,
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteOfferCommand>("offers.deleteOffer", command, cancellationToken);
+            return UnwrapResponse(response);
+        }
+
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetOfferDto>))]
         public async Task<ActionResult> GetJobOffers([FromQuery] GetOffersQuery query, CancellationToken cancellationToken)
@@ -67,14 +97,14 @@ namespace W4S.Gateway.Console.Posting
         [HttpGet]
         [Authorize]
         [Route("{offerId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOfferDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOfferDetailsDto))]
         public async Task<ActionResult> GetJobOffer([FromRoute] Guid offerId, CancellationToken cancellationToken)
         {
             var query = new GetOfferQuery
             {
                 OfferId = offerId
             };
-            var response = await busClient.SendRequest<ResponseWrapper<GetOfferDto>, GetOfferQuery>("offers.getOffer", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<GetOfferDetailsDto>, GetOfferQuery>("offers.getOffer", query, cancellationToken);
             return UnwrapResponse(response);
         }
 

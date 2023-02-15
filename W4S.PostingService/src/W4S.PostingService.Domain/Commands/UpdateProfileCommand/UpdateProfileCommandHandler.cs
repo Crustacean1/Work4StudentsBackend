@@ -11,9 +11,10 @@ namespace W4S.PostingService.Domain.Commands
     {
         private readonly IRepository<Recruiter> recruiterRepository;
         private readonly IRepository<Student> studentRepository;
+        private readonly AddressApi addressApi;
         private readonly IMapper mapper;
 
-        public UpdateProfileCommandHandler(IRepository<Student> studentRepository, IRepository<Recruiter> recruiterRepository)
+        public UpdateProfileCommandHandler(IRepository<Student> studentRepository, IRepository<Recruiter> recruiterRepository, AddressApi addressApi)
         {
             this.studentRepository = studentRepository;
             this.recruiterRepository = recruiterRepository;
@@ -25,6 +26,7 @@ namespace W4S.PostingService.Domain.Commands
                 b.CreateMap<UpdateProfileCommand, Address>();
             });
             mapper = mapperConfig.CreateMapper();
+            this.addressApi = addressApi;
         }
 
         public async Task<Unit> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
@@ -37,6 +39,11 @@ namespace W4S.PostingService.Domain.Commands
             if (user is null)
             {
                 throw new PostingException($"No user with id: {request.ProfileEvent.UserId}", 400);
+            }
+
+            if (student is not null)
+            {
+                await addressApi.UpdateAddress(student.Address);
             }
 
             mapper.Map(request.ProfileEvent, user);

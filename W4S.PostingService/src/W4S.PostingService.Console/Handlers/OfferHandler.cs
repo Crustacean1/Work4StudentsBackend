@@ -40,6 +40,24 @@ namespace W4S.PostingService.Console.Handlers
             });
         }
 
+        [BusRequestHandler("closeOffer")]
+        public async Task<ResponseWrapper<Guid>> OnCloseOffer(CloseOfferCommand command)
+        {
+            logger.LogInformation("Recruiter {RecruiterId} closes job offer: {OfferId}", command.RecruiterId, command.OfferId);
+
+            return await ExecuteHandler(async () =>
+            {
+                _ = await sender.Send(command);
+                return (Guid.Empty, 204);
+            });
+        }
+
+        [BusRequestHandler("deleteOffer")]
+        public Task<ResponseWrapper<Guid>> OnDeleteOffer(DeleteOfferCommand command)
+        {
+            return Task.FromResult(new ResponseWrapper<Guid>());
+        }
+
         [BusRequestHandler("getOffers")]
         public async Task<ResponseWrapper<PaginatedList<GetOfferDto>>> GetOfferListing(GetOffersQuery query)
         {
@@ -53,7 +71,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("getOffer")]
-        public async Task<ResponseWrapper<GetOfferDto>> GetOffer(GetOfferQuery query)
+        public async Task<ResponseWrapper<GetOfferDetailsDto>> GetOffer(GetOfferQuery query)
         {
             logger.LogInformation("Getting job offer {Id}", query.OfferId);
 

@@ -8,6 +8,9 @@ using W4S.PostingService.Console.Handlers;
 using System.Globalization;
 using W4S.PostingService.Domain.Commands;
 using MediatR;
+using W4S.PostingService.Console.Integrators;
+using W4S.PostingService.Domain.Integrations;
+using W4S.PostingService.Domain;
 
 namespace W4S.PostingService.Console
 {
@@ -29,10 +32,13 @@ namespace W4S.PostingService.Console
                   provider.AddScoped<IOfferRepository, OfferRepository>();
                   provider.AddScoped<IRepository<Student>, RepositoryBase<Student>>();
                   provider.AddScoped<IRepository<Recruiter>, RepositoryBase<Recruiter>>();
-                  provider.AddScoped<IRepository<Application>, RepositoryBase<Application>>();
+                  provider.AddScoped<IApplicationRepository, ApplicationRepository>();
                   provider.AddScoped<IRepository<Company>, RepositoryBase<Company>>();
                   provider.AddScoped<IReviewRepository<OfferReview>, OfferReviewRepository>();
                   provider.AddScoped<IReviewRepository<ApplicationReview>, ApplicationReviewRepository>();
+                  provider.AddScoped<AddressApi>();
+
+                  provider.AddScoped<IIntegrator, Integrator>();
 
                   provider.AddScoped<OfferHandler>();
                   provider.AddScoped<ApplicationHandler>();

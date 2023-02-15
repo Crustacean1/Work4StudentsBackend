@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using W4S.PostingService.Persistence;
 namespace W4S.PostingService.Persistence.Migrations
 {
     [DbContext(typeof(PostingContext))]
-    partial class PostingContextModelSnapshot : ModelSnapshot
+    [Migration("20230215133610_Location extension")]
+    partial class Locationextension
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,6 @@ namespace W4S.PostingService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<double>("Distance")
-                        .HasColumnType("double precision");
-
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp with time zone");
 
@@ -41,6 +41,9 @@ namespace W4S.PostingService.Persistence.Migrations
 
                     b.Property<Guid>("OfferId")
                         .HasColumnType("uuid");
+
+                    b.Property<decimal>("Proximity")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid?>("ReviewId")
                         .HasColumnType("uuid");
@@ -120,7 +123,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("525a029f-53f8-42e4-9017-80c196451557"),
+                            Id = new Guid("fc203cd1-6185-4e17-ac41-0e78e81d8eaf"),
                             NIP = "7821160955",
                             Name = "Comarch"
                         });
@@ -255,8 +258,8 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c6ea42c5-a38b-4472-958f-449254d0df32"),
-                            CompanyId = new Guid("525a029f-53f8-42e4-9017-80c196451557"),
+                            Id = new Guid("b29db4cc-2e63-47d9-89c5-887df4b2e945"),
+                            CompanyId = new Guid("fc203cd1-6185-4e17-ac41-0e78e81d8eaf"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
@@ -300,7 +303,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6dfe3606-a4c7-4f77-a1e1-ea73fbedff8b"),
+                            Id = new Guid("8c86ce46-32f6-4d7e-914c-10e5a7977859"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
@@ -371,11 +374,11 @@ namespace W4S.PostingService.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("text");
 
-                            b1.Property<double?>("Latitude")
-                                .HasColumnType("double precision");
+                            b1.Property<decimal?>("Latitude")
+                                .HasColumnType("numeric");
 
-                            b1.Property<double?>("Longitude")
-                                .HasColumnType("double precision");
+                            b1.Property<decimal?>("Longitude")
+                                .HasColumnType("numeric");
 
                             b1.Property<string>("Region")
                                 .IsRequired()
@@ -490,11 +493,11 @@ namespace W4S.PostingService.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("text");
 
-                            b1.Property<double?>("Latitude")
-                                .HasColumnType("double precision");
+                            b1.Property<decimal?>("Latitude")
+                                .HasColumnType("numeric");
 
-                            b1.Property<double?>("Longitude")
-                                .HasColumnType("double precision");
+                            b1.Property<decimal?>("Longitude")
+                                .HasColumnType("numeric");
 
                             b1.Property<string>("Region")
                                 .IsRequired()
@@ -514,7 +517,7 @@ namespace W4S.PostingService.Persistence.Migrations
                             b1.HasData(
                                 new
                                 {
-                                    RecruiterId = new Guid("c6ea42c5-a38b-4472-958f-449254d0df32"),
+                                    RecruiterId = new Guid("b29db4cc-2e63-47d9-89c5-887df4b2e945"),
                                     Building = "24",
                                     City = "Gliwice",
                                     Country = "Polandia",
@@ -548,11 +551,11 @@ namespace W4S.PostingService.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("text");
 
-                            b1.Property<double?>("Latitude")
-                                .HasColumnType("double precision");
+                            b1.Property<decimal?>("Latitude")
+                                .HasColumnType("numeric");
 
-                            b1.Property<double?>("Longitude")
-                                .HasColumnType("double precision");
+                            b1.Property<decimal?>("Longitude")
+                                .HasColumnType("numeric");
 
                             b1.Property<string>("Region")
                                 .IsRequired()
@@ -572,7 +575,7 @@ namespace W4S.PostingService.Persistence.Migrations
                             b1.HasData(
                                 new
                                 {
-                                    StudentId = new Guid("6dfe3606-a4c7-4f77-a1e1-ea73fbedff8b"),
+                                    StudentId = new Guid("8c86ce46-32f6-4d7e-914c-10e5a7977859"),
                                     Building = "Boilding",
                                     City = "Gliwice",
                                     Country = "Polandia",

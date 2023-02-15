@@ -10,18 +10,21 @@ namespace W4S.PostingService.Domain.Queries
 {
     public class GetStudentApplicationsQueryHandler : IRequestHandler<GetStudentApplicationsQuery, PaginatedList<GetApplicationDto>>
     {
-        private readonly IRepository<Application> applicationRepository;
+        private readonly IApplicationRepository applicationRepository;
         private readonly IRepository<Student> studentRepository;
         private readonly IMapper mapper;
 
-        public GetStudentApplicationsQueryHandler(IRepository<Student> studentRepository, IRepository<Application> applicationRepository)
+        public GetStudentApplicationsQueryHandler(IRepository<Student> studentRepository, IApplicationRepository applicationRepository)
         {
             this.studentRepository = studentRepository;
             this.applicationRepository = applicationRepository;
             var mapperConfig = new MapperConfiguration(b =>
             {
+                b.CreateMap<JobOffer, ApplicationOfferDto>()
+                .ForMember(a => a.Company, opt => opt.MapFrom(s => s.Recruiter.Company.Name));
                 b.CreateMap<Application, GetApplicationDto>()
                 .ForMember(a => a.Status, opt => opt.MapFrom(a => Enum.GetName(typeof(ApplicationStatus), a.Status)));
+
             });
             mapper = mapperConfig.CreateMapper();
         }
@@ -34,12 +37,9 @@ namespace W4S.PostingService.Domain.Queries
                 throw new PostingException($"No student with id: {query.StudentId}");
             }
 
-            Expression<Func<Application, bool>> selector = (Application a) => a.StudentId == student.Id;
+            var applications = await applicationRepository.GetStudentApplications(query.StudentId, query);
 
-            var applications = await applicationRepository.GetEntitiesAsync(query.Page, query.PageSize, selector, a => a.LastChanged);
-            var totalCount = await applicationRepository.GetTotalCount(selector);
-
-            return new PaginatedList<GetApplicationDto>(applications.Select(mapper.Map<GetApplicationDto>).ToList(), query.Page, query.PageSize, totalCount);
+            return new PaginatedList<GetApplicationDto>(applications.Items.Select(mapper.Map<GetApplicationDto>).ToList(), query.Page, query.PageSize, applications.TotalCount);
         }
     }
 }

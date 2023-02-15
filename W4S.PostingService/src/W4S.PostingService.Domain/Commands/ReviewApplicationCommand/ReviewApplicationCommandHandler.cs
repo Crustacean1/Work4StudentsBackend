@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
+using W4S.PostingService.Domain.Integrations;
 using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Commands
@@ -9,12 +10,14 @@ namespace W4S.PostingService.Domain.Commands
     public class ReviewApplicationCommandHandler : CommandHandlerBase, IRequestHandler<ReviewApplicationCommand, Guid>
     {
         private readonly IReviewRepository<ApplicationReview> reviewRepository;
-        private readonly IRepository<Application> applicationRepository;
+        private readonly IApplicationRepository applicationRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
+        private readonly IRepository<Student> studentRepository;
         private readonly IOfferRepository offerRepository;
+        private readonly IIntegrator integrator;
         private readonly IMapper mapper;
 
-        public ReviewApplicationCommandHandler(IReviewRepository<ApplicationReview> reviewRepository, IRepository<Application> applicationRepository, IRepository<Recruiter> recruiterRepository, IOfferRepository offerRepository)
+        public ReviewApplicationCommandHandler(IReviewRepository<ApplicationReview> reviewRepository, IApplicationRepository applicationRepository, IRepository<Recruiter> recruiterRepository, IOfferRepository offerRepository, IRepository<Student> studentRepository, IIntegrator integrator)
         {
             this.reviewRepository = reviewRepository;
             this.applicationRepository = applicationRepository;
@@ -26,6 +29,8 @@ namespace W4S.PostingService.Domain.Commands
             });
             this.mapper = conf.CreateMapper();
             this.offerRepository = offerRepository;
+            this.studentRepository = studentRepository;
+            this.integrator = integrator;
         }
 
         public async Task<Guid> Handle(ReviewApplicationCommand request, CancellationToken cancellationToken)
@@ -56,7 +61,18 @@ namespace W4S.PostingService.Domain.Commands
             await reviewRepository.AddAsync(review);
             await reviewRepository.SaveAsync();
 
+            var student = await GetEntity(studentRepository, application.StudentId);
+            await UpdateStudentRating(student);
+
             return review.Id;
+        }
+
+        public async Task UpdateStudentRating(Student student)
+        {
+            var newRating = await reviewRepository.GetRatingAverage(student.Id);
+            student.Rating = newRating;
+            await studentRepository.SaveAsync();
+            integrator.OnStudentRatingUpdated(new UserRatingChangedEvent { UserId = student.Id, Rating = student.Rating });
         }
     }
 }

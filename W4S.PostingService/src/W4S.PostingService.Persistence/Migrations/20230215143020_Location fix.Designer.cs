@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using W4S.PostingService.Persistence;
 namespace W4S.PostingService.Persistence.Migrations
 {
     [DbContext(typeof(PostingContext))]
-    partial class PostingContextModelSnapshot : ModelSnapshot
+    [Migration("20230215143020_Location fix")]
+    partial class Locationfix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,8 +32,8 @@ namespace W4S.PostingService.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<double>("Distance")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Distance")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("LastChanged")
                         .HasColumnType("timestamp with time zone");
@@ -120,7 +123,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("525a029f-53f8-42e4-9017-80c196451557"),
+                            Id = new Guid("b1362ece-63fd-4b29-b07f-b80fa90dda2b"),
                             NIP = "7821160955",
                             Name = "Comarch"
                         });
@@ -255,8 +258,8 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c6ea42c5-a38b-4472-958f-449254d0df32"),
-                            CompanyId = new Guid("525a029f-53f8-42e4-9017-80c196451557"),
+                            Id = new Guid("0e6f0063-f4cd-450c-ae69-ad0979cf8098"),
+                            CompanyId = new Guid("b1362ece-63fd-4b29-b07f-b80fa90dda2b"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
@@ -300,7 +303,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6dfe3606-a4c7-4f77-a1e1-ea73fbedff8b"),
+                            Id = new Guid("7942ae51-6efd-4dc0-938f-3ac3d15e4427"),
                             EmailAddress = "noreply@company.et",
                             FirstName = "John",
                             PhoneNumber = "123456789",
@@ -514,7 +517,7 @@ namespace W4S.PostingService.Persistence.Migrations
                             b1.HasData(
                                 new
                                 {
-                                    RecruiterId = new Guid("c6ea42c5-a38b-4472-958f-449254d0df32"),
+                                    RecruiterId = new Guid("0e6f0063-f4cd-450c-ae69-ad0979cf8098"),
                                     Building = "24",
                                     City = "Gliwice",
                                     Country = "Polandia",
@@ -572,7 +575,7 @@ namespace W4S.PostingService.Persistence.Migrations
                             b1.HasData(
                                 new
                                 {
-                                    StudentId = new Guid("6dfe3606-a4c7-4f77-a1e1-ea73fbedff8b"),
+                                    StudentId = new Guid("7942ae51-6efd-4dc0-938f-3ac3d15e4427"),
                                     Building = "Boilding",
                                     City = "Gliwice",
                                     Country = "Polandia",
