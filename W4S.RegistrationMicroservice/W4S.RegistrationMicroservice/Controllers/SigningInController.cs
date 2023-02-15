@@ -32,7 +32,7 @@ namespace W4SRegistrationMicroservice.API.Controllers
             }
             catch (UserNotFoundException ex)
             {
-                string message;
+                string message = string.Empty;
                 if (ex.InnerException != null)
                 {
                     message = ex.InnerException.Message;

@@ -4,7 +4,7 @@
     {
         public string? UserEmail { get; set; }
         public Guid UserId { get; set; }
-        public Guid UserProfileId { get; set; }
+        public Guid? UserProfileId { get; set; }
         public int UserType { get; set; }
         public string? JwtTokenValue { get; set; }
     }
