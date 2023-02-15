@@ -279,7 +279,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                string message;
+                string message = string.Empty;
                 if (ex.InnerException != null)
                 {
                     message = ex.InnerException.Message;
