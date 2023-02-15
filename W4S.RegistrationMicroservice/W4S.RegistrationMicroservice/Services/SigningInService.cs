@@ -52,7 +52,7 @@ namespace W4SRegistrationMicroservice.API.Services
             {
                 profileGuid = _dbContext.EmployerProfiles.Where(x => x.EmployerId == guid).FirstOrDefault().Id;
             }
-            signingResponse.UserProfileId = guid;
+            signingResponse.UserProfileId = profileGuid;
 
             return signingResponse;
         }
