@@ -12,7 +12,7 @@ namespace W4S.PostingService.Persistence.Repositories
         {
         }
 
-        public async Task<PaginatedRecords<Review>> GetReceivedReviews(Guid studentId, PaginatedQuery query)
+        public async Task<PaginatedRecords<ApplicationReview>> GetReceivedReviews(Guid studentId, PaginatedQuery query)
         {
             var totalCount = await context.Set<ApplicationReview>()
                 .Include(r => r.Application)
@@ -27,14 +27,14 @@ namespace W4S.PostingService.Persistence.Repositories
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            return new PaginatedRecords<Review>
+            return new PaginatedRecords<ApplicationReview>
             {
                 Items = reviews,
                 TotalCount = totalCount
             };
         }
 
-        public async Task<PaginatedRecords<Review>> GetSubmittedReviews(Guid authorId, PaginatedQuery query)
+        public async Task<PaginatedRecords<ApplicationReview>> GetSubmittedReviews(Guid authorId, PaginatedQuery query)
         {
             var totalCount = await context.Set<ApplicationReview>()
                 .Where(r => r.AuthorId == authorId)
@@ -47,11 +47,16 @@ namespace W4S.PostingService.Persistence.Repositories
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            return new PaginatedRecords<Review>
+            return new PaginatedRecords<ApplicationReview>
             {
                 Items = reviews,
                 TotalCount = totalCount
             };
+        }
+
+        public Task<PaginatedRecords<ApplicationReview>> GetDirectReviews(Guid subjectId, PaginatedQuery query)
+        {
+            throw new NotImplementedException("LMAO xD, to i tak nie dało by nic, bezsens");
         }
 
         public async Task<decimal> GetRatingAverage(Guid subjectId)

@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using W4S.PostingService.Domain.Dto;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Integrations;
@@ -13,11 +14,11 @@ namespace W4S.PostingService.Domain.Commands
         private readonly IRepository<Student> studentRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
         private readonly IOfferRepository offerRepository;
-        private readonly IRepository<Application> applicationRepository;
+        private readonly IApplicationRepository applicationRepository;
         private readonly IIntegrator integrator;
         private readonly IMapper mapper;
 
-        public ReviewOfferCommandHandler(IOfferRepository offerRepository, IRepository<Student> studentRepository, IReviewRepository<OfferReview> reviewRepository, IRepository<Application> applicationRepository, IRepository<Recruiter> recruiterRepository, IIntegrator integrator)
+        public ReviewOfferCommandHandler(IOfferRepository offerRepository, IRepository<Student> studentRepository, IReviewRepository<OfferReview> reviewRepository, IApplicationRepository applicationRepository, IRepository<Recruiter> recruiterRepository, IIntegrator integrator)
         {
             this.offerRepository = offerRepository;
             this.studentRepository = studentRepository;
@@ -25,7 +26,7 @@ namespace W4S.PostingService.Domain.Commands
 
             var conf = new MapperConfiguration(b =>
             {
-                b.CreateMap<OfferReviewDto, OfferReview>();
+                b.CreateMap<PostReviewDto, OfferReview>();
             });
             this.mapper = conf.CreateMapper();
             this.applicationRepository = applicationRepository;

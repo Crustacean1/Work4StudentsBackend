@@ -32,7 +32,7 @@ namespace W4S.PostingService.Domain.Entities
 
         public ICollection<Application> Applications { get; set; } = new List<Application>();
 
-        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public ICollection<OfferReview> Reviews { get; set; } = new List<OfferReview>();
 
         public NpgsqlTsVector SearchVector { get; set; }
     }

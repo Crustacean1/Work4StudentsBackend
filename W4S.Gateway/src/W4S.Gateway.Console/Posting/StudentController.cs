@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Domain.Dto;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Queries;
 using W4S.ServiceBus.Abstractions;
@@ -53,7 +53,7 @@ namespace W4S.Gateway.Console.Posting
                 StudentId = studentId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<ApplicationReview>>, GetStudentReviewsQuery>("reviews.getStudentReviews", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<ApplicationReviewDto>>, GetStudentReviewsQuery>("reviews.getStudentReviews", query, cancellationToken);
             return UnwrapResponse(response);
         }
 

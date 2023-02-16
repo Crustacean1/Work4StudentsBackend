@@ -10,6 +10,8 @@ namespace W4S.PostingService.Domain.Repositories
 
         public Task DeleteAsync(Guid id);
 
+        public Task<TEntity> RequireEntityAsync(Guid id);
+
         public Task<TEntity?> GetEntityAsync(Guid id);
 
         public Task<TEntity?> GetEntityAsync(Expression<Func<TEntity, bool>> selector);

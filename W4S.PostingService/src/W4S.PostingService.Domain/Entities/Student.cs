@@ -8,8 +8,8 @@ namespace W4S.PostingService.Domain.Entities
 
         public ICollection<Application> Applications { get; set; } = new List<Application>();
 
-        public ICollection<Review> ReceivedReviews { get; set; } = new List<Review>();
+        public ICollection<ApplicationReview> ReceivedReviews { get; set; } = new List<ApplicationReview>();
 
-        public ICollection<Review> SubmittedReviews { get; set; } = new List<Review>();
+        public ICollection<ApplicationReview> SubmittedReviews { get; set; } = new List<ApplicationReview>();
     }
 }

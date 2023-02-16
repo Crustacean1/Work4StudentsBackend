@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using W4S.PostingService.Domain.Commands;
-using W4S.PostingService.Domain.Entities;
+using W4S.PostingService.Domain.Dto;
 using W4S.ServiceBus.Abstractions;
 
 namespace W4S.Gateway.Console.Posting
@@ -59,7 +59,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpPost]
-        [Authorize(Roles = "Recruiter")]
+        [Authorize(Roles = "Employer")]
         [Route("{applicationId}/accept")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
         public async Task<ActionResult> AcceptApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
@@ -78,10 +78,29 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpPost]
+        [Authorize(Roles = "Employer")]
+        [Route("{applicationId}/reject")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
+        public async Task<ActionResult> RejectApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
+        {
+            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
+
+            var command = new RejectApplicationCommand
+            {
+                RecruiterId = Guid.Parse(userId),
+                ApplicationId = applicationId
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, RejectApplicationCommand>("applications.rejectApplication", command, cancellationToken);
+
+            return UnwrapResponse(response);
+        }
+
+        [HttpPost]
         [Authorize]
         [Route("{applicationId}/reviews")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
-        public async Task<ActionResult> PostReview([FromRoute] Guid applicationId, [FromBody] ApplicationReviewDto review, CancellationToken cancellationToken)
+        public async Task<ActionResult> PostReview([FromRoute] Guid applicationId, [FromBody] PostReviewDto review, CancellationToken cancellationToken)
         {
             var recruiterId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
             logger.LogInformation("Recruiter {RecruiterId} reviews offer {Application}", recruiterId, applicationId);

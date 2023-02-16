@@ -75,7 +75,7 @@ namespace W4S.PostingService.Domain.Commands
 
             logger.LogInformation("Getting distance, computation results: {A} {B} {C}", a, c, d);
 
-            return d;
+            return double.IsFinite(d) ? d : -1;
         }
 
         private double GetCoverage(IEnumerable<Schedule> availability, IEnumerable<Schedule> workTime)
@@ -84,7 +84,9 @@ namespace W4S.PostingService.Domain.Commands
             var totalTime = workTime.Sum(w => (w.End - w.Start).Duration().TotalHours);
 
             logger.LogInformation("Matching time {MatchingTime} TotalTime: {TotalTime}", matchingTime, totalTime);
-            return matchingTime / totalTime;
+
+            var result = matchingTime / totalTime;
+            return double.IsFinite(result) ? result : -1;
         }
 
         private double GetCoverage(Schedule availability, Schedule workTime)

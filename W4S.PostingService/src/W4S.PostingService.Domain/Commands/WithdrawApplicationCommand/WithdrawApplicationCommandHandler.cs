@@ -8,10 +8,10 @@ namespace W4S.PostingService.Domain.Commands
 {
     public class WithdrawApplicationCommandHandler : CommandHandlerBase, IRequestHandler<WithdrawApplicationCommand, Guid>
     {
-        private readonly IRepository<Application> applicationRepository;
+        private readonly IApplicationRepository applicationRepository;
         private readonly IRepository<Student> studentRepository;
 
-        public WithdrawApplicationCommandHandler(IRepository<Application> applicationRepository, IRepository<Student> studentApplication)
+        public WithdrawApplicationCommandHandler(IApplicationRepository applicationRepository, IRepository<Student> studentApplication)
         {
             this.applicationRepository = applicationRepository;
             this.studentRepository = studentApplication;

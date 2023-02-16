@@ -25,12 +25,14 @@ namespace W4S.PostingService.Domain.Queries
         {
             var personId = await GetPerson(query.UserId);
             var offer = await offerRepository.GetOfferDetails(query.OfferId, personId);
-            logger.LogInformation("Is applied: {Applied}", offer.Applied);
+
 
             if (offer is null)
             {
                 throw new PostingException($"No job offer with id: {query.OfferId}");
             }
+
+            logger.LogInformation("For student {Student} (un)real: {Fake} applied: {Applied}", query.UserId, personId, offer.Applied);
 
             return offer;
         }

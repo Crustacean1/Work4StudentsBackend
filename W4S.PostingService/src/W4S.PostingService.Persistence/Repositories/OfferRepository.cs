@@ -29,20 +29,42 @@ namespace W4S.PostingService.Persistence.Repositories
 
         public async Task<PaginatedRecords<GetOfferDto>> GetOffers(GetOffersQuery query)
         {
-            var keywordsArNull = string.IsNullOrEmpty(query.Keywords);
+            var keywordsAreNull = string.IsNullOrEmpty(query.Keywords);
             var modeIsNull = Enum.TryParse(query.Mode, out WorkMode mode);
             var statusIsNull = Enum.TryParse(query.Status, out OfferStatus status);
 
             var totalCount = await context.Set<JobOffer>()
-                .Where(o => keywordsArNull || o.SearchVector.Matches(query.Keywords))
+                .Where(o => keywordsAreNull || o.SearchVector.Matches(query.Keywords!))
                 .Where(o => modeIsNull || o.Mode == mode)
                 .Where(o => statusIsNull || o.Status == status)
                 .CountAsync();
 
             var offers = await context.Set<JobOffer>()
-                .Where(o => keywordsArNull || o.SearchVector.Matches(query.Keywords))
+                .Where(o => keywordsAreNull || o.SearchVector.Matches(query.Keywords!))
                 .Where(o => modeIsNull || o.Mode == mode)
                 .Where(o => statusIsNull || o.Status == status)
+                .Include(jo => jo.Recruiter)
+                .ThenInclude(r => r.Company)
+                .OrderBy(jo => jo.CreationDate)
+                .Skip(query.RecordsToSkip)
+                .Take(query.PageSize)
+                .ToListAsync();
+
+            return new PaginatedRecords<GetOfferDto>
+            {
+                Items = offers.Select(mapper.Map<JobOffer, GetOfferDto>),
+                TotalCount = totalCount
+            };
+        }
+
+        public async Task<PaginatedRecords<GetOfferDto>> GetRecruiterOffers(Guid recruiterId, PaginatedQuery query)
+        {
+            var totalCount = await context.Set<JobOffer>()
+                .Where(o => o.RecruiterId == recruiterId)
+                .CountAsync();
+
+            var offers = await context.Set<JobOffer>()
+                .Where(o => o.RecruiterId == recruiterId)
                 .Include(jo => jo.Recruiter)
                 .ThenInclude(r => r.Company)
                 .OrderBy(jo => jo.CreationDate)

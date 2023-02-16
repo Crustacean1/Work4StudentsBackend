@@ -5,9 +5,11 @@ namespace W4S.PostingService.Domain.Repositories
 {
     public interface IReviewRepository<TEntity> : IRepository<TEntity> where TEntity : Review
     {
-        Task<PaginatedRecords<Review>> GetSubmittedReviews(Guid authorId, PaginatedQuery query);
+        Task<PaginatedRecords<TEntity>> GetSubmittedReviews(Guid authorId, PaginatedQuery query);
 
-        Task<PaginatedRecords<Review>> GetReceivedReviews(Guid subjectid, PaginatedQuery query);
+        Task<PaginatedRecords<TEntity>> GetReceivedReviews(Guid subjectid, PaginatedQuery query);
+
+        Task<PaginatedRecords<TEntity>> GetDirectReviews(Guid subjectId, PaginatedQuery query);
 
         Task<decimal> GetRatingAverage(Guid subjectId);
     }

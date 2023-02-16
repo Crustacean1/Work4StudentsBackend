@@ -1,5 +1,5 @@
 using MediatR;
-using W4S.PostingService.Domain.Entities;
+using W4S.PostingService.Domain.Dto;
 
 namespace W4S.PostingService.Domain.Commands
 {
@@ -9,6 +9,6 @@ namespace W4S.PostingService.Domain.Commands
 
         public Guid StudentId { get; set; }
 
-        public OfferReviewDto Review { get; set; }
+        public PostReviewDto Review { get; set; }
     }
 }

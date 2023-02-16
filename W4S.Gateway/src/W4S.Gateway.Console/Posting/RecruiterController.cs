@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using W4S.PostingService.Domain.Dto;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Queries;
 using W4S.ServiceBus.Abstractions;
@@ -39,7 +40,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Route("{recrutierId}/reviews")]
+        [Route("{recruiterId}/reviews")]
         [Authorize]
         public async Task<ActionResult> GetReviews([FromRoute] Guid recruiterId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
@@ -52,7 +53,7 @@ namespace W4S.Gateway.Console.Posting
                 RecruiterId = recruiterId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReview>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReviewDto>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
