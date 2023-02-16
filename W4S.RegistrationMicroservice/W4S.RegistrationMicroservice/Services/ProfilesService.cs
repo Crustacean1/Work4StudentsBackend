@@ -203,14 +203,6 @@ namespace W4S.RegistrationMicroservice.API.Services
                 {
                     studentProfile.Description = dto.Description;
                 }
-                //if(dto.Image != null)
-                //{
-                //    studentProfile.PhotoFile = dto.Image;
-                //}
-                //if(dto.ResumeFile != null)
-                //{
-                //    studentProfile.ResumeFile = dto.ResumeFile;
-                //}
                 if(dto.Description != null)
                 {
                     studentProfile.Description = dto.Description;
@@ -348,7 +340,7 @@ namespace W4S.RegistrationMicroservice.API.Services
         {
             var resume = _dbContext.StudentProfiles
                 .Where(r => r.StudentId == studentId)
-                .FirstOrDefault()
+                .FirstOrDefault()?
                 .ResumeFile;
 
             if (resume == null)
@@ -446,7 +438,6 @@ namespace W4S.RegistrationMicroservice.API.Services
                     {
                         _logger.LogInformation("Validating email correctness.");
                         _dataValidator.ValidateEmailCorrectness(dto.EmailAddress, employerProfile.EmployerId);
-                        _dataValidator.ValidateUniversity(dto.EmailAddress);
                         _logger.LogInformation("Validated email correctness.");
                     }
                     catch (Exception ex)

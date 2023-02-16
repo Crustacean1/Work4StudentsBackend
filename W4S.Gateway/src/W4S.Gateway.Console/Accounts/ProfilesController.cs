@@ -201,7 +201,7 @@ namespace W4S.Gateway.Console.Accounts
         }
 
 
-        [HttpGet("get/resume/{id}")]
+        [HttpGet("get/resume/{studentId:Guid}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
         public async Task<IActionResult> GetResumeByStudentId([FromRoute] Guid studentId, CancellationToken cancellationToken)
         {
