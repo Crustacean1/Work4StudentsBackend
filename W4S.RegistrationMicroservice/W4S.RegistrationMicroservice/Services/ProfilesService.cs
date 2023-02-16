@@ -36,7 +36,7 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         #region Students
 
-        public Guid CreateStudentProfile(Student student)
+        public Guid CreateStudentProfile(Data.Entities.Users.Student student)
         {
             _logger.LogInformation($"Creating a new profile for Student with Id: {student.Id}");
 
