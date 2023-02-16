@@ -181,7 +181,7 @@ namespace W4S.Gateway.Console.Accounts
             return BadRequest(response.ExceptionMessage);
         }
 
-        [HttpGet("get/photo/{id}")]
+        [HttpGet("get/photo/{profileId:Guid}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
         public async Task<IActionResult> GetPhotoByProfileId([FromRoute] Guid profileId, CancellationToken cancellationToken)
         {

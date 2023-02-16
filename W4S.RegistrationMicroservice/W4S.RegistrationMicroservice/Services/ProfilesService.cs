@@ -624,7 +624,7 @@ namespace W4S.RegistrationMicroservice.API.Services
         {
             var photo = _dbContext.Profiles
                 .Where(p => p.Id == profileId)
-                .FirstOrDefault().PhotoFile;
+                .FirstOrDefault()?.PhotoFile;
 
             if (photo == null)
             {
