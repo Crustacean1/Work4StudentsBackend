@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Domain.Entities;
 using W4S.RegistrationMicroservice.API.Exceptions;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Validations.Interfaces;
@@ -225,6 +226,18 @@ namespace W4S.RegistrationMicroservice.API.Services
                 if(dto.Experience != studentProfile.Experience)
                 {
                     studentProfile.Experience = dto.Experience;
+                }
+                if(dto.FirstName != student.Name)
+                {
+                    student.Name = dto.FirstName;
+                }
+                if(dto.SecondName != student.SecondName) 
+                { 
+                    student.SecondName = dto.SecondName;
+                }
+                if(dto.Surname != student.Surname)
+                {
+                    student.Surname = dto.Surname;
                 }
 
                 _dbContext.Students.Update(student);
@@ -527,6 +540,18 @@ namespace W4S.RegistrationMicroservice.API.Services
                 {
                     employer.PositionName = dto.PositionName;
                     employerProfile.PositionName = dto.PositionName;
+                }
+                if (dto.FirstName != employer.Name)
+                {
+                    employer.Name = dto.FirstName;
+                }
+                if (dto.SecondName != employer.SecondName)
+                {
+                    employer.SecondName = dto.SecondName;
+                }
+                if (dto.Surname != employer.Surname)
+                {
+                    employer.Surname = dto.Surname;
                 }
 
                 _logger.LogInformation("Trying to update employer and employerProfile.");
