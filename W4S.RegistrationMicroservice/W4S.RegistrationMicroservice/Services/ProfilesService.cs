@@ -2,7 +2,6 @@
 using Microsoft.IdentityModel.Tokens;
 using W4S.PostingService.Domain.Commands;
 using W4S.RegistrationMicroservice.API.Exceptions;
-using W4S.RegistrationMicroservice.API.Extensions;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Validations.Interfaces;
 using W4S.RegistrationMicroservice.Data.DbContexts;
@@ -10,8 +9,6 @@ using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
-using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Creation;
-using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Updating;
 using W4S.ServiceBus.Abstractions;
 using W4SRegistrationMicroservice.API.Exceptions;
 
@@ -360,6 +357,15 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public byte[]? GetStudentResume(Guid studentId)
         {
+            _logger.LogInformation($"Searching for a resume of a student with id {studentId}.");
+
+            var profiles = _dbContext.StudentProfiles.Select(p => p.StudentId).ToList();
+
+            foreach(var profile in profiles)
+            {
+                _logger.LogInformation($"Every found Id: {profile}");
+            }
+
             var resume = _dbContext.StudentProfiles
                 .Where(r => r.StudentId == studentId)
                 .FirstOrDefault()?
@@ -525,9 +531,6 @@ namespace W4S.RegistrationMicroservice.API.Services
 
                 _logger.LogInformation("Trying to update employer and employerProfile.");
 
-                _dbContext.Employers.Update(employer);
-                _dbContext.EmployerProfiles.Update(employerProfile);
-                _dbContext.SaveChanges();
 
                 if (dto.Image != employerProfile.PhotoFile)
                 {
@@ -539,6 +542,10 @@ namespace W4S.RegistrationMicroservice.API.Services
                     _dbContext.EmployerProfiles.Update(employerProfile);
                     _dbContext.SaveChanges();
                 }
+
+                _dbContext.Employers.Update(employer);
+                _dbContext.EmployerProfiles.Update(employerProfile);
+                _dbContext.SaveChanges();
 
                 var newEvent = new UserInfoUpdatedEvent()
                 {
@@ -644,6 +651,16 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public byte[]? GetUserPhoto(Guid profileId)
         {
+
+            _logger.LogInformation($"Searching for a resume of a student with id {profileId}.");
+
+            var profiles = _dbContext.Profiles.Select(p => p.Id).ToList();
+
+            foreach (var profile in profiles)
+            {
+                _logger.LogInformation($"Every found Id: {profile}");
+            }
+
             var photo = _dbContext.Profiles
                 .Where(p => p.Id == profileId)
                 .FirstOrDefault()?.PhotoFile;
