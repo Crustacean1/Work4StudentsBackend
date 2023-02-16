@@ -54,7 +54,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("update.employer")]
-        public Task<EmployerProfileUpdatedResponse> UpdateEmployerProfile(UpdateProfileDtoWithId correctedDto)
+        public Task<EmployerProfileUpdatedResponse> UpdateEmployerProfile(UpdateEmployerProfileDtoWithId correctedDto)
         {
             var response = new EmployerProfileUpdatedResponse();
 
@@ -131,8 +131,6 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var profile = _profilesService.GetStudentProfileByStudentId(studentId.Id);
-                _logger.LogInformation($"Every field: Id: {profile.Id}, FirstName: {profile.Student.Name}, SecondName?: {profile.Student.SecondName}," +
-                    $" Description?: {profile.Description}, Surname: {profile.Student.Surname}, Email: {profile.EmailAddress}");
 
                 if (profile.Student is null)
                 {
@@ -211,6 +209,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.Street = profile.Street;
                 response.Building = profile.Building;
                 response.Photo = profile.PhotoFile;
+                response.PositionName = profile.PositionName;
             }
             catch (Exception ex)
             {
@@ -228,9 +227,6 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var profile = _profilesService.GetEmployerProfileByEmployerId(guid.Id);
-
-                _logger.LogInformation($"Every field: Id: {profile.Id}, FirstName: {profile.Employer.Name}, SecondName?: {profile.Employer.SecondName}," +
-                    $" Description?: {profile.Description}, Surname: {profile.Employer.Surname}, Email: {profile.EmailAddress}");
 
                 response.ProfileId = profile.Id;
                 response.FirstName = profile.Employer.Name;
@@ -279,7 +275,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                string message = string.Empty;
+                string message;
                 if (ex.InnerException != null)
                 {
                     message = ex.InnerException.Message;
@@ -297,7 +293,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         [BusRequestHandler("get.resume")]
         public Task GetResumeByStudentId(GuidPackedDto guid)
         {
-            var response = new GetResumeResponse(); // placeholder, getResumeResponse
+            var response = new GetResumeResponse();
             try
             {
                 var resume = _profilesService.GetStudentResume(guid.Id);

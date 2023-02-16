@@ -22,9 +22,9 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="W4S.PostingService.Domain" Version="1.27.0" />
-    <PackageReference Include="W4S.ServiceBus" Version="2.2.0" />
-    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="3.6.2" />
+    <PackageReference Include="W4S.PostingService.Domain" Version="1.29.0" />
+    <PackageReference Include="W4S.ServiceBus" Version="4.0.0" />
+    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="3.7.3" />
   </ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\W4S.RegistrationMicroservice.Data\W4S.RegistrationMicroservice.Data.csproj" />

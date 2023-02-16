@@ -21,27 +21,9 @@ namespace W4S.Gateway.Console.Accounts
             this.busClient = busClient;
         }
 
-        [HttpGet("get/student/{id}")]
-        [Authorize(Roles = "Student,Employer,Administrator")]
-        [Obsolete]
-        public async Task<IActionResult> GetStudentProfileById([FromRoute] Guid id, CancellationToken cancellationToken)
-        {
-            var guid = new GuidPackedDto()
-            {
-                Id = id
-            };
-            logger.LogInformation($"Request: Get student profile with Id: {id}.");
-            var response = await busClient.SendRequest<GetStudentProfileResponse, GuidPackedDto>("profiles.get.student", guid, cancellationToken);
-
-            if (response.ExceptionMessage is null)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response.ExceptionMessage);
-        }
-
         [HttpGet("get/studentByStudentId/{studentId}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetStudentProfileResponse)))]
         public async Task<IActionResult> GetStudentProfileByStudentId([FromRoute] Guid studentId, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
@@ -58,28 +40,9 @@ namespace W4S.Gateway.Console.Accounts
             return BadRequest(response.ExceptionMessage);
         }
 
-        [HttpGet("get/employer/{id}")]
-        [Authorize(Roles = "Student,Employer,Administrator")]
-        [Obsolete]
-        public async Task<IActionResult> GetEmployerProfileById([FromRoute] Guid id, CancellationToken cancellationToken)
-        {
-            var guid = new GuidPackedDto()
-            {
-                Id = id
-            };
-            logger.LogInformation($"Request: Get employer profile with Id: {id}.");
-            var response = await busClient.SendRequest<GetEmployerProfileResponse, GuidPackedDto>("profiles.get.employer", guid, cancellationToken);
-
-            if (response.ExceptionMessage is null)
-            {
-                return Ok(response);
-            }
-            return BadRequest(response.ExceptionMessage);
-        }
-
-
         [HttpGet("get/employerByEmployerId/{employerId}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetEmployerProfileResponse)))]
         public async Task<IActionResult> GetEmployerProfileByEmployerId([FromRoute] Guid employerId, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
@@ -99,6 +62,7 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpPut("update/student/{id}")]
         [Authorize(Roles = "Student,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentProfileUpdatedResponse)))]
         public async Task<IActionResult> UpdateStudentProfile([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
         {
             byte[]? image = null;
@@ -119,6 +83,9 @@ namespace W4S.Gateway.Console.Accounts
 
             var correctedDto = new UpdateStudentProfileDtoWithId()
             {
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
                 Id = id,
                 EmailAddress = dto.EmailAddress,
                 PhoneNumber = dto.PhoneNumber,
@@ -147,7 +114,8 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpPut("update/employer/{id}")]
         [Authorize(Roles = "Employer,Administrator")]
-        public async Task<IActionResult> UpdateEmployerProfile([FromRoute] Guid id, [FromForm] UpdateProfileDto dto, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(EmployerProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateEmployerProfile([FromRoute] Guid id, [FromForm] UpdateEmployerProfileDto dto, CancellationToken cancellationToken)
         {
             byte[]? image = null;
 
@@ -158,9 +126,12 @@ namespace W4S.Gateway.Console.Accounts
                 fileStream.Read(image, 0, (int)dto.Image.Length);
             }
 
-            var correctedDto = new UpdateProfileDtoWithId()
+            var correctedDto = new UpdateEmployerProfileDtoWithId()
             {
                 Id = id,
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
                 EmailAddress = dto.EmailAddress,
                 PhoneNumber = dto.PhoneNumber,
                 Description = dto.Description,
@@ -169,10 +140,11 @@ namespace W4S.Gateway.Console.Accounts
                 City = dto.City,
                 Street = dto.Street,
                 Building = dto.Building,
-                Image = image
+                Image = image,
+                PositionName = dto.PositionName
             };
             logger.LogInformation("Request: Update employer profile");
-            var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateProfileDtoWithId>("profiles.update.employer", correctedDto, cancellationToken);
+            var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateEmployerProfileDtoWithId>("profiles.update.employer", correctedDto, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
@@ -183,6 +155,7 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpGet("get/photo/{profileId:Guid}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetProfilePhotoResponse)))]
         public async Task<IActionResult> GetPhotoByProfileId([FromRoute] Guid profileId, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
@@ -203,6 +176,7 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpGet("get/resume/{studentId:Guid}")]
         [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetResumeResponse)))]
         public async Task<IActionResult> GetResumeByStudentId([FromRoute] Guid studentId, CancellationToken cancellationToken)
         {
             var guid = new GuidPackedDto()
@@ -211,7 +185,7 @@ namespace W4S.Gateway.Console.Accounts
             };
             logger.LogInformation($"Request: Get resume with Id: {studentId}.");
 
-            var response = await busClient.SendRequest<GetProfilePhotoResponse, GuidPackedDto>("profiles.get.resume", guid, cancellationToken);
+            var response = await busClient.SendRequest<GetResumeResponse, GuidPackedDto>("profiles.get.resume", guid, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {

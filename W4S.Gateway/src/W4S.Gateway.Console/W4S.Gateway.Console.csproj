@@ -11,8 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="W4S.PostingService.Domain" Version="1.26.0" />
-    <PackageReference Include="W4S.ServiceBus" Version="2.2.0" />
-    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="3.6.2" />
+    <PackageReference Include="W4S.ServiceBus" Version="4.0.0" />
+    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="3.7.3" />
   </ItemGroup>
 
 </Project>

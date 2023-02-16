@@ -2,6 +2,9 @@
 {
     public class UpdateStudentProfileDtoWithId
     {
+        public string? FirstName { get; set; }
+        public string? SecondName { get; set; }
+        public string? Surname { get; set; }
         public Guid Id { get; set; }
         public byte[]? Image { get; set; }
         public string? Description { get; set; }

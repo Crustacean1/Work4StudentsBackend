@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using W4S.PostingService.Domain.Commands;
 using W4S.RegistrationMicroservice.API.Exceptions;
 using W4S.RegistrationMicroservice.API.Extensions;
@@ -109,7 +110,14 @@ namespace W4S.RegistrationMicroservice.API.Services
                     throw new UserNotFoundException("Couldn't find a student connected to that profile."); // not gonna happen
                 }
 
-                if (dto.EmailAddress != null)
+                if(dto.EmailAddress.IsNullOrEmpty() || dto.FirstName.IsNullOrEmpty() || dto.Surname.IsNullOrEmpty() 
+                    || dto.Country.IsNullOrEmpty() || dto.Region.IsNullOrEmpty() || dto.City.IsNullOrEmpty() 
+                    || dto.Street.IsNullOrEmpty() || dto.Building.IsNullOrEmpty()) 
+                {
+                    throw new Exception("Fields EmailAddress, FirstName, Surname, Country, Region, City, Street, Building cannot be empty or null.");
+                }
+
+                if (dto.EmailAddress != studentProfile.EmailAddress)
                 {
                     try
                     {
@@ -126,7 +134,11 @@ namespace W4S.RegistrationMicroservice.API.Services
                     student.EmailAddress = dto.EmailAddress;
                     studentProfile.EmailAddress = dto.EmailAddress;
                 }
-                if (dto.PhoneNumber != null)
+                if(dto.FirstName != null)
+                {
+
+                }
+                if (dto.PhoneNumber != studentProfile.PhoneNumber)
                 {
                     _logger.LogInformation("Validating phone number.");
                     //_dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
@@ -134,85 +146,95 @@ namespace W4S.RegistrationMicroservice.API.Services
                     student.PhoneNumber = dto.PhoneNumber;
                     studentProfile.PhoneNumber = dto.PhoneNumber;
                 }
-                if (dto.Country != null)
+                if (dto.Country != studentProfile.Country)
                 {
                     student.Country = dto.Country;
                     studentProfile.Country = dto.Country;
                 }
-                if (dto.Region != null)
+                if (dto.Region != studentProfile.Region)
                 {
                     student.Region = dto.Region;
                     studentProfile.Region = dto.Region;
 
                 }
-                if (dto.City != null)
+                if (dto.City != studentProfile.City)
                 {
                     student.City = dto.City;
                     studentProfile.City = dto.City;
 
                 }
-                if (dto.Street != null)
+                if (dto.Street != studentProfile.Street)
                 {
                     student.Street = dto.Street;
                     studentProfile.Street = dto.Street;
                 }
-                if (dto.Building != null)
+                if (dto.Building != studentProfile.Building)
                 {
                     student.Building = dto.Building;
                     studentProfile.Building = dto.Building;
                 }
-                if(dto.Availability != null)
+                if(dto.Availability != studentProfile.Avaiability)
                 {
-                    if (!dto.Availability.Any())
+                    if(dto.Availability != null)
                     {
-                        _logger.LogInformation("Avaiability is empty.");
-                    }
-                    List<StudentSchedule> avaiability = new List<StudentSchedule>();
-                    foreach(var item in dto.Availability)
-                    {
-                        avaiability.Add(new StudentSchedule()
+                        if (!dto.Availability.Any())
                         {
-                            Id = Guid.NewGuid(),
-                            Start = item.Start,
-                            End = item.End,
-                        });
-                        _logger.LogInformation($"Added availability with start: {item.Start}, and end: {item.End}.");
-                    }
-
-                    foreach(var item in dto.Availability)
-                    {
-                        if(item.Start > item.End)
+                            _logger.LogInformation("Avaiability is empty.");
+                        }
+                        List<StudentSchedule> avaiability = new List<StudentSchedule>();
+                        foreach (var item in dto.Availability)
                         {
-                            throw new Exception($"Start value cannot be bigger than End value. Start: {item.Start} End: {item.End}");
+                            avaiability.Add(new StudentSchedule()
+                            {
+                                Id = Guid.NewGuid(),
+                                Start = item.Start,
+                                End = item.End,
+                            });
+                            _logger.LogInformation($"Added availability with start: {item.Start}, and end: {item.End}.");
                         }
 
-                        if (dto.Availability.Any(x => item.Start > x.Start && item.Start < x.End))
+                        foreach (var item in dto.Availability)
                         {
-                            throw new Exception($"Overlapping with another avaiability.");
-                        }
-                        if (dto.Availability.Any(x => item.End > x.Start && item.End < x.End))
-                        {
-                            throw new Exception($"Overlapping with another avaiability.");
-                        }
-                    }
+                            if (item.Start > item.End)
+                            {
+                                throw new Exception($"Start value cannot be bigger than End value. Start: {item.Start} End: {item.End}");
+                            }
 
-                    studentProfile.Avaiability = avaiability;
+                            if (dto.Availability.Any(x => item.Start > x.Start && item.Start < x.End))
+                            {
+                                throw new Exception($"Overlapping with another avaiability.");
+                            }
+                            if (dto.Availability.Any(x => item.End > x.Start && item.End < x.End))
+                            {
+                                throw new Exception($"Overlapping with another avaiability.");
+                            }
+                        }
+                        studentProfile.Avaiability = avaiability;
+                    }
+                    else
+                    {
+                        studentProfile.Avaiability = null;
+                    }
                 }
 
-                if (dto.Description != null) 
+                if (dto.Description != studentProfile.Description) 
                 {
                     studentProfile.Description = dto.Description;
                 }
-                if(dto.Description != null)
+                if(dto.Education != studentProfile.Education)
                 {
-                    studentProfile.Description = dto.Description;
+                    studentProfile.Education = dto.Education;
+                }
+                if(dto.Experience != studentProfile.Experience)
+                {
+                    studentProfile.Experience = dto.Experience;
                 }
 
                 _dbContext.Students.Update(student);
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
 
-                if(dto.ResumeFile != null)
+                if(dto.ResumeFile != studentProfile.ResumeFile)
                 {
                     studentProfile.ResumeFile = null;
                     _dbContext.StudentProfiles.Update(studentProfile);
@@ -222,7 +244,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     _dbContext.StudentProfiles.Update(studentProfile);
                     _dbContext.SaveChanges();
                 }
-                if (dto.Image != null)
+                if (dto.Image != studentProfile.PhotoFile)
                 {
                     studentProfile.PhotoFile = null;
                     _dbContext.StudentProfiles.Update(studentProfile);
@@ -403,7 +425,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             return profile.Id;
         }
 
-        public void UpdateEmployerProfile(UpdateProfileDtoWithId dto)
+        public void UpdateEmployerProfile(UpdateEmployerProfileDtoWithId dto)
         {
             EmployerProfile? employerProfile = null;
             try
@@ -419,6 +441,14 @@ namespace W4S.RegistrationMicroservice.API.Services
                 throw;
             }
 
+
+            if (dto.EmailAddress.IsNullOrEmpty() || dto.FirstName.IsNullOrEmpty() || dto.Surname.IsNullOrEmpty()
+                || dto.Country.IsNullOrEmpty() || dto.Region.IsNullOrEmpty() || dto.City.IsNullOrEmpty()
+                || dto.Street.IsNullOrEmpty() || dto.Building.IsNullOrEmpty() || dto.PositionName.IsNullOrEmpty())
+            {
+                throw new Exception("Fields EmailAddress, FirstName, Surname, Country, Region, City, Street, Building, PositionName cannot be empty or null.");
+            }
+
             if (employerProfile != null)
             {
                 _logger.LogInformation($"Found a profile with id: {employerProfile.Id}");
@@ -432,7 +462,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     throw new UserNotFoundException("Couldn't find an employer connected to that profile."); // not gonna happen
                 }
 
-                if (dto.EmailAddress != null)
+                if (dto.EmailAddress != employerProfile.EmailAddress)
                 {
                     try
                     {
@@ -448,7 +478,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     employer.EmailAddress = dto.EmailAddress;
                     employerProfile.EmailAddress = dto.EmailAddress;
                 }
-                if(dto.PhoneNumber != null)
+                if(dto.PhoneNumber != employerProfile.PhoneNumber)
                 {
                     _logger.LogInformation("Validating phone number.");
                     //_dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
@@ -456,41 +486,42 @@ namespace W4S.RegistrationMicroservice.API.Services
                     employer.PhoneNumber = dto.PhoneNumber;
                     employerProfile.PhoneNumber = dto.PhoneNumber;
                 }
-                if(dto.Country != null)
+                if(dto.Country != employerProfile.Country)
                 {
                     employer.Country = dto.Country;
                     employerProfile.Country = dto.Country;
                 }
-                if(dto.Region != null)
+                if(dto.Region != employerProfile.Region)
                 {
                     employer.Region = dto.Region;
                     employerProfile.Region = dto.Region;
 
                 }
-                if(dto.City != null)
+                if(dto.City != employerProfile.City)
                 {
                     employer.City = dto.City;
                     employerProfile.City = dto.City;
 
                 }
-                if(dto.Street != null)
+                if(dto.Street != employerProfile.Street)
                 {
                     employer.Street = dto.Street;
                     employerProfile.Street = dto.Street;
                 }
-                if(dto.Building != null)
+                if(dto.Building != employerProfile.Building)
                 {
                     employer.Building = dto.Building;
                     employerProfile.Building = dto.Building;
                 }
-                if(dto.Description != null)
+                if(dto.Description != employerProfile.Description)
                 {
                     employerProfile.Description = dto.Description;
                 }
-                //if(dto.Image != null)
-                //{
-                //    employerProfile.PhotoFile = dto.Image;
-                //}
+                if(dto.PositionName != employerProfile.PositionName)
+                {
+                    employer.PositionName = dto.PositionName;
+                    employerProfile.PositionName = dto.PositionName;
+                }
 
                 _logger.LogInformation("Trying to update employer and employerProfile.");
 
@@ -498,7 +529,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _dbContext.EmployerProfiles.Update(employerProfile);
                 _dbContext.SaveChanges();
 
-                if (dto.Image != null)
+                if (dto.Image != employerProfile.PhotoFile)
                 {
                     employerProfile.PhotoFile = null;
                     _dbContext.EmployerProfiles.Update(employerProfile);

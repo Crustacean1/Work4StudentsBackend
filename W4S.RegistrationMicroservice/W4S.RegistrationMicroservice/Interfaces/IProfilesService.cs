@@ -15,7 +15,7 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
         List<StudentProfile> GetStudentProfiles(Guid[] ids);
         byte[]? GetStudentResume(Guid profileId);
         byte[]? GetUserPhoto(Guid profileId);
-        void UpdateEmployerProfile(UpdateProfileDtoWithId dto);
+        void UpdateEmployerProfile(UpdateEmployerProfileDtoWithId dto);
         void UpdateEmployerRating(UserRatingChangedEvent changedEvent);
         void UpdateStudentProfile(UpdateStudentProfileDtoWithId dto);
         void UpdateStudentRating(UserRatingChangedEvent changedEvent);
