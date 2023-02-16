@@ -41,7 +41,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<User>().Property(e => e.Name).HasMaxLength(50);
             modelBuilder.Entity<User>().Property(e => e.SecondName).HasMaxLength(50);
             modelBuilder.Entity<User>().Property(e => e.Surname).HasMaxLength(50);
-            modelBuilder.Entity<User>().Property(e => e.PhoneNumber).HasMaxLength(10);
+            modelBuilder.Entity<User>().Property(e => e.PhoneNumber).HasMaxLength(15);
 
             // Student
             modelBuilder.Entity<Student>().Property(e => e.UniversityId).IsRequired();
