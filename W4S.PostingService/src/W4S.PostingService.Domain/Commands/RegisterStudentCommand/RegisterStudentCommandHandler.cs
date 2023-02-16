@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
@@ -12,9 +13,10 @@ namespace W4S.PostingService.Domain.Commands
     {
         private readonly IRepository<Student> studentRepository;
         private readonly AddressApi addressApi;
+        private readonly ILogger<RegisterStudentCommandHandler> logger;
         private readonly IMapper mapper;
 
-        public RegisterStudentCommandHandler(IRepository<Student> studentRepository, AddressApi addressApi)
+        public RegisterStudentCommandHandler(IRepository<Student> studentRepository, AddressApi addressApi, ILogger<RegisterStudentCommandHandler> logger)
         {
             var mapperConfig = new MapperConfiguration(builder =>
             {
@@ -25,10 +27,14 @@ namespace W4S.PostingService.Domain.Commands
             mapper = mapperConfig.CreateMapper();
             this.studentRepository = studentRepository;
             this.addressApi = addressApi;
+            this.logger = logger;
         }
 
         public async Task<Unit> Handle(RegisterStudentCommand request, CancellationToken cancellationToken)
         {
+
+            logger.LogInformation("Adding student {Id}", request.Student.Id);
+
             var address = mapper.Map<Address>(request.Student);
             var student = mapper.Map<Student>(request.Student);
 
