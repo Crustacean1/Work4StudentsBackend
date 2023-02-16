@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
@@ -12,9 +13,10 @@ namespace W4S.PostingService.Domain.Commands
     {
         private readonly IRepository<Recruiter> recruiterRepository;
         private readonly IRepository<Company> companyRepository;
+        private readonly ILogger<RegisterRecruiterCommandHandler> logger;
         private IMapper mapper;
 
-        public RegisterRecruiterCommandHandler(IRepository<Recruiter> recruiterRepository, IRepository<Company> companyRepository)
+        public RegisterRecruiterCommandHandler(IRepository<Recruiter> recruiterRepository, IRepository<Company> companyRepository, ILogger<RegisterRecruiterCommandHandler> logger)
         {
             var mapperConfig = new MapperConfiguration(builder =>
             {
@@ -26,10 +28,13 @@ namespace W4S.PostingService.Domain.Commands
             mapper = mapperConfig.CreateMapper();
             this.recruiterRepository = recruiterRepository;
             this.companyRepository = companyRepository;
+            this.logger = logger;
         }
 
         public async Task<Unit> Handle(RegisterRecruiterCommand command, CancellationToken cancellationToken)
         {
+            logger.LogInformation("Registering recruiter with id {Id}", command.Recruiter.Id);
+
             var recruiter = mapper.Map<Recruiter>(command.Recruiter);
             var company = mapper.Map<Company>(command.Recruiter.Company);
             var address = mapper.Map<Address>(command.Recruiter);
