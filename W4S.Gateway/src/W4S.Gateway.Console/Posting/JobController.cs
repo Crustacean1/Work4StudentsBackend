@@ -5,6 +5,7 @@ using W4S.PostingService.Domain.Queries;
 using W4S.PostingService.Domain.Entities;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using W4S.PostingService.Domain.Dto;
 
 namespace W4S.Gateway.Console.Posting
 {
@@ -52,7 +53,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpPut]
-        [Authorize(Roles = "Recruiter")]
+        [Authorize(Roles = "Employer")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(List<string>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<string>))]
@@ -109,7 +110,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles="Employer,Administrator")]
         [Route("{offerId}/applications")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
         public async Task<ActionResult> GetJobApplications([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
@@ -135,14 +136,14 @@ namespace W4S.Gateway.Console.Posting
         {
             logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for recruiter {Id}", pagedQuery.Page, pagedQuery.PageSize, offerId);
 
-            var query = new GetRecruiterReviewsQuery
+            var query = new GetOfferReviewsQuery
             {
                 PageSize = pagedQuery.PageSize,
                 Page = pagedQuery.Page,
-                RecruiterId = offerId
+                OfferId = offerId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReview>>, GetRecruiterReviewsQuery>("reviews.getRecruiterReviews", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReview>>, GetOfferReviewsQuery>("reviews.getOfferReviews", query, cancellationToken);
             return UnwrapResponse(response);
         }
 
@@ -150,7 +151,7 @@ namespace W4S.Gateway.Console.Posting
         [Authorize(Roles = "Student")]
         [Route("{offerId}/reviews")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
-        public async Task<ActionResult> SubmitReview([FromRoute] Guid offerId, [FromBody] OfferReviewDto review, CancellationToken cancellationToken)
+        public async Task<ActionResult> SubmitReview([FromRoute] Guid offerId, [FromBody] PostReviewDto review, CancellationToken cancellationToken)
         {
             var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
 

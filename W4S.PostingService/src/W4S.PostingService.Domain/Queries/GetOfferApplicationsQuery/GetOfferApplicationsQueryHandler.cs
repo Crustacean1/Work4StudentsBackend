@@ -1,6 +1,6 @@
-using System.Linq.Expressions;
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
@@ -12,9 +12,10 @@ namespace W4S.PostingService.Domain.Queries
     {
         private readonly IApplicationRepository applicationRepository;
         private readonly IOfferRepository offerRepository;
+        private readonly ILogger<GetOfferApplicationsQueryHandler> logger;
         private readonly IMapper mapper;
 
-        public GetOfferApplicationsQueryHandler(IOfferRepository offerRepository, IApplicationRepository applicationRepository)
+        public GetOfferApplicationsQueryHandler(IOfferRepository offerRepository, IApplicationRepository applicationRepository, ILogger<GetOfferApplicationsQueryHandler> logger)
         {
             this.offerRepository = offerRepository;
             this.applicationRepository = applicationRepository;
@@ -24,9 +25,13 @@ namespace W4S.PostingService.Domain.Queries
                 .ForMember(a => a.Company, opt => opt.MapFrom(s => s.Recruiter.Company.Name));
 
                 b.CreateMap<Application, GetApplicationDto>()
-                .ForMember(a => a.Status, opt => opt.MapFrom(a => Enum.GetName(typeof(ApplicationStatus), a.Status)));
+                .ForMember(a => a.Status, opt => opt.MapFrom(a => Enum.GetName(typeof(ApplicationStatus), a.Status)))
+                .ForMember(a => a.Distance, opt => opt.MapFrom(s => double.IsFinite(s.Distance) ? s.Distance : 0))
+                .ForMember(a => a.WorkTimeOverlap, opt => opt.MapFrom(s => double.IsFinite(s.WorkTimeOverlap) ? s.WorkTimeOverlap : 0));
+
             });
             mapper = mapperConfig.CreateMapper();
+            this.logger = logger;
         }
 
         public async Task<PaginatedList<GetApplicationDto>> Handle(GetOfferApplicationsQuery query, CancellationToken cancellationToken)

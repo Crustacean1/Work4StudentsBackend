@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using W4S.PostingService.Domain.Dto;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Integrations;
@@ -25,7 +26,7 @@ namespace W4S.PostingService.Domain.Commands
 
             var conf = new MapperConfiguration(b =>
             {
-                b.CreateMap<ApplicationReviewDto, ApplicationReview>();
+                b.CreateMap<PostReviewDto, ApplicationReview>();
             });
             this.mapper = conf.CreateMapper();
             this.offerRepository = offerRepository;

@@ -1,3 +1,4 @@
+using MediatR;
 using W4S.PostingService.Domain.Exceptions;
 
 namespace W4S.PostingService.Console.Handlers
@@ -5,21 +6,23 @@ namespace W4S.PostingService.Console.Handlers
     public class HandlerBase
     {
         protected readonly ILogger<HandlerBase> logger;
+        protected readonly ISender sender;
 
-        public HandlerBase(ILogger<HandlerBase> logger)
+        public HandlerBase(ISender sender, ILogger<HandlerBase> logger)
         {
             this.logger = logger;
+            this.sender = sender;
         }
 
-        protected async Task<ResponseWrapper<T>> ExecuteHandler<T>(Func<Task<(T result, int responseCode)>> handlerAction)
+        protected async Task<ResponseWrapper<T>> ExecuteHandler<T>(IRequest<T> request, int successCode)
         {
             try
             {
-                var (result, responseCode) = await handlerAction();
+                var result = await sender.Send(request);
 
                 return new ResponseWrapper<T>
                 {
-                    ResponseCode = responseCode,
+                    ResponseCode = successCode,
                     Response = result
                 };
             }

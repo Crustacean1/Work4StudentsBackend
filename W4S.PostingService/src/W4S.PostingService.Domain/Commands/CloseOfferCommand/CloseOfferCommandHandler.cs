@@ -6,23 +6,23 @@ using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class CloseOfferCommandHandler : CommandHandlerBase, IRequestHandler<CloseOfferCommand, Unit>
+    public class CloseOfferCommandHandler : CommandHandlerBase, IRequestHandler<CloseOfferCommand, Guid>
     {
         private readonly IRepository<Recruiter> recruiterRepository;
-        private readonly IRepository<JobOffer> offerRepository;
-        private readonly IRepository<Application> applicationRepository;
+        private readonly IOfferRepository offerRepository;
+        private readonly IApplicationRepository applicationRepository;
 
-        public CloseOfferCommandHandler(IRepository<JobOffer> offerRepository, IRepository<Recruiter> recruiterRepository, IRepository<Application> applicationRepository)
+        public CloseOfferCommandHandler(IOfferRepository offerRepository, IRepository<Recruiter> recruiterRepository, IApplicationRepository applicationRepository)
         {
             this.offerRepository = offerRepository;
             this.recruiterRepository = recruiterRepository;
             this.applicationRepository = applicationRepository;
         }
 
-        public async Task<Unit> Handle(CloseOfferCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CloseOfferCommand request, CancellationToken cancellationToken)
         {
-            var recruiter = await GetEntity(recruiterRepository, request.RecruiterId);
-            var offer = await GetEntity(offerRepository, request.OfferId);
+            var recruiter = await recruiterRepository.RequireEntityAsync(request.RecruiterId);
+            var offer = await offerRepository.RequireEntityAsync(request.OfferId);
 
             if (offer.RecruiterId != recruiter.Id)
             {
@@ -38,7 +38,7 @@ namespace W4S.PostingService.Domain.Commands
 
             await applicationRepository.SaveAsync();
 
-            return Unit.Value;
+            return offer.Id;
         }
     }
 }

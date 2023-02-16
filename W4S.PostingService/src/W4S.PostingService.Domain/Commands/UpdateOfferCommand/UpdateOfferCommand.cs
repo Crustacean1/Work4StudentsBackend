@@ -3,7 +3,7 @@ using W4S.PostingService.Domain.Entities;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class UpdateOfferCommand : IRequest
+    public class UpdateOfferCommand : IRequest<Guid>
     {
         public UpdateOfferDto Offer { get; set; }
 

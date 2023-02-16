@@ -17,7 +17,6 @@ namespace W4S.PostingService.Console.Handlers
         public ProfileIntegrationHandler(ILogger<ProfileIntegrationHandler> logger, ISender sender)
         {
             this.logger = logger;
-            logger.LogInformation("Integration handler created");
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {

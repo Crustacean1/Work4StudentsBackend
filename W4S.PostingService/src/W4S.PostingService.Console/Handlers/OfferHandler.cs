@@ -1,19 +1,17 @@
 using W4S.PostingService.Domain.Commands;
 using W4S.ServiceBus.Attributes;
 using W4S.PostingService.Domain.Queries;
-using W4S.PostingService.Domain.Entities;
 using MediatR;
+using W4S.PostingService.Domain.Entities;
+using W4S.PostingService.Domain.Dto;
 
 namespace W4S.PostingService.Console.Handlers
 {
     [BusService("offers")]
     public class OfferHandler : HandlerBase
     {
-        private readonly ISender sender;
-
-        public OfferHandler(ILogger<OfferHandler> logger, ISender sender) : base(logger)
+        public OfferHandler(ILogger<OfferHandler> logger, ISender sender) : base(sender, logger)
         {
-            this.sender = sender;
         }
 
         [BusRequestHandler("postOffer")]
@@ -21,11 +19,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Recruiter: {Recruiter} posts job offer titled: {Title}", command.RecruiterId, command.Offer.Title);
 
-            return await ExecuteHandler(async () =>
-            {
-                Guid offerId = await sender.Send(command);
-                return (offerId, 201);
-            });
+            return await ExecuteHandler(command, 201);
         }
 
         [BusRequestHandler("updateOffer")]
@@ -33,11 +27,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Recruiter {RecruiterId} updates job offer: {OfferId}", command.RecruiterId, command.OfferId);
 
-            return await ExecuteHandler(async () =>
-            {
-                _ = await sender.Send(command);
-                return (Guid.Empty, 204);
-            });
+            return await ExecuteHandler(command, 204);
         }
 
         [BusRequestHandler("closeOffer")]
@@ -45,11 +35,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Recruiter {RecruiterId} closes job offer: {OfferId}", command.RecruiterId, command.OfferId);
 
-            return await ExecuteHandler(async () =>
-            {
-                _ = await sender.Send(command);
-                return (Guid.Empty, 204);
-            });
+            return await ExecuteHandler(command, 204);
         }
 
         [BusRequestHandler("deleteOffer")]
@@ -63,11 +49,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Getting all job offers");
 
-            return await ExecuteHandler(async () =>
-            {
-                var offers = await sender.Send(query);
-                return (offers, 200);
-            });
+            return await ExecuteHandler(query, 200);
         }
 
         [BusRequestHandler("getOffer")]
@@ -75,11 +57,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Getting job offer {Id}", query.OfferId);
 
-            return await ExecuteHandler(async () =>
-            {
-                var offer = await sender.Send(query);
-                return (offer, 200);
-            });
+            return await ExecuteHandler(query, 200);
         }
 
         [BusRequestHandler("getRecruiterOffers")]
@@ -87,11 +65,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Getting offers of recruiter: {RecruiterId}", query.RecruiterId);
 
-            return await ExecuteHandler(async () =>
-            {
-                var offers = await sender.Send(query);
-                return (offers, 200);
-            });
+            return await ExecuteHandler(query, 200);
         }
     }
 }

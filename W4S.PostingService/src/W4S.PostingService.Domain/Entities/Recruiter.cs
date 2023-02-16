@@ -8,6 +8,6 @@ namespace W4S.PostingService.Domain.Entities
 
         public ICollection<JobOffer> Offers { get; set; } = new List<JobOffer>();
 
-        public ICollection<Review> SubmitedReviews { get; set; } = new List<Review>();
+        public ICollection<OfferReview> SubmitedReviews { get; set; } = new List<OfferReview>();
     }
 }

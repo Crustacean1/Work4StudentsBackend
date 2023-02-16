@@ -8,14 +8,14 @@ using W4S.PostingService.Domain.Exceptions;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class UpdateOfferCommandHandler : CommandHandlerBase, IRequestHandler<UpdateOfferCommand, Unit>
+    public class UpdateOfferCommandHandler : CommandHandlerBase, IRequestHandler<UpdateOfferCommand, Guid>
     {
         private readonly ILogger<UpdateOfferCommandHandler> logger;
         private readonly IMapper mapper;
-        private readonly IRepository<JobOffer> offerRepository;
+        private readonly IOfferRepository offerRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
 
-        public UpdateOfferCommandHandler(IRepository<JobOffer> offerRepository, ILogger<UpdateOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository)
+        public UpdateOfferCommandHandler(IOfferRepository offerRepository, ILogger<UpdateOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository)
         {
             MapperConfiguration conf = new(builder => builder.CreateMap<UpdateOfferDto, JobOffer>()
                     .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)));
@@ -25,7 +25,7 @@ namespace W4S.PostingService.Domain.Commands
             this.recruiterRepository = recruiterRepository;
         }
 
-        public async Task<Unit> Handle(UpdateOfferCommand command, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(UpdateOfferCommand command, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating job offer: {OfferId} with update: {Update}", command.Offer, JsonSerializer.Serialize(command.Offer));
 
@@ -41,7 +41,7 @@ namespace W4S.PostingService.Domain.Commands
             mapper.Map(newOffer, previousOffer);
 
             await offerRepository.SaveAsync();
-            return Unit.Value;
+            return previousOffer.Id;
         }
     }
 }

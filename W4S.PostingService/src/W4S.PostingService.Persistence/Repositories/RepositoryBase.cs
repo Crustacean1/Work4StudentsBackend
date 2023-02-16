@@ -34,6 +34,16 @@ namespace W4S.PostingService.Persistence.Repositories
             return await result.ToListAsync();
         }
 
+        public async Task<T> RequireEntityAsync(Guid id)
+        {
+            var result = await context.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
+            if (result is null)
+            {
+                throw new InvalidOperationException($"No {typeof(T).Name} entity found with id: {id}");
+            }
+            return result;
+        }
+
         public virtual async Task<IEnumerable<T>> GetEntitiesAsync(Expression<Func<T, bool>> selector)
         {
             IEnumerable<T> result = await context.Set<T>().Where(selector).ToListAsync();

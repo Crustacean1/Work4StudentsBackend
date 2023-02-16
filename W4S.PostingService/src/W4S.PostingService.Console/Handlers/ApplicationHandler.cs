@@ -8,11 +8,9 @@ namespace W4S.PostingService.Console.Handlers
     [BusService("applications")]
     public class ApplicationHandler : HandlerBase
     {
-        private readonly ISender sender;
 
-        public ApplicationHandler(ILogger<ApplicationHandler> logger, ISender sender) : base(logger)
+        public ApplicationHandler(ILogger<ApplicationHandler> logger, ISender sender) : base(sender, logger)
         {
-            this.sender = sender;
         }
 
         [BusRequestHandler("submitApplication")]
@@ -20,11 +18,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Applicant {Applicant} applies for {JobOffer} offer", command.StudentId, command.OfferId);
 
-            return await ExecuteHandler(async () =>
-            {
-                var applicationId = await sender.Send(command);
-                return (applicationId, 201);
-            });
+            return await ExecuteHandler(command, 201);
         }
 
         [BusRequestHandler("withdrawApplication")]
@@ -32,22 +26,14 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Applicant {Applicant} withdraws application {Application}", command.StudentId, command.ApplicationId);
 
-            return await ExecuteHandler(async () =>
-            {
-                var applicationId = await sender.Send(command);
-                return (applicationId, 201);
-            });
+            return await ExecuteHandler(command, 201);
         }
 
         public async Task<ResponseWrapper<Guid>> OnAcceptApplication(AcceptApplicationCommand command)
         {
             logger.LogInformation("Recruiter {Recruiter} accepts application {Application}", command.RecruiterId, command.ApplicationId);
 
-            return await ExecuteHandler(async () =>
-            {
-                var applicationId = await sender.Send(command);
-                return (applicationId, 201);
-            });
+            return await ExecuteHandler(command, 200);
         }
 
         [BusRequestHandler("getOfferApplications")]
@@ -55,11 +41,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Listing applications for offer {Offer}", query.OfferId);
 
-            return await ExecuteHandler(async () =>
-            {
-                var response = await sender.Send(query);
-                return (response, 200);
-            });
+            return await ExecuteHandler(query, 200);
         }
 
         [BusRequestHandler("getStudentApplications")]
@@ -67,11 +49,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Lising applications of student: {Student}", query.StudentId);
 
-            return await ExecuteHandler(async () =>
-            {
-                var response = await sender.Send(query);
-                return (response, 200);
-            });
+            return await ExecuteHandler(query, 200);
         }
     }
 }

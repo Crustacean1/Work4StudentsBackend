@@ -8,11 +8,11 @@ namespace W4S.PostingService.Domain.Commands
 {
     public class AcceptApplicationCommandHandler : CommandHandlerBase, IRequestHandler<AcceptApplicationCommand, Guid>
     {
-        private readonly IRepository<Application> applicationRepository;
+        private readonly IApplicationRepository applicationRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
         private readonly IRepository<JobOffer> offerRepository;
 
-        public AcceptApplicationCommandHandler(IRepository<Recruiter> recruiterRepository, IRepository<Application> applicationRepository)
+        public AcceptApplicationCommandHandler(IRepository<Recruiter> recruiterRepository, IApplicationRepository applicationRepository)
         {
             this.recruiterRepository = recruiterRepository;
             this.applicationRepository = applicationRepository;

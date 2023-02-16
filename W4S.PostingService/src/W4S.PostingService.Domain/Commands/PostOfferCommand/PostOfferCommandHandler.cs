@@ -2,8 +2,8 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
+using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
-using W4S.PostingService.Domain.ValueType;
 
 namespace W4S.PostingService.Domain.Commands
 {
@@ -32,6 +32,11 @@ namespace W4S.PostingService.Domain.Commands
             var recruiter = await GetEntity(recruiterRepository, command.RecruiterId);
 
             JobOffer offer = mapper.Map<JobOffer>(command.Offer);
+            if (offer.PayRange.Max < offer.PayRange.Min)
+            {
+                throw new PostingException("Invalid pay range, max must be below min", 400);
+            }
+
             offer.Id = Guid.NewGuid();
             offer.RecruiterId = recruiter.Id;
             offer.CreationDate = DateTime.UtcNow;

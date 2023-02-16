@@ -73,8 +73,8 @@ namespace W4S.PostingService.Persistence
                     Role = "Position A",
                     WorkingHours = new List<Schedule>(),
                     Applications = new List<Application>(),
-                    Reviews = new List<Review>{
-                        new Review
+                    Reviews = new List<OfferReview>{
+                        new OfferReview
                         {
                             Title = "Recruitment process",
                             Message = "Went great",

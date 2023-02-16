@@ -12,7 +12,7 @@ namespace W4S.PostingService.Persistence.Repositories
         {
         }
 
-        public async Task<PaginatedRecords<Review>> GetReceivedReviews(Guid recruiterId, PaginatedQuery query)
+        public async Task<PaginatedRecords<OfferReview>> GetReceivedReviews(Guid recruiterId, PaginatedQuery query)
         {
             var totalCount = await context.Set<OfferReview>()
                 .Include(r => r.Offer)
@@ -27,14 +27,14 @@ namespace W4S.PostingService.Persistence.Repositories
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            return new PaginatedRecords<Review>
+            return new PaginatedRecords<OfferReview>
             {
                 Items = reviews,
                 TotalCount = totalCount
             };
         }
 
-        public async Task<PaginatedRecords<Review>> GetSubmittedReviews(Guid studentId, PaginatedQuery query)
+        public async Task<PaginatedRecords<OfferReview>> GetSubmittedReviews(Guid studentId, PaginatedQuery query)
         {
             var totalCount = await context.Set<OfferReview>()
                 .Where(r => r.AuthorId == studentId)
@@ -47,7 +47,27 @@ namespace W4S.PostingService.Persistence.Repositories
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            return new PaginatedRecords<Review>
+            return new PaginatedRecords<OfferReview>
+            {
+                Items = reviews,
+                TotalCount = totalCount
+            };
+        }
+
+        public async Task<PaginatedRecords<OfferReview>> GetDirectReviews(Guid subjectId, PaginatedQuery query)
+        {
+            var totalCount = await context.Set<OfferReview>()
+                .Where(r => r.SubjectId == subjectId)
+                .CountAsync();
+
+            var reviews = await context.Set<OfferReview>()
+                .Where(r => r.SubjectId == subjectId)
+                .OrderBy(r => r.CreationDate)
+                .Skip(query.RecordsToSkip)
+                .Take(query.PageSize)
+                .ToListAsync();
+
+            return new PaginatedRecords<OfferReview>
             {
                 Items = reviews,
                 TotalCount = totalCount
