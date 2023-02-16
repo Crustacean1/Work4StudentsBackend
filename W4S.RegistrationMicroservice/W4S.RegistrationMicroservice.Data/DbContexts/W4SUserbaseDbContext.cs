@@ -24,6 +24,7 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<EmployerProfile> EmployerProfiles { get; set; }
         public DbSet<StudentProfile> StudentProfiles { get; set; }
+        public DbSet<StudentSchedule>  StudentSchedules { get; set; }
 
 
         public async Task MigrateAsync(CancellationToken cancellationToken)
