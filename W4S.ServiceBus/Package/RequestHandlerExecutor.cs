@@ -3,7 +3,6 @@ using W4S.ServiceBus.Abstractions;
 using W4S.ServiceBus.Events;
 using System.Reflection;
 using System.Text.Json;
-using System.Text;
 
 namespace W4S.ServiceBus.Package
 {

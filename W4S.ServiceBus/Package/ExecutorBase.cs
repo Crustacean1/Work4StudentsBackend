@@ -28,7 +28,7 @@ namespace W4S.ServiceBus.Package
 
         public abstract void Start();
 
-        protected async Task<object?> ExecuteMethod(dynamic arg)
+        protected async Task<MessageWrapper<object?>> ExecuteMethod(dynamic arg)
         {
             using (var scope = provider.CreateScope())
             {
