@@ -1,4 +1,5 @@
-﻿using W4S.RegistrationMicroservice.Models.Profiles;
+﻿using W4S.PostingService.Models.Entities;
+using W4S.RegistrationMicroservice.Models.Profiles;
 
 namespace W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles
 {
@@ -16,6 +17,6 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles
         public string? SecondName { get; set; }
         public string? Surname { get; set; }
 
-        public List<ScheduleProfile>? Availability { get; set; }
+        public List<Schedule>? Availability { get; set; }
     }
 }

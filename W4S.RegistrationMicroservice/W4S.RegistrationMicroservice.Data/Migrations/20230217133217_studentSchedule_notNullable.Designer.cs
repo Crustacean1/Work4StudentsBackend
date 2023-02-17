@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using W4S.RegistrationMicroservice.Data.DbContexts;
@@ -11,9 +12,11 @@ using W4S.RegistrationMicroservice.Data.DbContexts;
 namespace W4S.RegistrationMicroservice.Data.Migrations
 {
     [DbContext(typeof(UserbaseDbContext))]
-    partial class UserbaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230217133217_studentSchedule_notNullable")]
+    partial class studentSchedulenotNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

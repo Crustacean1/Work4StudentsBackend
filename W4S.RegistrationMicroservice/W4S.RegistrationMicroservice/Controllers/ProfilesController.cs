@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Microsoft.AspNetCore.Mvc;
 using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Models.Entities;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Models;
@@ -172,13 +173,14 @@ namespace W4S.RegistrationMicroservice.API.Controllers
 
                 if (profile.Avaiability != null)
                 {
-                    var availability = new List<ScheduleProfile>();
+                    var availability = new List<Schedule>();
                     foreach (var schedule in profile.Avaiability)
                     {
-                        availability.Add(new ScheduleProfile()
+                        availability.Add(new Schedule()
                         {
-                            //Start = schedule.Start,
-                            //End = schedule.End
+                            DayOfWeek = schedule.DayOfWeek,
+                            StartHour = schedule.StartHour,
+                            Duration = schedule.Duration,
                         });
                     }
                     response.Availability = availability;

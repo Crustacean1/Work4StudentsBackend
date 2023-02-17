@@ -1,4 +1,5 @@
-﻿using W4S.RegistrationMicroservice.Models.Profiles;
+﻿using W4S.PostingService.Models.Entities;
+using W4S.RegistrationMicroservice.Models.Profiles;
 
 namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting
 {
@@ -22,6 +23,6 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
         public string City { get; set; }
         public string Street { get; set; }
         public string Building { get; set; }
-        public List<ScheduleProfile>? Availability { get; set; }
+        public List<Schedule>? Availability { get; set; }
     }
 }

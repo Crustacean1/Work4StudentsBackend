@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using W4S.PostingService.Models.Entities;
 
 namespace W4S.RegistrationMicroservice.Models.Profiles.Update
 {
@@ -19,6 +20,6 @@ namespace W4S.RegistrationMicroservice.Models.Profiles.Update
         public string? Education { get; set; }
         public string? Experience { get; set; }
         public IFormFile? ResumeFile { get; set; }
-        public List<ScheduleProfile>? Availability { get; set; }
+        public List<Schedule>? Availability { get; set; }
     }
 }

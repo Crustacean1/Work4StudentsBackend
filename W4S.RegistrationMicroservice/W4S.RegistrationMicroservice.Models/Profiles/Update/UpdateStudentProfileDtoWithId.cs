@@ -1,4 +1,6 @@
-﻿namespace W4S.RegistrationMicroservice.Models.Profiles.Update
+﻿using W4S.PostingService.Models.Entities;
+
+namespace W4S.RegistrationMicroservice.Models.Profiles.Update
 {
     public class UpdateStudentProfileDtoWithId
     {
@@ -18,6 +20,6 @@
         public string? Street { get; set; }
         public string? Building { get; set; }
         public byte[]? ResumeFile { get; set; }
-        public List<ScheduleProfile>? Availability { get; set; }
+        public List<Schedule>? Availability { get; set; }
     }
 }
