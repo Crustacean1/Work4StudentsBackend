@@ -345,7 +345,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
+                var message = ex.InnerException?.Message ?? ex.Message;
                 _logger.LogError(message, ex);
                 throw;
             }
@@ -370,15 +370,6 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public byte[]? GetStudentResume(Guid studentId)
         {
-            _logger.LogInformation($"Searching for a resume of a student with id {studentId}.");
-
-            var profiles = _dbContext.StudentProfiles.Select(p => p.StudentId).ToList();
-
-            foreach(var profile in profiles)
-            {
-                _logger.LogInformation($"Every found Id: {profile}");
-            }
-
             var resume = _dbContext.StudentProfiles
                 .Where(r => r.StudentId == studentId)
                 .FirstOrDefault()?
@@ -676,16 +667,6 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public byte[]? GetUserPhoto(Guid profileId)
         {
-
-            _logger.LogInformation($"Searching for a resume of a student with id {profileId}.");
-
-            var profiles = _dbContext.Profiles.Select(p => p.Id).ToList();
-
-            foreach (var profile in profiles)
-            {
-                _logger.LogInformation($"Every found Id: {profile}");
-            }
-
             var photo = _dbContext.Profiles
                 .Where(p => p.Id == profileId)
                 .FirstOrDefault()?.PhotoFile;

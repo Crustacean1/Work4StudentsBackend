@@ -33,6 +33,52 @@ namespace W4S.RegistrationMicroservice.API.Services
             _dataValidator = dataValidator;
         }
 
+        public void DeleteUser(Guid userId)
+        {
+            try
+            {
+                var userToDelete = _dbContext.Users
+                    .Where(x => x.Id == userId)
+                    .First();
+
+                _logger.LogInformation($"Found user with Id: {userId}");
+
+                Guid? profileGuid = null;
+
+                profileGuid = _dbContext.StudentProfiles
+                    .Where(x => x.StudentId == userId)
+                    .FirstOrDefault()?.Id;
+
+                if(profileGuid == null)
+                {
+                    profileGuid = _dbContext.EmployerProfiles
+                        .Where(x => x.EmployerId == userId)
+                        .First().Id;
+                }
+
+                var profileToDelete = _dbContext.Profiles
+                    .Where(x => x.Id == profileGuid)
+                    .First();
+
+                _logger.LogInformation($"Profile found with Id: {profileGuid}");
+
+                _dbContext.Remove(userToDelete);
+                _dbContext.Remove(profileToDelete);
+
+                _logger.LogInformation("Trying to delete an user and his profile.");
+
+                _dbContext.SaveChanges();
+
+                _logger.LogInformation($"User with Id: {userId} and profile with Id: {profileGuid} has been deleted.");
+            }
+            catch(Exception ex)
+            {
+                var message = ex.InnerException?.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                throw;
+            }
+        }
+
         public EmployerRegisteredEvent RegisterEmployer(EmployerRegistrationDto employerCreationDto)
         {
             try
@@ -54,9 +100,9 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
             catch (IncorrectPhoneNumberException e)
             {
-                _logger.LogError(e.Message);
-                employerCreationDto.PhoneNumber = null;
-                //throw; have to change this shiiiit
+                var message = e.InnerException?.Message ?? e.Message;
+                _logger.LogError(message, e);
+                throw;
             }
             catch (FormatException e)
             {

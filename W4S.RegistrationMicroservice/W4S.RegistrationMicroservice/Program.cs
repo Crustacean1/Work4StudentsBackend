@@ -105,6 +105,7 @@ void ConfigureControllers(IServiceCollection services)
     services.TryAddScoped<RegistrationController>();
     services.TryAddScoped<SigningInController>();
     services.TryAddScoped<ProfilesController>();
+    services.TryAddScoped<DeletingController>();
     services.AddHostedService<MigrationHost>();
     services.AddServiceBus();
 }

@@ -8,6 +8,9 @@ using W4S.RegistrationMicroservice.Models.Users.Signing;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
+using W4S.RegistrationMicroservice.Models;
+using Microsoft.AspNetCore.Authorization;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Deleting;
 
 namespace W4S.Gateway.Console.Accounts
 {
@@ -60,6 +63,24 @@ namespace W4S.Gateway.Console.Accounts
             if (response.ExceptionMessage is null)
             {
                 return Ok(response.Id);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+        [HttpDelete("delete/user/{userId:Guid}")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteUser([FromRoute] Guid userId, CancellationToken cancellationToken)
+        {
+            var guid = new GuidPackedDto()
+            {
+                Id = userId
+            };
+
+            UserDeletedResponse response = await busClient.SendRequest<UserDeletedResponse, GuidPackedDto>("deleting.user", guid, cancellationToken);
+
+            if(response.ExceptionMessage is null)
+            {
+                return NoContent();
             }
             return BadRequest(response.ExceptionMessage);
         }

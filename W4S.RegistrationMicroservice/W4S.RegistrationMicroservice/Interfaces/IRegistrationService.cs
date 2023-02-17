@@ -7,5 +7,6 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
     {
         StudentRegisteredEvent RegisterStudent(StudentRegistrationDto studentCreationDto);
         EmployerRegisteredEvent RegisterEmployer(EmployerRegistrationDto employerCreationDto);
+        void DeleteUser(Guid userId);
     }
 }
