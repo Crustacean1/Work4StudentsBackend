@@ -16,8 +16,8 @@ namespace W4S.PostingService.Persistence
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            logger.LogInformation("Starting migration");
-            await context.MigrateAsync(cancellationToken);
+            //logger.LogInformation("Starting migration");
+            //await context.MigrateAsync(cancellationToken);
             logger.LogInformation("Migration done");
         }
 
