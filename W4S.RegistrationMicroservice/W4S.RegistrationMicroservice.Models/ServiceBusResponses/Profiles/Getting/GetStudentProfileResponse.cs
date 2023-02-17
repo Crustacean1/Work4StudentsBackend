@@ -15,8 +15,8 @@ namespace W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getti
         public string? Education { get; set; }
         public string? Experience { get; set; }
         public decimal Rating { get; set; }
-        public byte[]? Photo { get; set; }
-        public byte[]? Resume { get; set; }
+        public string? Photo { get; set; }
+        public string? Resume { get; set; }
         public string Country { get; set; }
         public string Region { get; set; }
         public string City { get; set; }

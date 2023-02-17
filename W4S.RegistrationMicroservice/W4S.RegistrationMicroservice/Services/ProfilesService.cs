@@ -275,7 +275,10 @@ namespace W4S.RegistrationMicroservice.API.Services
                     City = dto.City,
                     Street = dto.Street,
                     Building = dto.Building,
-                    Avaiability = dto.Availability
+                    Availability = dto.Availability,
+                    FirstName = dto.FirstName,
+                    SecondName = dto.SecondName,
+                    Surname = dto.Surname
                 };
 
                 _client.SendEvent<UserInfoUpdatedEvent>("registration.user.profile.updated", newEvent);
@@ -573,7 +576,10 @@ namespace W4S.RegistrationMicroservice.API.Services
                     City = dto.City,
                     Street = dto.Street,
                     Building = dto.Building,
-                    Avaiability = null
+                    Availability = null,
+                    FirstName = dto.FirstName,
+                    SecondName = dto.SecondName,
+                    Surname = dto.Surname
                 };
 
                 _client.SendEvent<UserInfoUpdatedEvent>("registration.user.profile.updated", newEvent);

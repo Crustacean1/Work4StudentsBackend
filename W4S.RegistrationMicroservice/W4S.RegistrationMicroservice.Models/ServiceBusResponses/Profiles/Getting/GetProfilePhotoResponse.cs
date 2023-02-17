@@ -2,6 +2,6 @@
 {
     public class GetProfilePhotoResponse : BaseResponse
     {
-        public byte[]? Photo { get; set; }
+        public string? Photo { get; set; }
     }
 }

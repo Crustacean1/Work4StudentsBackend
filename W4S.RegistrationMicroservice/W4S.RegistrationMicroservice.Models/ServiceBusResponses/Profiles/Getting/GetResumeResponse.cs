@@ -2,6 +2,6 @@
 {
     public class GetResumeResponse : BaseResponse
     {
-        public byte[]? Resume { get; set; }
+        public string? Resume { get; set; }
     }
 }

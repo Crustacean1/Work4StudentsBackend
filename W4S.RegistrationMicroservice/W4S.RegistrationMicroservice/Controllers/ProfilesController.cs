@@ -110,9 +110,17 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.City = profile.City;
                 response.Street = profile.Street;
                 response.Building = profile.Building;
-                response.Photo = profile.PhotoFile;
-                response.Resume = profile.ResumeFile;
-                //response.Avaiability
+
+                if(profile.PhotoFile != null)
+                {
+                    response.Photo = Convert.ToBase64String(profile.PhotoFile);
+                }
+                if(profile.ResumeFile != null)
+                {
+                    response.Resume = Convert.ToBase64String(profile.ResumeFile);
+                }
+
+                //response.Availability = profile.Avaiability; 
             }
             catch (Exception ex)
             {
@@ -150,8 +158,14 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.City = profile.City;
                 response.Street = profile.Street;
                 response.Building = profile.Building;
-                response.Photo = profile.PhotoFile;
-                response.Resume = profile.ResumeFile;
+                if (profile.PhotoFile != null)
+                {
+                    response.Photo = Convert.ToBase64String(profile.PhotoFile);
+                }
+                if (profile.ResumeFile != null)
+                {
+                    response.Resume = Convert.ToBase64String(profile.ResumeFile);
+                }
                 response.Description = profile.Description;
                 response.Education = profile.Education;
                 response.Experience = profile.Experience;
@@ -187,38 +201,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             return Task.FromResult(response);
         }
 
-        [BusRequestHandler("get.employer")]
-        [Obsolete]
-        public Task GetEmployerProfile(GuidPackedDto employerId)
-        {
-            var response = new GetEmployerProfileResponse(); // placeholder
-            try
-            {
-                var profile = _profilesService.GetEmployerProfile(employerId.Id);
-
-                response.FirstName = profile.Employer.Name;
-                response.SecondName = profile.Employer.SecondName;
-                response.Surname = profile.Employer.Surname;
-                response.EmailAddress = profile.EmailAddress;
-                response.PhoneNumber = profile.PhoneNumber;
-                response.EmployerId = profile.EmployerId;
-                response.Rating = profile.Rating;
-                response.Country = profile.Country;
-                response.Region = profile.Region;
-                response.City = profile.City;
-                response.Street = profile.Street;
-                response.Building = profile.Building;
-                response.Photo = profile.PhotoFile;
-                response.PositionName = profile.PositionName;
-            }
-            catch (Exception ex)
-            {
-                var message = ex?.InnerException.Message ?? ex.Message;
-                _logger.LogError(message, ex);
-                response.ExceptionMessage = message;
-            }
-            return Task.FromResult(response);
-        }
+        
 
         [BusRequestHandler("get.employer.employerId")]
         public Task GetEmployerProfileByEmployerId(GuidPackedDto guid)
@@ -242,7 +225,10 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.City = profile.City;
                 response.Street = profile.Street;
                 response.Building = profile.Building;
-                response.Photo = profile.PhotoFile;
+                if(profile.PhotoFile != null)
+                {
+                    response.Photo = Convert.ToBase64String(profile.PhotoFile);
+                }
                 response.CompanyName = profile.CompanyName;
                 response.PositionName = profile.PositionName;
             }
@@ -271,7 +257,10 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var photo = _profilesService.GetUserPhoto(guid.Id);
-                response.Photo = photo;
+                if(photo != null)
+                {
+                    response.Photo = Convert.ToBase64String(photo);
+                }
             }
             catch (Exception ex)
             {
@@ -297,7 +286,10 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var resume = _profilesService.GetStudentResume(guid.Id);
-                response.Resume = resume;
+                if(resume != null)
+                {
+                    response.Resume = Convert.ToBase64String(resume);
+                }
             }
             catch (Exception ex)
             {
