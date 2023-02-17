@@ -26,12 +26,17 @@ namespace W4S.ServiceBus.Package
         {
             try
             {
-                dynamic arg = ParseMessageBody(args.RequestBody);
-                _ = await ExecuteMethod(arg);
+                var (param, paramBody) = ParseMessageBody(args.RequestBody);
+
+                var truncated = paramBody?.Length > 1024;
+                var redactedMessage = paramBody?.Substring(0, truncated ? 1024 : paramBody.Length) ?? "<NULL>";
+                logger.LogInformation("Received event: {Request} {IsTrimmed} at address: {Topic} with id: {Id}", redactedMessage, truncated ? "(truncated)" : "", args?.Topic ?? "No topic", "No request id");
+
+                _ = await ExecuteMethod(param);
             }
             catch (Exception e)
             {
-                logger.LogError("Error during event execution for message {Message}: {Error}", args.Topic, e.Message);
+                logger.LogError("Error during event execution for message {Message}: {Error} \n{InnerError}", args.Topic, e.Message, e.InnerException?.Message ?? "No innards");
             }
             finally
             {

@@ -52,7 +52,7 @@ namespace W4S.ServiceBus.Rabbit
         {
             if (disposed) { throw new ObjectDisposedException("ServiceBusSender.SendRequest"); }
 
-            var props = channel!.CreateBasicProperties();
+            var props = channel?.CreateBasicProperties() ?? throw new InvalidOperationException("No channel defined");
             props.ContentType = "application/json";
             props.DeliveryMode = 2;
 

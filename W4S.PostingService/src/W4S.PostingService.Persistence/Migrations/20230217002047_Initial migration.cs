@@ -8,7 +8,7 @@ using NpgsqlTypes;
 namespace W4S.PostingService.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,7 @@ namespace W4S.PostingService.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
+                    Rating = table.Column<decimal>(type: "numeric", nullable: false),
                     SecondName = table.Column<string>(type: "text", nullable: true),
                     Surname = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: true),
@@ -27,7 +28,9 @@ namespace W4S.PostingService.Persistence.Migrations
                     AddressRegion = table.Column<string>(name: "Address_Region", type: "text", nullable: false),
                     AddressCity = table.Column<string>(name: "Address_City", type: "text", nullable: false),
                     AddressStreet = table.Column<string>(name: "Address_Street", type: "text", nullable: false),
-                    AddressBuilding = table.Column<string>(name: "Address_Building", type: "text", nullable: false)
+                    AddressBuilding = table.Column<string>(name: "Address_Building", type: "text", nullable: false),
+                    AddressLatitude = table.Column<double>(name: "Address_Latitude", type: "double precision", nullable: true),
+                    AddressLongitude = table.Column<double>(name: "Address_Longitude", type: "double precision", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -75,6 +78,7 @@ namespace W4S.PostingService.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CompanyId = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
+                    Rating = table.Column<decimal>(type: "numeric", nullable: false),
                     SecondName = table.Column<string>(type: "text", nullable: true),
                     Surname = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: true),
@@ -83,7 +87,9 @@ namespace W4S.PostingService.Persistence.Migrations
                     AddressRegion = table.Column<string>(name: "Address_Region", type: "text", nullable: false),
                     AddressCity = table.Column<string>(name: "Address_City", type: "text", nullable: false),
                     AddressStreet = table.Column<string>(name: "Address_Street", type: "text", nullable: false),
-                    AddressBuilding = table.Column<string>(name: "Address_Building", type: "text", nullable: false)
+                    AddressBuilding = table.Column<string>(name: "Address_Building", type: "text", nullable: false),
+                    AddressLatitude = table.Column<double>(name: "Address_Latitude", type: "double precision", nullable: true),
+                    AddressLongitude = table.Column<double>(name: "Address_Longitude", type: "double precision", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -112,6 +118,8 @@ namespace W4S.PostingService.Persistence.Migrations
                     AddressCity = table.Column<string>(name: "Address_City", type: "text", nullable: false),
                     AddressStreet = table.Column<string>(name: "Address_Street", type: "text", nullable: false),
                     AddressBuilding = table.Column<string>(name: "Address_Building", type: "text", nullable: false),
+                    AddressLatitude = table.Column<double>(name: "Address_Latitude", type: "double precision", nullable: true),
+                    AddressLongitude = table.Column<double>(name: "Address_Longitude", type: "double precision", nullable: true),
                     PayRangeMin = table.Column<decimal>(name: "PayRange_Min", type: "numeric", nullable: false),
                     PayRangeMax = table.Column<decimal>(name: "PayRange_Max", type: "numeric", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -127,6 +135,36 @@ namespace W4S.PostingService.Persistence.Migrations
                         name: "FK_JobOffers_Recruiters_RecruiterId",
                         column: x => x.RecruiterId,
                         principalTable: "Recruiters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Applications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OfferId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    WorkTimeOverlap = table.Column<double>(type: "double precision", nullable: false),
+                    Distance = table.Column<double>(type: "double precision", nullable: false),
+                    LastChanged = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Applications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Applications_Applicants_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Applicants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Applications_JobOffers_OfferId",
+                        column: x => x.OfferId,
+                        principalTable: "JobOffers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -157,17 +195,23 @@ namespace W4S.PostingService.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: false),
                     OfferId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RecruiterId = table.Column<Guid>(type: "uuid", nullable: true),
                     Rating = table.Column<decimal>(type: "numeric", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Message = table.Column<string>(type: "text", nullable: false),
-                    AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OfferReviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OfferReviews_Applicants_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Applicants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OfferReviews_JobOffers_OfferId",
                         column: x => x.OfferId,
@@ -175,11 +219,10 @@ namespace W4S.PostingService.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OfferReviews_JobOffers_SubjectId",
-                        column: x => x.SubjectId,
-                        principalTable: "JobOffers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_OfferReviews_Recruiters_RecruiterId",
+                        column: x => x.RecruiterId,
+                        principalTable: "Recruiters",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -187,84 +230,82 @@ namespace W4S.PostingService.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    RecruiterId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ApplicationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StudentId1 = table.Column<Guid>(type: "uuid", nullable: true),
                     Rating = table.Column<decimal>(type: "numeric", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Message = table.Column<string>(type: "text", nullable: false),
-                    AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApplicationReviews", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Applications",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    OfferId = table.Column<Guid>(type: "uuid", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uuid", nullable: false),
-                    WorkTimeOverlap = table.Column<decimal>(type: "numeric", nullable: false),
-                    Proximity = table.Column<decimal>(type: "numeric", nullable: false),
-                    LastChanged = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: false),
-                    ReviewId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Applications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Applications_Applicants_StudentId",
+                        name: "FK_ApplicationReviews_Applicants_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Applicants",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ApplicationReviews_Applicants_StudentId1",
+                        column: x => x.StudentId1,
+                        principalTable: "Applicants",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ApplicationReviews_Applications_ApplicationId",
+                        column: x => x.ApplicationId,
+                        principalTable: "Applications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Applications_ApplicationReviews_ReviewId",
-                        column: x => x.ReviewId,
-                        principalTable: "ApplicationReviews",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Applications_JobOffers_OfferId",
-                        column: x => x.OfferId,
-                        principalTable: "JobOffers",
+                        name: "FK_ApplicationReviews_Recruiters_RecruiterId",
+                        column: x => x.RecruiterId,
+                        principalTable: "Recruiters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 table: "Applicants",
-                columns: new[] { "Id", "EmailAddress", "FirstName", "PhoneNumber", "SecondName", "Surname", "Address_Building", "Address_City", "Address_Country", "Address_Region", "Address_Street" },
-                values: new object[] { new Guid("ad10a94c-18cf-443d-a137-f8ecd45830e3"), "noreply@company.et", "John", "123456789", "", "Smith", "Boilding", "Gliwice", "Polandia", "Silesia", "Street" });
+                columns: new[] { "Id", "EmailAddress", "FirstName", "PhoneNumber", "Rating", "SecondName", "Surname", "Address_Building", "Address_City", "Address_Country", "Address_Latitude", "Address_Longitude", "Address_Region", "Address_Street" },
+                values: new object[] { new Guid("04ba9c77-4947-4a56-a478-25f39e91b736"), "noreply@company.et", "John", "123456789", 0.0m, "", "Smith", "Boilding", "Gliwice", "Polandia", null, null, "Silesia", "Street" });
 
             migrationBuilder.InsertData(
                 table: "Companies",
                 columns: new[] { "Id", "NIP", "Name" },
-                values: new object[] { new Guid("15f641b1-2823-47ca-85a8-3d9987443597"), "7821160955", "Comarch" });
+                values: new object[] { new Guid("c75cae6e-77df-4445-9826-8b63ea51ecd5"), "7821160955", "Comarch" });
 
             migrationBuilder.InsertData(
                 table: "Recruiters",
-                columns: new[] { "Id", "CompanyId", "EmailAddress", "FirstName", "PhoneNumber", "SecondName", "Surname", "Address_Building", "Address_City", "Address_Country", "Address_Region", "Address_Street" },
-                values: new object[] { new Guid("33fd39f4-3d59-4ca5-ab85-08cea4360451"), new Guid("15f641b1-2823-47ca-85a8-3d9987443597"), "noreply@company.et", "John", "123456789", "", "Smith", "24", "Gliwice", "Polandia", "Silesia", "Wrocławska" });
+                columns: new[] { "Id", "CompanyId", "EmailAddress", "FirstName", "PhoneNumber", "Rating", "SecondName", "Surname", "Address_Building", "Address_City", "Address_Country", "Address_Latitude", "Address_Longitude", "Address_Region", "Address_Street" },
+                values: new object[] { new Guid("4e6f427e-4387-4845-bd4b-b56889b680c1"), new Guid("c75cae6e-77df-4445-9826-8b63ea51ecd5"), "noreply@company.et", "John", "123456789", 0.0m, "", "Smith", "24", "Gliwice", "Polandia", null, null, "Silesia", "Wrocławska" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationReviews_SubjectId",
+                name: "IX_ApplicationReviews_ApplicationId",
                 table: "ApplicationReviews",
-                column: "SubjectId",
+                column: "ApplicationId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationReviews_RecruiterId",
+                table: "ApplicationReviews",
+                column: "RecruiterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationReviews_StudentId",
+                table: "ApplicationReviews",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationReviews_StudentId1",
+                table: "ApplicationReviews",
+                column: "StudentId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_OfferId",
                 table: "Applications",
                 column: "OfferId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Applications_ReviewId",
-                table: "Applications",
-                column: "ReviewId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_StudentId",
@@ -288,37 +329,29 @@ namespace W4S.PostingService.Persistence.Migrations
                 column: "OfferId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OfferReviews_SubjectId",
+                name: "IX_OfferReviews_RecruiterId",
                 table: "OfferReviews",
-                column: "SubjectId");
+                column: "RecruiterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OfferReviews_StudentId",
+                table: "OfferReviews",
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Recruiters_CompanyId",
                 table: "Recruiters",
                 column: "CompanyId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationReviews_Applications_SubjectId",
-                table: "ApplicationReviews",
-                column: "SubjectId",
-                principalTable: "Applications",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Applications_Applicants_StudentId",
-                table: "Applications");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ApplicationReviews_Applications_SubjectId",
-                table: "ApplicationReviews");
-
             migrationBuilder.DropTable(
                 name: "Applicants_Availability");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationReviews");
 
             migrationBuilder.DropTable(
                 name: "JobOffers_WorkingHours");
@@ -327,13 +360,10 @@ namespace W4S.PostingService.Persistence.Migrations
                 name: "OfferReviews");
 
             migrationBuilder.DropTable(
-                name: "Applicants");
-
-            migrationBuilder.DropTable(
                 name: "Applications");
 
             migrationBuilder.DropTable(
-                name: "ApplicationReviews");
+                name: "Applicants");
 
             migrationBuilder.DropTable(
                 name: "JobOffers");

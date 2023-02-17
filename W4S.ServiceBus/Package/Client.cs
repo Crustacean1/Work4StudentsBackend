@@ -65,8 +65,8 @@ namespace W4S.ServiceBus.Package
                 throw new TimeoutException($"Timeout while waiting for: {topic}");
             }
 
-            var truncated = responseBody?.Length > 256;
-            var redactedMessage = responseBody?.Substring(0, truncated ? 256 : responseBody.Length) ?? "<NULL>";
+            var truncated = responseBody?.Length > 1024;
+            var redactedMessage = responseBody?.Substring(0, truncated ? 1024 : responseBody.Length) ?? "<NULL>";
 
             logger.LogInformation("Received response: {Response} {IsTruncated}", redactedMessage, truncated ? "(truncated)" : "");
 

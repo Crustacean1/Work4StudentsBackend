@@ -32,12 +32,6 @@ namespace W4S.PostingService.Persistence
         {
             builder.Ignore<Review>();
 
-            builder.Entity<OfferReview>()
-                .ToTable("OfferReviews");
-
-            builder.Entity<ApplicationReview>()
-                .ToTable("ApplicationReviews");
-
             builder.Entity<Company>(b =>
             {
                 b.HasData(seeder.FakeCompany);
@@ -70,7 +64,7 @@ namespace W4S.PostingService.Persistence
                     p => new { p.Role, p.Description, p.Title });
                 b.HasIndex(jo => jo.SearchVector)
                 .HasMethod("GIN");
-                b.HasMany<OfferReview>().WithOne().HasForeignKey(r => r.SubjectId);
+                b.HasMany<OfferReview>(o => o.Reviews).WithOne(r => r.Offer).HasForeignKey(r => r.OfferId);
             });
 
             builder.Entity<Student>(b =>
@@ -92,7 +86,7 @@ namespace W4S.PostingService.Persistence
             {
                 b.HasOne(a => a.Student);
                 b.HasOne(a => a.Offer);
-                b.HasOne<ApplicationReview>().WithOne(r => r.Application).HasForeignKey<ApplicationReview>(r => r.SubjectId);
+                b.HasOne<ApplicationReview>(a => a.Review).WithOne(r => r.Application).HasForeignKey<ApplicationReview>(r => r.ApplicationId);
             });
         }
 

@@ -12,10 +12,11 @@ namespace W4S.PostingService.Domain.Queries
     {
         private readonly IApplicationRepository applicationRepository;
         private readonly IOfferRepository offerRepository;
+        private readonly IRepository<Recruiter> recruiterRepository;
         private readonly ILogger<GetOfferApplicationsQueryHandler> logger;
         private readonly IMapper mapper;
 
-        public GetOfferApplicationsQueryHandler(IOfferRepository offerRepository, IApplicationRepository applicationRepository, ILogger<GetOfferApplicationsQueryHandler> logger)
+        public GetOfferApplicationsQueryHandler(IOfferRepository offerRepository, IApplicationRepository applicationRepository, ILogger<GetOfferApplicationsQueryHandler> logger, IRepository<Recruiter> recruiterRepository)
         {
             this.offerRepository = offerRepository;
             this.applicationRepository = applicationRepository;
@@ -32,6 +33,7 @@ namespace W4S.PostingService.Domain.Queries
             });
             mapper = mapperConfig.CreateMapper();
             this.logger = logger;
+            this.recruiterRepository = recruiterRepository;
         }
 
         public async Task<PaginatedList<GetApplicationDto>> Handle(GetOfferApplicationsQuery query, CancellationToken cancellationToken)
@@ -40,6 +42,13 @@ namespace W4S.PostingService.Domain.Queries
             if (offer is null)
             {
                 throw new PostingException($"No offer with id: {query.OfferId}");
+            }
+
+            var recruiter = await recruiterRepository.RequireEntityAsync(query.RecruiterId);
+
+            if (offer.RecruiterId != recruiter.Id)
+            {
+                throw new PostingException($"Recruiter {query.RecruiterId} does not have access to {query.OfferId}", 403);
             }
 
             var applications = await applicationRepository.GetOfferApplications(query.OfferId, query);

@@ -27,7 +27,7 @@ namespace W4S.PostingService.Domain.Commands
 
             if (offer.RecruiterId != recruiter.Id)
             {
-                throw new PostingException($"Couldn't reject application {application.Id}, recruiter {recruiter.Id} does not own offer {offer.Id}", 400);
+                throw new PostingException($"Couldn't reject application {application.Id}, recruiter {recruiter.Id} does not own offer {offer.Id}", 403);
             }
 
             if (application.Status != ApplicationStatus.Submitted)

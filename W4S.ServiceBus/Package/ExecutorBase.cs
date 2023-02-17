@@ -39,11 +39,13 @@ namespace W4S.ServiceBus.Package
                     logger.LogInformation("Executing handler method: {Name} with return type: {Type}", methodInfo.Name, methodInfo.ReturnType.Name);
                     var handler = scope.ServiceProvider.GetRequiredService(methodInfo.DeclaringType!);
                     wrapper.Message = await InvokeHandler(handler, arg);
+                    logger.LogInformation("Method executed");
                 }
             }
             catch (Exception e)
             {
                 wrapper.Error = $"{e.Message}\nInner Exception:\n{e.InnerException?.Message ?? "<No internal exception>"}\nStackTrace:\n{e.StackTrace}";
+                logger.LogInformation("Failed to execute method: {Error}", wrapper.Error ?? "No error?");
             }
 
             return wrapper;

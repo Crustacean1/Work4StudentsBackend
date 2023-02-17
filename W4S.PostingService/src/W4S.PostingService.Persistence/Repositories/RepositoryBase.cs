@@ -19,9 +19,10 @@ namespace W4S.PostingService.Persistence.Repositories
             await context.Set<T>().AddAsync(entity);
         }
 
-        public virtual async Task DeleteAsync(Guid id)
+        public virtual void Delete(Guid id)
         {
-            await context.Set<T>().Where(o => o.Id == id).ExecuteDeleteAsync();
+            var entityToRemove = context.Set<T>().Single(e => e.Id == id);
+            context.Remove(entityToRemove);
         }
 
         public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize, Expression<Func<T, bool>> selector, Expression<Func<T, object>> comparator)

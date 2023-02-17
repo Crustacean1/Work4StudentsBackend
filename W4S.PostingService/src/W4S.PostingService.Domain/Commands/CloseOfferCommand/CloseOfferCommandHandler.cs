@@ -26,15 +26,26 @@ namespace W4S.PostingService.Domain.Commands
 
             if (offer.RecruiterId != recruiter.Id)
             {
-                throw new PostingException($"Could not close offer, recruiter {recruiter.Id} does not own offer {offer.Id}", 400);
+                throw new PostingException($"Could not close offer, recruiter {recruiter.Id} does not own offer {offer.Id}", 403);
+            }
+
+            if (offer.Status != OfferStatus.Active)
+            {
+                throw new PostingException($"Only active offer can be closed", 400);
             }
 
             var applications = await applicationRepository.GetEntitiesAsync(a => a.OfferId == request.OfferId && a.Status == ApplicationStatus.Submitted);
 
+
             foreach (var application in applications)
             {
-                application.Status = ApplicationStatus.Rejected;
+                if (application.Status == ApplicationStatus.Accepted)
+                {
+                    application.Status = ApplicationStatus.Rejected;
+                }
             }
+
+            offer.Status = OfferStatus.Finished;
 
             await applicationRepository.SaveAsync();
 

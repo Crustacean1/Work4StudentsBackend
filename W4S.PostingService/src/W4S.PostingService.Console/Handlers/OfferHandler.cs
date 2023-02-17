@@ -27,7 +27,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Recruiter {RecruiterId} updates job offer: {OfferId}", command.RecruiterId, command.OfferId);
 
-            return await ExecuteHandler(command, 204);
+            return await ExecuteHandler(command, 200);
         }
 
         [BusRequestHandler("closeOffer")]
@@ -35,7 +35,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Recruiter {RecruiterId} closes job offer: {OfferId}", command.RecruiterId, command.OfferId);
 
-            return await ExecuteHandler(command, 204);
+            return await ExecuteHandler(command, 200);
         }
 
         [BusRequestHandler("deleteOffer")]

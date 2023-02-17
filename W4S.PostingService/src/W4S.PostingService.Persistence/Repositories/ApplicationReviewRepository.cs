@@ -37,11 +37,11 @@ namespace W4S.PostingService.Persistence.Repositories
         public async Task<PaginatedRecords<ApplicationReview>> GetSubmittedReviews(Guid authorId, PaginatedQuery query)
         {
             var totalCount = await context.Set<ApplicationReview>()
-                .Where(r => r.AuthorId == authorId)
+                .Where(r => r.RecruiterId == authorId)
                 .CountAsync();
 
             var reviews = await context.Set<ApplicationReview>()
-                .Where(r => r.AuthorId == authorId)
+                .Where(r => r.RecruiterId == authorId)
                 .OrderBy(r => r.CreationDate)
                 .Skip(query.RecordsToSkip)
                 .Take(query.PageSize)

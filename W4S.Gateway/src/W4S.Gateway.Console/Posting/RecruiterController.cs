@@ -62,7 +62,8 @@ namespace W4S.Gateway.Console.Posting
         {
             if (wrappedResponse.Messages.Any())
             {
-                return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Messages);
+                var aggregate = wrappedResponse.Messages.Aggregate("", (t, m) => (t + "\n" + m));
+                return StatusCode(wrappedResponse.ResponseCode, new { ErrorMessage = wrappedResponse.Messages });
             }
 
             return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Response);

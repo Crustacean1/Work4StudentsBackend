@@ -8,7 +8,7 @@ namespace W4S.PostingService.Domain.Repositories
 
         public Task AddAsync(TEntity entity);
 
-        public Task DeleteAsync(Guid id);
+        public void Delete(Guid id);
 
         public Task<TEntity> RequireEntityAsync(Guid id);
 

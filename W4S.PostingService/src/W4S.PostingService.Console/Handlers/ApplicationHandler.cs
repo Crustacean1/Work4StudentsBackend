@@ -29,6 +29,7 @@ namespace W4S.PostingService.Console.Handlers
             return await ExecuteHandler(command, 201);
         }
 
+        [BusRequestHandler("acceptApplication")]
         public async Task<ResponseWrapper<Guid>> OnAcceptApplication(AcceptApplicationCommand command)
         {
             logger.LogInformation("Recruiter {Recruiter} accepts application {Application}", command.RecruiterId, command.ApplicationId);

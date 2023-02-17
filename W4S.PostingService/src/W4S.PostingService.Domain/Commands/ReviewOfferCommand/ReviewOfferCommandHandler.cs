@@ -45,7 +45,7 @@ namespace W4S.PostingService.Domain.Commands
                 throw new PostingException($"Couldn't post review, student {student.Id} did not apply for offer {offer.Id}", 400);
             }
 
-            var previousReview = await reviewRepository.GetEntityAsync(r => r.AuthorId == student.Id && r.SubjectId == offer.Id);
+            var previousReview = await reviewRepository.GetEntityAsync(r => r.StudentId == student.Id && r.OfferId == offer.Id);
             if (previousReview is not null)
             {
                 throw new PostingException($"Student {student.Id} already rated offer {offer.Id}", 400);
@@ -53,8 +53,8 @@ namespace W4S.PostingService.Domain.Commands
 
             var review = mapper.Map<OfferReview>(command.Review);
             review.Id = Guid.NewGuid();
-            review.AuthorId = student.Id;
-            review.SubjectId = offer.Id;
+            review.StudentId = student.Id;
+            review.OfferId = offer.Id;
             review.CreationDate = DateTime.UtcNow;
 
             await reviewRepository.AddAsync(review);
