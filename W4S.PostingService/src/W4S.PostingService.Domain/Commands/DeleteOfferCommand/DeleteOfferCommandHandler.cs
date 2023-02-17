@@ -3,7 +3,7 @@ using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class DeleteOfferCommandHandler : CommandHandlerBase, IRequestHandler<DeleteApplicationCommand, Guid>
+    public class DeleteOfferCommandHandler : CommandHandlerBase, IRequestHandler<DeleteOfferCommand, Guid>
     {
         private readonly IOfferRepository entityRepository;
 
@@ -12,9 +12,9 @@ namespace W4S.PostingService.Domain.Commands
             this.entityRepository = entityRepository;
         }
 
-        public async Task<Guid> Handle(DeleteApplicationCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(DeleteOfferCommand request, CancellationToken cancellationToken)
         {
-            var entity = await GetEntity(entityRepository, request.ApplicationId);
+            var entity = await GetEntity(entityRepository, request.OfferId);
 
             entityRepository.Delete(entity.Id);
             await entityRepository.SaveAsync();

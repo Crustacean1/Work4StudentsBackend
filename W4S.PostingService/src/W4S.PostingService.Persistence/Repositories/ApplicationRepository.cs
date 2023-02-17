@@ -44,6 +44,8 @@ namespace W4S.PostingService.Persistence.Repositories
             var applications = await context.Set<Application>()
                 .Where(a => a.OfferId == offerId)
                 .Include(a => a.Offer)
+                .ThenInclude(o => o.Recruiter)
+                .ThenInclude(r => r.Company)
                 .OrderBy(r => r.LastChanged)
                 .Skip(query.RecordsToSkip)
                 .Take(query.PageSize)

@@ -55,5 +55,13 @@ namespace W4S.PostingService.Console.Handlers
 
             return await ExecuteHandler(query, 200);
         }
+
+        [BusRequestHandler("deleteReview")]
+        public async Task<ResponseWrapper<Guid>> DeleteReview(DeleteReviewCommand command)
+        {
+            logger.LogInformation("Deleting review {Review}", command.ReviewId);
+
+            return await ExecuteHandler(command, 200);
+        }
     }
 }

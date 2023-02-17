@@ -4,7 +4,7 @@ using W4S.PostingService.Domain.Repositories;
 
 namespace W4S.PostingService.Domain.Commands
 {
-    public class DeleteReviewCommandHandler<T> : CommandHandlerBase, IRequestHandler<DeleteApplicationCommand, Guid> where T : Review
+    public class DeleteReviewCommandHandler<T> : CommandHandlerBase, IRequestHandler<DeleteReviewCommand, Guid> where T : Review
     {
         private readonly IReviewRepository<T> entityRepository;
 
@@ -13,9 +13,9 @@ namespace W4S.PostingService.Domain.Commands
             this.entityRepository = entityRepository;
         }
 
-        public async Task<Guid> Handle(DeleteApplicationCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
         {
-            var entity = await GetEntity(entityRepository, request.ApplicationId);
+            var entity = await GetEntity(entityRepository, request.ReviewId);
 
             entityRepository.Delete(entity.Id);
             await entityRepository.SaveAsync();

@@ -26,7 +26,7 @@ namespace W4S.PostingService.Console.Handlers
         {
             logger.LogInformation("Applicant {Applicant} withdraws application {Application}", command.StudentId, command.ApplicationId);
 
-            return await ExecuteHandler(command, 201);
+            return await ExecuteHandler(command, 200);
         }
 
         [BusRequestHandler("acceptApplication")]
@@ -48,9 +48,17 @@ namespace W4S.PostingService.Console.Handlers
         [BusRequestHandler("getStudentApplications")]
         public async Task<ResponseWrapper<PaginatedList<GetApplicationDto>>> OnGetStudentApplications(GetStudentApplicationsQuery query)
         {
-            logger.LogInformation("Lising applications of student: {Student}", query.StudentId);
+            logger.LogInformation("Listing applications of student: {Student}", query.StudentId);
 
             return await ExecuteHandler(query, 200);
+        }
+
+        [BusRequestHandler("deleteApplication")]
+        public async Task<ResponseWrapper<Guid>> DeleteApplication(DeleteApplicationCommand command)
+        {
+            logger.LogInformation("Deleting application {Application}", command.ApplicationId);
+
+            return await ExecuteHandler(command, 200);
         }
     }
 }

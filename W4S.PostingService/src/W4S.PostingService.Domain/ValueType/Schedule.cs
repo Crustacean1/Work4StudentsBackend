@@ -2,8 +2,10 @@ namespace W4S.PostingService.Domain.Models
 {
     public record Schedule
     {
-        public DateTime Start { get; set; }
+        public int DayOfWeek { get; set; }
 
-        public DateTime End { get; set; }
+        public int StartHour { get; set; }
+
+        public int Duration { get; set; }
     }
 }

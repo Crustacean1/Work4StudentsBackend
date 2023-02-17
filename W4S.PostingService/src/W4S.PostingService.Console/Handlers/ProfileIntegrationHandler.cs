@@ -42,7 +42,7 @@ namespace W4S.PostingService.Console.Handlers
             await sender.Send(new RegisterRecruiterCommand { Recruiter = recruiter });
         }
 
-        [BusEventHandler("profiles.user.updated")]
+        [BusEventHandler("user.profile.updated")]
         public async Task OnProfileUpdate(UserInfoUpdatedEvent updateEvent)
         {
             logger.LogInformation("Updating profile of user {User}", updateEvent.UserId);

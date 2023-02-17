@@ -86,17 +86,17 @@ namespace W4S.PostingService.Domain.Commands
         private double GetCoverage(IEnumerable<Schedule> availability, IEnumerable<Schedule> workTime)
         {
             var matchingTime = workTime.Aggregate(0.0, (total, work) => total + availability.Sum(av => GetCoverage(av, work)));
-            var totalTime = workTime.Sum(w => (w.End - w.Start).Duration().TotalHours);
+            //var totalTime = workTime.Sum(w => (w.End - w.Start).Duration().TotalHours);
 
-            logger.LogInformation("Matching time {MatchingTime} TotalTime: {TotalTime}", matchingTime, totalTime);
+            logger.LogInformation("Matching time {MatchingTime} TotalTime: {TotalTime}", matchingTime, -1);
 
-            var result = matchingTime / totalTime;
+            var result = matchingTime / 1;
             return double.IsFinite(result) ? result : -1;
         }
 
         private double GetCoverage(Schedule availability, Schedule workTime)
         {
-            var start = new[] { availability.Start, workTime.Start }.Max();
+            /*var start = new[] { availability.Start, workTime.Start }.Max();
             var end = new[] { availability.End, workTime.End }.Min();
 
             logger.LogInformation("Time piece  {start} TotalTime: {end}", start, end);
@@ -104,7 +104,7 @@ namespace W4S.PostingService.Domain.Commands
             if (start < end)
             {
                 return (end - start).Duration().TotalHours;
-            }
+            }*/
 
             return 0;
         }
@@ -114,7 +114,7 @@ namespace W4S.PostingService.Domain.Commands
             logger.LogInformation("Schedule: ");
             foreach (var schedule in schedules)
             {
-                logger.LogInformation("In schedule: {Start} {End}", schedule.Start, schedule.End);
+                logger.LogInformation("In schedule: {Start} {End}", schedule.StartHour, schedule.Duration);
             }
         }
     }

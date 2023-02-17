@@ -94,13 +94,14 @@ namespace W4S.PostingService.Persistence.Repositories
             var application = await context.Set<Application>()
                 .SingleOrDefaultAsync(a => a.OfferId == id && a.StudentId == userId);
 
-            var applied = application is not null;
+            var applied = application is Application offerApplication && offerApplication.Status != ApplicationStatus.Submitted;
 
 
             return mapper.Map<JobOffer, GetOfferDetailsDto>(offer, opt => opt.AfterMap((src, dst) =>
                         {
                             dst.Created = src.RecruiterId == userId;
                             dst.Applied = applied;
+                            dst.ApplicationId = application?.Id ?? Guid.Empty;
                         }));
         }
     }

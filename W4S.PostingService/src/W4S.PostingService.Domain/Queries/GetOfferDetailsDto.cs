@@ -30,5 +30,7 @@ namespace W4S.PostingService.Domain.Queries
         public bool Applied { get; set; }
 
         public bool Created { get; set; }
+
+        public Guid ApplicationId { get; set; }
     }
 }

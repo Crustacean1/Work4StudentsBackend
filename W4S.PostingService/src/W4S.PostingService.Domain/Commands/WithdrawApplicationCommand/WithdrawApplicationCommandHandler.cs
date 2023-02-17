@@ -19,8 +19,8 @@ namespace W4S.PostingService.Domain.Commands
 
         public async Task<Guid> Handle(WithdrawApplicationCommand request, CancellationToken cancellationToken)
         {
-            var application = await GetEntity(applicationRepository, request.ApplicationId);
-            var student = await GetEntity(studentRepository, request.StudentId);
+            var application = await GetEntity(applicationRepository, request.ApplicationId, "No application with");
+            var student = await GetEntity(studentRepository, request.StudentId, "No student with");
 
             if (application.StudentId != student.Id)
             {

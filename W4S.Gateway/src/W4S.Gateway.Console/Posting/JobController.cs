@@ -101,9 +101,11 @@ namespace W4S.Gateway.Console.Posting
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOfferDetailsDto))]
         public async Task<ActionResult> GetJobOffer([FromRoute] Guid offerId, CancellationToken cancellationToken)
         {
+            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString();
             var query = new GetOfferQuery
             {
-                OfferId = offerId
+                OfferId = offerId,
+                UserId = Guid.Parse(userId)
             };
             var response = await busClient.SendRequest<ResponseWrapper<GetOfferDetailsDto>, GetOfferQuery>("offers.getOffer", query, cancellationToken);
             return UnwrapResponse(response);
@@ -115,6 +117,7 @@ namespace W4S.Gateway.Console.Posting
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
         public async Task<ActionResult> GetJobApplications([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
+            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
             logger.LogInformation("Getting job applications for {Offer} {Tragedy}", offerId, busClient == null);
 
             var query = new GetOfferApplicationsQuery
@@ -122,6 +125,7 @@ namespace W4S.Gateway.Console.Posting
                 Page = paginatedQuery.Page,
                 PageSize = paginatedQuery.PageSize,
                 OfferId = offerId,
+                RecruiterId = Guid.Parse(userId)
             };
 
             var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetApplicationDto>>, GetOfferApplicationsQuery>("applications.getOfferApplications", query, cancellationToken);

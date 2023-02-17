@@ -39,9 +39,11 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusRequestHandler("deleteOffer")]
-        public Task<ResponseWrapper<Guid>> OnDeleteOffer(DeleteOfferCommand command)
+        public async Task<ResponseWrapper<Guid>> OnDeleteOffer(DeleteOfferCommand command)
         {
-            return Task.FromResult(new ResponseWrapper<Guid>());
+            logger.LogInformation("Deleting offer");
+
+            return await ExecuteHandler(command, 200);
         }
 
         [BusRequestHandler("getOffers")]
