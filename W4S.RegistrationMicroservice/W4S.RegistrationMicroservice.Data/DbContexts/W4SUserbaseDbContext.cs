@@ -76,9 +76,9 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<Profile>().Property(x => x.Street).IsRequired();
             modelBuilder.Entity<Profile>().Property(x => x.Building).IsRequired();
             modelBuilder.Entity<Profile>().Property(x => x.EmailAddress).IsRequired();
-            modelBuilder.Entity<Profile>().Property(x => x.PhotoFile).HasMaxLength(5242880);
+            modelBuilder.Entity<Profile>().Property(x => x.PhotoFile);
 
-            modelBuilder.Entity<StudentProfile>().Property(x => x.ResumeFile).HasMaxLength(5242880);
+            modelBuilder.Entity<StudentProfile>().Property(x => x.ResumeFile);
 
             //Seeding values...
             modelBuilder.Entity<Role>().HasData(new List<Role>() { _seeder.StudentRole, _seeder.EmployerRole, _seeder.AdminRole });
