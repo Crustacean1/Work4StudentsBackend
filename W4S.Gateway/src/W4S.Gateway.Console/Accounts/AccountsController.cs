@@ -67,7 +67,7 @@ namespace W4S.Gateway.Console.Accounts
             return BadRequest(response.ExceptionMessage);
         }
 
-        [HttpDelete("delete/user/{userId:Guid}")]
+        [HttpDelete("user/{userId:Guid}")]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteUser([FromRoute] Guid userId, CancellationToken cancellationToken)
         {
