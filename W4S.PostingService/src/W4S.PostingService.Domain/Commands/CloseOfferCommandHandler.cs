@@ -40,7 +40,7 @@ namespace W4S.PostingService.Domain.Commands
 
             foreach (var application in applications)
             {
-                if (application.Status == ApplicationStatus.Accepted)
+                if (application.Status == ApplicationStatus.Submitted)
                 {
                     application.Status = ApplicationStatus.Rejected;
                 }
