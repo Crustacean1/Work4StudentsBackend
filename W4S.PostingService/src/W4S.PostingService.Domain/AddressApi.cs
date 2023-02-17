@@ -16,23 +16,33 @@ namespace W4S.PostingService.Domain
 
         public async Task UpdateAddress(Address address)
         {
-            using HttpClient client = new();
-            client.DefaultRequestHeaders.Add("User-Agent", "W4SBackend");
-            string query = $"https://nominatim.openstreetmap.org/search?country={address.Country}&state={address.Region}&city={address.City}&street={address.Building} {address.Street}&format=json";
-
-            var rawResponse = await client.GetAsync(query);
-            var responseBody = await rawResponse.Content.ReadAsStringAsync();
-            logger.LogInformation("Got address {Address}", responseBody);
-
-            var response = JsonSerializer.Deserialize<List<GeographicData>>(responseBody)?.FirstOrDefault();
-
-            if (response is not null)
+            try
             {
-                logger.LogInformation("Found location at coordinates: Lon: {lon} Lat: {lat}", response.lon, response.lat);
-                address.Longitude = Convert.ToDouble(response.lon);
-                address.Latitude = Convert.ToDouble(response.lat);
-            }
+                using HttpClient client = new();
+                client.DefaultRequestHeaders.Add("User-Agent", "W4SBackend");
+                string query = $"https://nominatim.openstreetmap.org/search?country={address.Country}&state={address.Region}&city={address.City}&street={address.Building} {address.Street}&format=json";
 
+                logger.LogInformation("Sending request to url {Url}", query);
+
+                var rawResponse = await client.GetAsync(query);
+                var responseBody = await rawResponse.Content.ReadAsStringAsync();
+
+                logger.LogInformation("Got address {Address}", responseBody);
+
+                var response = JsonSerializer.Deserialize<List<GeographicData>>(responseBody)?.FirstOrDefault();
+
+                if (response is not null)
+                {
+                    logger.LogInformation("Found location at coordinates: Lon: {lon} Lat: {lat}", response.lon, response.lat);
+                    address.Longitude = Convert.ToDouble(response.lon);
+                    address.Latitude = Convert.ToDouble(response.lat);
+                }
+
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Failed to retrieve address of location, check if submitted locaiton is valid: Error: ", e.Message);
+            }
         }
     }
 }
