@@ -120,16 +120,16 @@ namespace W4S.Gateway.Console.Posting
 
         [HttpDelete]
         [Authorize(Roles = "Administrator")]
-        [Route("{offerId}")]
-        public async Task<ActionResult> DeleteApplication([FromRoute] Guid offerId, CancellationToken cancellationToken)
+        [Route("{applicationId}")]
+        public async Task<ActionResult> DeleteApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
         {
-            var command = new DeleteOfferCommand
+            var command = new DeleteApplicationCommand
             {
-                OfferId = offerId,
+                ApplicationId = applicationId,
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteOfferCommand>("offers.deleteOffer", command, cancellationToken);
-            return StatusCode(204);
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteApplicationCommand>("offers.deleteOffer", command, cancellationToken);
+            return response.Messages.Any() ? StatusCode(400, new { ErrorMessage = response.Messages.FirstOrDefault() ?? "????" }) : StatusCode(204);
         }
 
         private ActionResult UnwrapResponse<T>(ResponseWrapper<T> wrappedResponse)
