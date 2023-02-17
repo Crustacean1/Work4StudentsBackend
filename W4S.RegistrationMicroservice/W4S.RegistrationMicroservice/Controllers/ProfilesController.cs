@@ -177,8 +177,8 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                     {
                         availability.Add(new ScheduleProfile()
                         {
-                            Start = schedule.Start,
-                            End = schedule.End
+                            //Start = schedule.Start,
+                            //End = schedule.End
                         });
                     }
                     response.Availability = availability;

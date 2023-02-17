@@ -11,6 +11,7 @@ using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Signing;
 using W4S.RegistrationMicroservice.Models;
 using Microsoft.AspNetCore.Authorization;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Deleting;
+using System.Security.Claims;
 
 namespace W4S.Gateway.Console.Accounts
 {
@@ -68,9 +69,18 @@ namespace W4S.Gateway.Console.Accounts
         }
 
         [HttpDelete("user/{userId:Guid}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
         public async Task<IActionResult> DeleteUser([FromRoute] Guid userId, CancellationToken cancellationToken)
         {
+
+            var currentUserId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
+            var currentUserRole = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? throw new InvalidOperationException("No user role specified.");
+
+            if(currentUserRole != "Administrator" && userId.ToString() != currentUserId)
+            {
+                return Forbid();
+            }
+
             var guid = new GuidPackedDto()
             {
                 Id = userId

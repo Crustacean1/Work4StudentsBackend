@@ -125,7 +125,7 @@ namespace W4S.Gateway.Console.Posting
                 Page = paginatedQuery.Page,
                 PageSize = paginatedQuery.PageSize,
                 OfferId = offerId,
-                RecruiterId = Guid.Parse(userId)
+                //asda = Guid.Parse(userId)
             };
 
             var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetApplicationDto>>, GetOfferApplicationsQuery>("applications.getOfferApplications", query, cancellationToken);
