@@ -1,0 +1,10 @@
+namespace W4S.RegistrationMicroservice.Models.Users
+{
+    public class UserDto
+    {
+        public int UserId { get; set; }
+        public int UserType { get; set; }
+        public string FirstName { get; set; }
+        public string Surname { get; set; }
+    }
+}

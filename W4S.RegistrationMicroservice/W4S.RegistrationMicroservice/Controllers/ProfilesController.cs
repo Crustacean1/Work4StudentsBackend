@@ -112,11 +112,11 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.Street = profile.Street;
                 response.Building = profile.Building;
 
-                if(profile.PhotoFile != null)
+                if (profile.PhotoFile != null)
                 {
                     response.Photo = Convert.ToBase64String(profile.PhotoFile);
                 }
-                if(profile.ResumeFile != null)
+                if (profile.ResumeFile != null)
                 {
                     response.Resume = Convert.ToBase64String(profile.ResumeFile);
                 }
@@ -211,7 +211,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             return Task.FromResult(response);
         }
 
-        
+
 
         [BusRequestHandler("get.employer.employerId")]
         public Task GetEmployerProfileByEmployerId(GuidPackedDto guid)
@@ -235,7 +235,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 response.City = profile.City;
                 response.Street = profile.Street;
                 response.Building = profile.Building;
-                if(profile.PhotoFile != null)
+                if (profile.PhotoFile != null)
                 {
                     response.Photo = Convert.ToBase64String(profile.PhotoFile);
                 }
@@ -271,7 +271,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var photo = _profilesService.GetUserPhoto(guid.Id);
-                if(photo != null)
+                if (photo != null)
                 {
                     response.Photo = Convert.ToBase64String(photo);
                 }
@@ -300,7 +300,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             try
             {
                 var resume = _profilesService.GetStudentResume(guid.Id);
-                if(resume != null)
+                if (resume != null)
                 {
                     response.Resume = Convert.ToBase64String(resume);
                 }
@@ -322,6 +322,12 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             return Task.FromResult(response);
         }
 
+        [BusRequestHandler("get.users")]
+        public void GetUsers()
+        {
+
+        }
+
         [BusEventHandler("update.student.rating")]
         public void UpdateStudentRating(UserRatingChangedEvent changedEvent)
         {
@@ -335,6 +341,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             _logger.LogInformation($"Got an updated rating for the student with Id: {changedEvent.UserId}");
             _profilesService.UpdateEmployerRating(changedEvent);
         }
+
 
     }
 }

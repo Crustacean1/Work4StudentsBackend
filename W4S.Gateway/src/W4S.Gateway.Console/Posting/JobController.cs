@@ -83,7 +83,7 @@ namespace W4S.Gateway.Console.Posting
             };
 
             var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteOfferCommand>("offers.deleteOffer", command, cancellationToken);
-            return StatusCode(204);
+            return response.Messages.Any() ? StatusCode(400, new { ErrorMessage = response.Messages.FirstOrDefault() ?? "????" }) : StatusCode(204);
         }
 
 
