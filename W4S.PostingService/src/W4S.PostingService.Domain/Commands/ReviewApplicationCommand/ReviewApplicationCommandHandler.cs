@@ -52,7 +52,7 @@ namespace W4S.PostingService.Domain.Commands
                 throw new PostingException($"Recruiter {recruiter.Id} already rated application {application.Id} (offer: {prevReview.Id})", 400);
             }
 
-            if (application.Status != ValueType.ApplicationStatus.Accepted && application.Status != ValueType.ApplicationStatus.Rejected)
+            if (application.Status != ValueType.ApplicationStatus.Accepted)
             {
                 throw new PostingException($"Only closed application ({application.Id}) can be reviewed");
             }
