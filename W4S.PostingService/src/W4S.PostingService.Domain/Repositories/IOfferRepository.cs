@@ -1,5 +1,6 @@
 using W4S.PostingService.Domain.Entities;
-using W4S.PostingService.Domain.Queries;
+using W4S.PostingService.Models.Queries;
+using W4S.PostingService.Models.Transfer;
 
 namespace W4S.PostingService.Domain.Repositories
 {

@@ -18,6 +18,7 @@
 
   <ItemGroup>
       <ProjectReference Include="..\W4S.PostingService.Domain\W4S.PostingService.Domain.csproj" />
+      <ProjectReference Include="..\W4S.PostingService.Models\W4S.PostingService.Models.csproj" />
   </ItemGroup>
 
 </Project>

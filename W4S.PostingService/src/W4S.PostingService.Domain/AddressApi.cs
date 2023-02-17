@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Commands;
-using W4S.PostingService.Domain.ValueType;
+using W4S.PostingService.Models.Entities;
 
 namespace W4S.PostingService.Domain
 {

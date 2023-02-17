@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\W4S.PostingService.Domain\W4S.PostingService.Domain.csproj" />
     <ProjectReference Include="..\W4S.PostingService.Persistence\W4S.PostingService.Persistence.csproj" />
+    <ProjectReference Include="..\W4S.PostingService.Models\W4S.PostingService.Models.csproj" />
   </ItemGroup>
 
 </Project>

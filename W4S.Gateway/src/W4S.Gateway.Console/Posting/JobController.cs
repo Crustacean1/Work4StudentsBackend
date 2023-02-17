@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using W4S.ServiceBus.Abstractions;
-using W4S.PostingService.Domain.Commands;
-using W4S.PostingService.Domain.Queries;
-using W4S.PostingService.Domain.Entities;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using W4S.PostingService.Domain.Dto;
+using W4S.PostingService.Models.Transfer;
+using W4S.PostingService.Models.Commands;
+using W4S.PostingService.Models.Queries;
 
 namespace W4S.Gateway.Console.Posting
 {
@@ -135,7 +135,7 @@ namespace W4S.Gateway.Console.Posting
         [HttpGet]
         [Authorize]
         [Route("{offerId}/reviews")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<OfferReview>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<OfferReviewDto>))]
         public async Task<ActionResult> GetReviews([FromRoute] Guid offerId, [FromQuery] PaginatedQuery pagedQuery, CancellationToken cancellationToken)
         {
             logger.LogInformation("Getting page {Page} with page size: {PageSize} reviews for recruiter {Id}", pagedQuery.Page, pagedQuery.PageSize, offerId);
@@ -147,7 +147,7 @@ namespace W4S.Gateway.Console.Posting
                 OfferId = offerId
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReview>>, GetOfferReviewsQuery>("reviews.getOfferReviews", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<OfferReviewDto>>, GetOfferReviewsQuery>("reviews.getOfferReviews", query, cancellationToken);
             return UnwrapResponse(response);
         }
 

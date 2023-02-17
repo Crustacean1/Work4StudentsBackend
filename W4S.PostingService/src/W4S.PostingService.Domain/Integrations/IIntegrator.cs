@@ -1,4 +1,4 @@
-using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Models.Events;
 
 namespace W4S.PostingService.Domain.Integrations
 {

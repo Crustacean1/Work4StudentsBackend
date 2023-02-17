@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Dto;
+using W4S.PostingService.Models.Commands;
 using W4S.ServiceBus.Abstractions;
 
 namespace W4S.Gateway.Console.Posting

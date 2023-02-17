@@ -1,4 +1,4 @@
-using W4S.PostingService.Domain.Models;
+using W4S.PostingService.Models.Entities;
 
 namespace W4S.PostingService.Domain.Entities
 {

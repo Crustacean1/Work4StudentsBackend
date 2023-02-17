@@ -2,9 +2,10 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using W4S.PostingService.Domain.Entities;
-using W4S.PostingService.Domain.Queries;
 using W4S.PostingService.Domain.Repositories;
 using W4S.PostingService.Domain.ValueType;
+using W4S.PostingService.Models.Queries;
+using W4S.PostingService.Models.Transfer;
 
 namespace W4S.PostingService.Persistence.Repositories
 {
