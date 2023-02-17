@@ -240,6 +240,23 @@ namespace W4S.RegistrationMicroservice.API.Services
                     student.Surname = dto.Surname;
                 }
 
+                if (dto.Image == null)
+                {
+                    _logger.LogInformation("This image is null, do something.");
+                }
+                else
+                {
+                    _logger.LogInformation("This image is not null yeah 8)");
+                }
+
+                if (dto.ResumeFile == null)
+                {
+                    _logger.LogInformation("This resume is null, do something.");
+                }
+                else
+                {
+                    _logger.LogInformation("This resume is not null yeah 8)");
+                }
                 _dbContext.Students.Update(student);
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
@@ -550,6 +567,14 @@ namespace W4S.RegistrationMicroservice.API.Services
 
                 _logger.LogInformation("Trying to update employer and employerProfile.");
 
+                if(dto.Image == null)
+                {
+                    _logger.LogInformation("This image is null, do something.");
+                }
+                else
+                {
+                    _logger.LogInformation("This image is not null yeah 8)");
+                }
 
                 if (dto.Image != employerProfile.PhotoFile)
                 {

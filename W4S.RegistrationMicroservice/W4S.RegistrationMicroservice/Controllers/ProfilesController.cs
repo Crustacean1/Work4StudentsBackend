@@ -148,10 +148,10 @@ namespace W4S.RegistrationMicroservice.API.Controllers
 
                 response.ProfileId = profile.Id;
                 response.FirstName = profile.Student.Name;
-                response.SecondName = profile.Student.SecondName;
+                response.SecondName = profile.Student.SecondName ?? "";
                 response.Surname = profile.Student.Surname;
                 response.EmailAddress = profile.EmailAddress;
-                response.PhoneNumber = profile.PhoneNumber;
+                response.PhoneNumber = profile.PhoneNumber ?? "";
                 response.StudentId = profile.StudentId;
                 response.Rating = profile.Rating;
                 response.Country = profile.Country;
@@ -163,13 +163,21 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 {
                     response.Photo = Convert.ToBase64String(profile.PhotoFile);
                 }
+                else
+                {
+                    response.Photo = "";
+                }
                 if (profile.ResumeFile != null)
                 {
                     response.Resume = Convert.ToBase64String(profile.ResumeFile);
                 }
-                response.Description = profile.Description;
-                response.Education = profile.Education;
-                response.Experience = profile.Experience;
+                else
+                {
+                    response.Resume = "";
+                }
+                response.Description = profile.Description ?? "";
+                response.Education = profile.Education ?? "";
+                response.Experience = profile.Experience ?? "";
 
                 if (profile.Avaiability != null)
                 {
@@ -215,11 +223,11 @@ namespace W4S.RegistrationMicroservice.API.Controllers
 
                 response.ProfileId = profile.Id;
                 response.FirstName = profile.Employer.Name;
-                response.SecondName = profile.Employer.SecondName;
-                response.Description = profile.Description;
+                response.SecondName = profile.Employer.SecondName ?? "";
+                response.Description = profile.Description ?? "";
                 response.Surname = profile.Employer.Surname;
                 response.EmailAddress = profile.EmailAddress;
-                response.PhoneNumber = profile.PhoneNumber;
+                response.PhoneNumber = profile.PhoneNumber ?? "";
                 response.EmployerId = profile.EmployerId;
                 response.Rating = profile.Rating;
                 response.Country = profile.Country;
@@ -230,6 +238,10 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 if(profile.PhotoFile != null)
                 {
                     response.Photo = Convert.ToBase64String(profile.PhotoFile);
+                }
+                else
+                {
+                    response.Photo = "";
                 }
                 response.CompanyName = profile.CompanyName;
                 response.PositionName = profile.PositionName;
