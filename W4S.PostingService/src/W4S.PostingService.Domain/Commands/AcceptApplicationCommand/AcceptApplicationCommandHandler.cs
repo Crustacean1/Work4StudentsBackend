@@ -10,12 +10,13 @@ namespace W4S.PostingService.Domain.Commands
     {
         private readonly IApplicationRepository applicationRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
-        private readonly IRepository<JobOffer> offerRepository;
+        private readonly IOfferRepository offerRepository;
 
-        public AcceptApplicationCommandHandler(IRepository<Recruiter> recruiterRepository, IApplicationRepository applicationRepository)
+        public AcceptApplicationCommandHandler(IRepository<Recruiter> recruiterRepository, IApplicationRepository applicationRepository, IOfferRepository offerRepository)
         {
             this.recruiterRepository = recruiterRepository;
             this.applicationRepository = applicationRepository;
+            this.offerRepository = offerRepository;
         }
 
         public async Task<Guid> Handle(AcceptApplicationCommand request, CancellationToken cancellationToken)

@@ -128,14 +128,15 @@ namespace W4S.Gateway.Console.Posting
             };
 
             var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteOfferCommand>("offers.deleteOffer", command, cancellationToken);
-            return UnwrapResponse(response);
+            return StatusCode(204);
         }
 
         private ActionResult UnwrapResponse<T>(ResponseWrapper<T> wrappedResponse)
         {
             if (wrappedResponse.Messages?.Any() ?? false)
             {
-                return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Messages);
+                var aggregate = wrappedResponse.Messages.Aggregate("", (t, m) => (t + "\n" + m));
+                return StatusCode(wrappedResponse.ResponseCode, new { ErrorMessages = wrappedResponse.Messages });
             }
 
             return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Response);

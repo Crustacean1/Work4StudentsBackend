@@ -83,7 +83,7 @@ namespace W4S.Gateway.Console.Posting
             };
 
             var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteOfferCommand>("offers.deleteOffer", command, cancellationToken);
-            return UnwrapResponse(response);
+            return StatusCode(204);
         }
 
 
@@ -110,7 +110,7 @@ namespace W4S.Gateway.Console.Posting
         }
 
         [HttpGet]
-        [Authorize(Roles="Employer,Administrator")]
+        [Authorize(Roles = "Employer,Administrator")]
         [Route("{offerId}/applications")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
         public async Task<ActionResult> GetJobApplications([FromRoute] Guid offerId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
@@ -173,8 +173,10 @@ namespace W4S.Gateway.Console.Posting
         {
             if (wrappedResponse.Messages?.Any() ?? false)
             {
-                return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Messages);
+                var aggregate = wrappedResponse.Messages.Aggregate("", (t, m) => (t + "\n" + m));
+                return StatusCode(wrappedResponse.ResponseCode, new { ErrorMessages = wrappedResponse.Messages });
             }
+
 
             return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Response);
         }

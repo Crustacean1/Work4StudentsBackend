@@ -37,11 +37,11 @@ namespace W4S.PostingService.Persistence.Repositories
         public async Task<PaginatedRecords<OfferReview>> GetSubmittedReviews(Guid studentId, PaginatedQuery query)
         {
             var totalCount = await context.Set<OfferReview>()
-                .Where(r => r.AuthorId == studentId)
+                .Where(r => r.StudentId == studentId)
                 .CountAsync();
 
             var reviews = await context.Set<OfferReview>()
-                .Where(r => r.AuthorId == studentId)
+                .Where(r => r.StudentId == studentId)
                 .OrderBy(r => r.CreationDate)
                 .Skip(query.RecordsToSkip)
                 .Take(query.PageSize)
@@ -57,11 +57,11 @@ namespace W4S.PostingService.Persistence.Repositories
         public async Task<PaginatedRecords<OfferReview>> GetDirectReviews(Guid subjectId, PaginatedQuery query)
         {
             var totalCount = await context.Set<OfferReview>()
-                .Where(r => r.SubjectId == subjectId)
+                .Where(r => r.OfferId == subjectId)
                 .CountAsync();
 
             var reviews = await context.Set<OfferReview>()
-                .Where(r => r.SubjectId == subjectId)
+                .Where(r => r.OfferId == subjectId)
                 .OrderBy(r => r.CreationDate)
                 .Skip(query.RecordsToSkip)
                 .Take(query.PageSize)

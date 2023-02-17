@@ -78,8 +78,8 @@ namespace W4S.PostingService.Persistence
                         {
                             Title = "Recruitment process",
                             Message = "Went great",
-                            SubjectId = fakeJobOfferId,
-                            AuthorId = FakeStudent.Id,
+                            OfferId = fakeJobOfferId,
+                            StudentId = FakeStudent.Id,
                             Rating = 5.0m
                         }
                     }

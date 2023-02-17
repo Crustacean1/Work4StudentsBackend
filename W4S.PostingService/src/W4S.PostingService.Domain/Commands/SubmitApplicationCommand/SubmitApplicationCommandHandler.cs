@@ -38,6 +38,11 @@ namespace W4S.PostingService.Domain.Commands
                 throw new PostingException($"Student {command.StudentId} already applied for {command.OfferId}");
             }
 
+            if (offer.Status != OfferStatus.Active)
+            {
+                throw new PostingException($"Student ({student.Id}) can only apply for active offer ({offer.Id})");
+            }
+
             var application = new Application
             {
                 Id = Guid.NewGuid(),

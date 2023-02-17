@@ -19,9 +19,7 @@ namespace W4S.PostingService.Domain.Queries
 
             var mapperConfig = new MapperConfiguration(b =>
             {
-                b.CreateMap<OfferReview, OfferReviewDto>()
-                .ForMember(r => r.OfferId, opts => opts.MapFrom(r => r.SubjectId))
-                .ForMember(r => r.StudentId, opts => opts.MapFrom(r => r.AuthorId));
+                b.CreateMap<OfferReview, OfferReviewDto>();
             });
             this.mapper = mapperConfig.CreateMapper();
         }

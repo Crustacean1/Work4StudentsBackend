@@ -16,7 +16,8 @@ namespace W4S.PostingService.Domain.Commands
         {
             var application = await GetEntity(applicationRepository, request.ApplicationId);
 
-            await applicationRepository.DeleteAsync(application.Id);
+            applicationRepository.Delete(application.Id);
+            await applicationRepository.SaveAsync();
 
             return application.Id;
         }

@@ -19,9 +19,7 @@ namespace W4S.PostingService.Domain.Queries
             this.studentRepository = studentRepository;
             var mapperConf = new MapperConfiguration(b =>
             {
-                b.CreateMap<ApplicationReview, ApplicationReviewDto>()
-                .ForMember(r => r.RecruiterId, opts => opts.MapFrom(r => r.AuthorId))
-                .ForMember(r => r.ApplicationId, opts => opts.MapFrom(r => r.SubjectId));
+                b.CreateMap<ApplicationReview, ApplicationReviewDto>();
             });
             this.mapper = mapperConf.CreateMapper();
         }

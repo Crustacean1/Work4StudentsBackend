@@ -51,8 +51,8 @@ namespace W4S.ServiceBus.Package
             {
                 var (param, paramBody) = ParseMessageBody(args.RequestBody);
 
-                var truncated = paramBody?.Length > 256;
-                var redactedMessage = paramBody?.Substring(0, truncated ? 256 : paramBody.Length) ?? "<NULL>";
+                var truncated = paramBody?.Length > 1024;
+                var redactedMessage = paramBody?.Substring(0, truncated ? 1024 : paramBody.Length) ?? "<NULL>";
 
                 logger.LogInformation("Received request: {Request} {IsTrimmed} at address: {Topic} with reply address: {ReplyAddress} id: {Id}", redactedMessage, truncated ? "(truncated)" : "", args.Topic, args.ReplyTopic, args.RequestId);
 

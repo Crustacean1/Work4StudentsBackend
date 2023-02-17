@@ -35,7 +35,7 @@ namespace W4S.PostingService.Domain.Commands
 
             if (previousOffer.RecruiterId != recruiter.Id)
             {
-                throw new PostingException($"Could not update offer, recruiter {recruiter.Id} does not own offer {previousOffer.Id}", 400);
+                throw new PostingException($"Could not update offer, recruiter {recruiter.Id} does not own offer {previousOffer.Id}", 403);
             }
 
             mapper.Map(newOffer, previousOffer);

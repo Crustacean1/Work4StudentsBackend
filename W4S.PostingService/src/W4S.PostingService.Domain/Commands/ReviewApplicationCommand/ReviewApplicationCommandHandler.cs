@@ -42,21 +42,26 @@ namespace W4S.PostingService.Domain.Commands
 
             if (offer.RecruiterId != recruiter.Id)
             {
-                throw new PostingException($"Could not post review, recruiter {recruiter.Id} does not own offer {offer.Id}", 400);
+                throw new PostingException($"Could not post review, recruiter {recruiter.Id} does not own offer {offer.Id}", 403);
             }
 
-            var prevReview = await reviewRepository.GetEntityAsync(r => r.AuthorId == recruiter.Id && r.SubjectId == application.Id);
+            var prevReview = await reviewRepository.GetEntityAsync(r => r.RecruiterId == recruiter.Id && r.ApplicationId == application.Id);
 
             if (prevReview is not null)
             {
                 throw new PostingException($"Recruiter {recruiter.Id} already rated application {application.Id} (offer: {prevReview.Id})", 400);
             }
 
+            if (application.Status != ValueType.ApplicationStatus.Accepted && application.Status != ValueType.ApplicationStatus.Rejected)
+            {
+                throw new PostingException($"Only closed application ({application.Id}) can be reviewed");
+            }
+
             var review = mapper.Map<ApplicationReview>(request.Review);
 
             review.Id = Guid.NewGuid();
-            review.AuthorId = recruiter.Id;
-            review.SubjectId = application.Id;
+            review.RecruiterId = recruiter.Id;
+            review.ApplicationId = application.Id;
             review.CreationDate = DateTime.UtcNow;
 
             await reviewRepository.AddAsync(review);
