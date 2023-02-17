@@ -6,7 +6,8 @@ using W4S.PostingService.Domain.Exceptions;
 using W4S.PostingService.Domain.Repositories;
 using W4S.PostingService.Models.Commands;
 using W4S.PostingService.Models.Entities;
-using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
+using W4S.PostingService.Models.Events;
+using W4S.PostingService.Models.Transfer;
 
 namespace W4S.PostingService.Domain.Commands
 {

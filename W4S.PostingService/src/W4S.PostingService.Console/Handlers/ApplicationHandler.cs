@@ -38,6 +38,14 @@ namespace W4S.PostingService.Console.Handlers
             return await ExecuteHandler(command, 200);
         }
 
+        [BusRequestHandler("rejectApplication")]
+        public async Task<ResponseWrapper<Guid>> OnRejectApplication(RejectApplicationCommand command)
+        {
+            logger.LogInformation("Recruiter {Recruiter} accepts application {Application}", command.RecruiterId, command.ApplicationId);
+
+            return await ExecuteHandler(command, 200);
+        }
+
         [BusRequestHandler("getOfferApplications")]
         public async Task<ResponseWrapper<PaginatedList<GetApplicationDto>>> OnGetOfferApplications(GetOfferApplicationsQuery query)
         {

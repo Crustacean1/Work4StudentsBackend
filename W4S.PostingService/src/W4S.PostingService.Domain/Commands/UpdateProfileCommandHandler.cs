@@ -14,6 +14,7 @@ namespace W4S.PostingService.Domain.Commands
     {
         private readonly IRepository<Recruiter> recruiterRepository;
         private readonly IRepository<Student> studentRepository;
+        private readonly IRepository<Company> companyRepository;
         private readonly ILogger<UpdateProfileCommandHandler> logger;
         private readonly AddressApi addressApi;
         private readonly IMapper mapper;
@@ -29,6 +30,9 @@ namespace W4S.PostingService.Domain.Commands
                     .ForMember(p => p.Id, opt => opt.Ignore())
                     .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
                 b.CreateMap<UserChangedEvent, Address>();
+                b.CreateMap<UserChangedEvent, Company>()
+                .ForMember(p => p.Id, opt => opt.Ignore())
+                .ForMember(p => p.Name, opt => opt.MapFrom(e => e.CompanyName));
             });
             mapper = mapperConfig.CreateMapper();
             this.addressApi = addressApi;
@@ -45,13 +49,18 @@ namespace W4S.PostingService.Domain.Commands
                 throw new PostingException($"No user with id: {request.ProfileEvent.UserId}", 400);
             }
 
+            mapper.Map(request.ProfileEvent, user);
+            mapper.Map(request.ProfileEvent, user.Address);
+
             if (user is Student student)
             {
                 await addressApi.UpdateAddress(student.Address);
             }
-
-            mapper.Map(request.ProfileEvent, user);
-            mapper.Map(request.ProfileEvent, user.Address);
+            if (user is Recruiter recruiter)
+            {
+                var company = await companyRepository.GetEntityAsync(recruiter.CompanyId);
+                mapper.Map(request.ProfileEvent, company);
+            }
 
             logger.LogInformation("New Creds: {FirstName} {Country} {Street}", user.FirstName, user.Address.Country, user.Address.Street);
 

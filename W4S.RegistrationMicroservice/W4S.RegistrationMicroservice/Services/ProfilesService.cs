@@ -10,6 +10,8 @@ using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
 using W4S.ServiceBus.Abstractions;
+using W4S.RegistrationMicroservice.Models.Users;
+using W4S.RegistrationMicroservice.Models;
 using W4SRegistrationMicroservice.API.Exceptions;
 
 namespace W4S.RegistrationMicroservice.API.Services
@@ -109,9 +111,9 @@ namespace W4S.RegistrationMicroservice.API.Services
                     throw new UserNotFoundException("Couldn't find a student connected to that profile."); // not gonna happen
                 }
 
-                if(dto.EmailAddress.IsNullOrEmpty() || dto.FirstName.IsNullOrEmpty() || dto.Surname.IsNullOrEmpty() 
-                    || dto.Country.IsNullOrEmpty() || dto.Region.IsNullOrEmpty() || dto.City.IsNullOrEmpty() 
-                    || dto.Street.IsNullOrEmpty() || dto.Building.IsNullOrEmpty()) 
+                if (dto.EmailAddress.IsNullOrEmpty() || dto.FirstName.IsNullOrEmpty() || dto.Surname.IsNullOrEmpty()
+                    || dto.Country.IsNullOrEmpty() || dto.Region.IsNullOrEmpty() || dto.City.IsNullOrEmpty()
+                    || dto.Street.IsNullOrEmpty() || dto.Building.IsNullOrEmpty())
                 {
                     throw new Exception("Fields EmailAddress, FirstName, Surname, Country, Region, City, Street, Building cannot be empty or null.");
                 }
@@ -133,7 +135,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     student.EmailAddress = dto.EmailAddress;
                     studentProfile.EmailAddress = dto.EmailAddress;
                 }
-                if(dto.FirstName != null)
+                if (dto.FirstName != null)
                 {
 
                 }
@@ -172,9 +174,9 @@ namespace W4S.RegistrationMicroservice.API.Services
                     student.Building = dto.Building;
                     studentProfile.Building = dto.Building;
                 }
-                if(dto.Availability != studentProfile.Avaiability)
+                if (dto.Availability != studentProfile.Avaiability)
                 {
-                    if(dto.Availability != null)
+                    if (dto.Availability != null)
                     {
                         if (!dto.Availability.Any())
                         {
@@ -215,27 +217,27 @@ namespace W4S.RegistrationMicroservice.API.Services
                     }
                 }
 
-                if (dto.Description != studentProfile.Description) 
+                if (dto.Description != studentProfile.Description)
                 {
                     studentProfile.Description = dto.Description;
                 }
-                if(dto.Education != studentProfile.Education)
+                if (dto.Education != studentProfile.Education)
                 {
                     studentProfile.Education = dto.Education;
                 }
-                if(dto.Experience != studentProfile.Experience)
+                if (dto.Experience != studentProfile.Experience)
                 {
                     studentProfile.Experience = dto.Experience;
                 }
-                if(dto.FirstName != student.Name)
+                if (dto.FirstName != student.Name)
                 {
                     student.Name = dto.FirstName;
                 }
-                if(dto.SecondName != student.SecondName) 
-                { 
+                if (dto.SecondName != student.SecondName)
+                {
                     student.SecondName = dto.SecondName;
                 }
-                if(dto.Surname != student.Surname)
+                if (dto.Surname != student.Surname)
                 {
                     student.Surname = dto.Surname;
                 }
@@ -261,7 +263,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
 
-                if(dto.ResumeFile != studentProfile.ResumeFile)
+                if (dto.ResumeFile != studentProfile.ResumeFile)
                 {
                     studentProfile.ResumeFile = null;
                     _dbContext.StudentProfiles.Update(studentProfile);
@@ -508,7 +510,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     employer.EmailAddress = dto.EmailAddress;
                     employerProfile.EmailAddress = dto.EmailAddress;
                 }
-                if(dto.PhoneNumber != employerProfile.PhoneNumber)
+                if (dto.PhoneNumber != employerProfile.PhoneNumber)
                 {
                     _logger.LogInformation("Validating phone number.");
                     //_dataValidator.ValidatePhoneNumber(dto.PhoneNumber);
@@ -516,38 +518,38 @@ namespace W4S.RegistrationMicroservice.API.Services
                     employer.PhoneNumber = dto.PhoneNumber;
                     employerProfile.PhoneNumber = dto.PhoneNumber;
                 }
-                if(dto.Country != employerProfile.Country)
+                if (dto.Country != employerProfile.Country)
                 {
                     employer.Country = dto.Country;
                     employerProfile.Country = dto.Country;
                 }
-                if(dto.Region != employerProfile.Region)
+                if (dto.Region != employerProfile.Region)
                 {
                     employer.Region = dto.Region;
                     employerProfile.Region = dto.Region;
 
                 }
-                if(dto.City != employerProfile.City)
+                if (dto.City != employerProfile.City)
                 {
                     employer.City = dto.City;
                     employerProfile.City = dto.City;
 
                 }
-                if(dto.Street != employerProfile.Street)
+                if (dto.Street != employerProfile.Street)
                 {
                     employer.Street = dto.Street;
                     employerProfile.Street = dto.Street;
                 }
-                if(dto.Building != employerProfile.Building)
+                if (dto.Building != employerProfile.Building)
                 {
                     employer.Building = dto.Building;
                     employerProfile.Building = dto.Building;
                 }
-                if(dto.Description != employerProfile.Description)
+                if (dto.Description != employerProfile.Description)
                 {
                     employerProfile.Description = dto.Description;
                 }
-                if(dto.PositionName != employerProfile.PositionName)
+                if (dto.PositionName != employerProfile.PositionName)
                 {
                     employer.PositionName = dto.PositionName;
                     employerProfile.PositionName = dto.PositionName;
@@ -724,5 +726,37 @@ namespace W4S.RegistrationMicroservice.API.Services
         }
 
         #endregion
+
+        public PaginatedList<UserDto> GetUsers(PaginatedQuery query)
+        {
+            var totalCount = _dbContext.Users.Count();
+
+            var roles = _dbContext.Roles.ToList();
+
+            var items = _dbContext.Users
+                .Join(_dbContext.Roles, u => u.RoleId, r => r.Id, (User, Role) => new { User, Role })
+                .OrderBy(ag => ag.User.Surname + ag.User.Name)
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .Select(ag => new UserDto
+                {
+                    UserId = ag.User.Id,
+                    UserType = ag.Role.Description,
+                    FirstName = ag.User.Name,
+                    Surname = ag.User.Surname,
+                    EmailAddress = ag.User.EmailAddress
+                });
+
+            return new PaginatedList<UserDto>
+            {
+                Items = items.ToList(),
+                MetaData = new MetaData
+                {
+                    TotalCount = totalCount,
+                    Page = query.Page,
+                    PageSize = query.PageSize
+                }
+            };
+        }
     }
 }

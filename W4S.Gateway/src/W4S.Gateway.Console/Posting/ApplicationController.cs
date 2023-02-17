@@ -128,7 +128,7 @@ namespace W4S.Gateway.Console.Posting
                 ApplicationId = applicationId,
             };
 
-            var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteApplicationCommand>("offers.deleteOffer", command, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteApplicationCommand>("applications.deleteApplication", command, cancellationToken);
             return response.Messages.Any() ? StatusCode(400, new { ErrorMessage = response.Messages.FirstOrDefault() ?? "????" }) : StatusCode(204);
         }
 

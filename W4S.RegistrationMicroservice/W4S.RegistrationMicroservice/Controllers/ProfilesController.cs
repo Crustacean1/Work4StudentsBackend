@@ -1,17 +1,11 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
-using W4S.PostingService.Domain.Commands;
+﻿using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Models.Entities;
 using W4S.RegistrationMicroservice.API.Interfaces;
-using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Models;
-using W4S.RegistrationMicroservice.Models.Profiles;
-using W4S.RegistrationMicroservice.Models.Profiles.Create;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
-using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
-using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Creation;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Updating;
+using W4S.RegistrationMicroservice.Models.Users;
 using W4S.ServiceBus.Abstractions;
 using W4S.ServiceBus.Attributes;
 
@@ -323,9 +317,10 @@ namespace W4S.RegistrationMicroservice.API.Controllers
         }
 
         [BusRequestHandler("get.users")]
-        public void GetUsers()
+        public PaginatedList<UserDto> GetUsers(PaginatedQuery query)
         {
-
+            _logger.LogInformation("Getting all users");
+            return _profilesService.GetUsers(query);
         }
 
         [BusEventHandler("update.student.rating")]

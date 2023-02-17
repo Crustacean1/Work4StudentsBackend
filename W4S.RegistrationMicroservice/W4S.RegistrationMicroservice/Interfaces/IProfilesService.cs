@@ -1,8 +1,9 @@
 ﻿using W4S.PostingService.Domain.Commands;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
+using W4S.RegistrationMicroservice.Models;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
-using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
+using W4S.RegistrationMicroservice.Models.Users;
 
 namespace W4S.RegistrationMicroservice.API.Interfaces
 {
@@ -22,6 +23,6 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
         EmployerProfile GetEmployerProfile(Guid id);
         EmployerProfile GetEmployerProfileByEmployerId(Guid employerId);
         List<EmployerProfile> GetEmployerProfiles(Guid[] ids);
-
+        PaginatedList<UserDto> GetUsers(PaginatedQuery query);
     }
 }

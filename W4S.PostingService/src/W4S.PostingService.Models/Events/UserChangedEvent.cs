@@ -15,6 +15,7 @@ namespace W4S.PostingService.Models.Events
         public string? FirstName { get; set; }
         public string? SecondName { get; set; }
         public string? Surname { get; set; }
+        public string? CompanyName { get; set; }
 
         public List<Schedule>? Availability { get; set; }
     }

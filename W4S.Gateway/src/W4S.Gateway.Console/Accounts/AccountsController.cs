@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using W4S.ServiceBus.Abstractions;
-using W4S.ServiceBus.Rabbit;
-using System.Threading;
 using W4S.RegistrationMicroservice.Models.Users.Signing;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Registration;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
@@ -12,6 +8,7 @@ using W4S.RegistrationMicroservice.Models;
 using Microsoft.AspNetCore.Authorization;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Users.Deleting;
 using System.Security.Claims;
+using W4S.RegistrationMicroservice.Models.Users;
 
 namespace W4S.Gateway.Console.Accounts
 {
@@ -26,6 +23,16 @@ namespace W4S.Gateway.Console.Accounts
         {
             this.logger = logger;
             this.busClient = busClient;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> GetUsers([FromQuery] PaginatedQuery query, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Request: get all users");
+            PaginatedList<UserDto> response = await busClient.SendRequest<PaginatedList<UserDto>, PaginatedQuery>("profiles.get.users", query);
+
+            return Ok(response);
         }
 
         [HttpPost("signing")]
@@ -76,7 +83,7 @@ namespace W4S.Gateway.Console.Accounts
             var currentUserId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
             var currentUserRole = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? throw new InvalidOperationException("No user role specified.");
 
-            if(currentUserRole != "Administrator" && userId.ToString() != currentUserId)
+            if (currentUserRole != "Administrator" && userId.ToString() != currentUserId)
             {
                 return Forbid();
             }
@@ -88,7 +95,7 @@ namespace W4S.Gateway.Console.Accounts
 
             UserDeletedResponse response = await busClient.SendRequest<UserDeletedResponse, GuidPackedDto>("deleting.user", guid, cancellationToken);
 
-            if(response.ExceptionMessage is null)
+            if (response.ExceptionMessage is null)
             {
                 return NoContent();
             }
