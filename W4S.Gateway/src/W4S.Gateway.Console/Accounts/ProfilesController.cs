@@ -77,8 +77,8 @@ namespace W4S.Gateway.Console.Accounts
             if (dto.ResumeFile != null)
             {
                 using var fileStream = dto.ResumeFile.OpenReadStream();
-                resume = new byte[dto.Image.Length];
-                fileStream.Read(resume, 0, (int)dto.Image.Length);
+                resume = new byte[dto.ResumeFile.Length];
+                fileStream.Read(resume, 0, (int)dto.ResumeFile.Length);
             }
 
             var correctedDto = new UpdateStudentProfileDtoWithId()
