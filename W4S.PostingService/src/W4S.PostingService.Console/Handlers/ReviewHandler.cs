@@ -1,7 +1,8 @@
 using MediatR;
-using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Dto;
-using W4S.PostingService.Domain.Queries;
+using W4S.PostingService.Models.Commands;
+using W4S.PostingService.Models.Queries;
+using W4S.PostingService.Models.Transfer;
 using W4S.ServiceBus.Attributes;
 
 namespace W4S.PostingService.Console.Handlers

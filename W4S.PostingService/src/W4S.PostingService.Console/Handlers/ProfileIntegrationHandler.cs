@@ -1,9 +1,8 @@
 using AutoMapper;
 using MediatR;
-using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Entities;
-using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles;
-using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
+using W4S.PostingService.Models.Commands;
+using W4S.PostingService.Models.Events;
 using W4S.ServiceBus.Attributes;
 
 namespace W4S.PostingService.Console.Handlers
@@ -43,7 +42,7 @@ namespace W4S.PostingService.Console.Handlers
         }
 
         [BusEventHandler("user.profile.updated")]
-        public async Task OnProfileUpdate(UserInfoUpdatedEvent updateEvent)
+        public async Task OnProfileUpdate(UserChangedEvent updateEvent)
         {
             logger.LogInformation("Updating profile of user {User}", updateEvent.UserId);
             await sender.Send(new UpdateProfileCommand { ProfileEvent = updateEvent });

@@ -1,5 +1,5 @@
-using W4S.PostingService.Domain.Commands;
 using W4S.PostingService.Domain.Integrations;
+using W4S.PostingService.Models.Events;
 using W4S.ServiceBus.Abstractions;
 
 namespace W4S.PostingService.Console.Integrators

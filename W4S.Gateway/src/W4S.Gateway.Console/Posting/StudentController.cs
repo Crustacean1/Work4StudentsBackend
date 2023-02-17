@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using W4S.PostingService.Domain.Dto;
-using W4S.PostingService.Domain.Queries;
+using W4S.PostingService.Models.Queries;
+using W4S.PostingService.Models.Transfer;
 using W4S.ServiceBus.Abstractions;
 
 namespace W4S.Gateway.Console.Posting

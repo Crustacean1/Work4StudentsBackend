@@ -1,4 +1,5 @@
 using W4S.PostingService.Domain.ValueType;
+using W4S.PostingService.Models.Entities;
 
 namespace W4S.PostingService.Domain.Entities
 {
