@@ -4,8 +4,10 @@ using W4S.RegistrationMicroservice.API.Validations.Interfaces;
 using W4S.RegistrationMicroservice.Data.DbContexts;
 using W4S.RegistrationMicroservice.Data.Entities;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
+using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Deleting;
 using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
 using W4S.RegistrationMicroservice.Models.Users.Creation;
+using W4S.ServiceBus.Abstractions;
 using W4SRegistrationMicroservice.CommonServices.Interfaces;
 
 namespace W4S.RegistrationMicroservice.API.Services
@@ -18,19 +20,22 @@ namespace W4S.RegistrationMicroservice.API.Services
         private readonly UserbaseDbContext _dbContext;
         private readonly ILogger _logger;
         private readonly IDataValidator _dataValidator;
+        private readonly IClient _busClient;
 
         public RegistrationService(
             IHasher passwordHasher,
             IProfilesService profilesService,
             UserbaseDbContext dbContext,
             ILogger<RegistrationService> logger,
-            IDataValidator dataValidator)
+            IDataValidator dataValidator,
+            IClient busClient)
         {
             _passwordHasher = passwordHasher;
             _profilesService = profilesService;
             _dbContext = dbContext;
             _logger = logger;
             _dataValidator = dataValidator;
+            _busClient = busClient;
         }
 
         public void DeleteUser(Guid userId)
@@ -70,6 +75,13 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _dbContext.SaveChanges();
 
                 _logger.LogInformation($"User with Id: {userId} and profile with Id: {profileGuid} has been deleted.");
+
+                var userDeletedEvent = new UserDeletedEvent()
+                {
+                    UserId = userId
+                };
+
+                _busClient.SendEvent<UserDeletedEvent>("registration.user.deleted", userDeletedEvent);
             }
             catch(Exception ex)
             {
