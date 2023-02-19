@@ -32,35 +32,43 @@ namespace W4S.PostingService.Domain.Commands
             LogSchedules(student.Availability);
             LogSchedules(offer.WorkingHours);
 
-            var prevApplications = await applicationRepository.GetEntityAsync(a => a.OfferId == command.OfferId && a.StudentId == command.StudentId);
-
-            if (prevApplications is not null)
-            {
-                throw new PostingException($"Student {command.StudentId} already applied for {command.OfferId}");
-            }
-
+            var prevApplication = await applicationRepository.GetEntityAsync(a => a.OfferId == command.OfferId && a.StudentId == command.StudentId);
             if (offer.Status != OfferStatus.Active)
             {
                 throw new PostingException($"Student ({student.Id}) can only apply for active offer ({offer.Id})");
             }
 
-            var application = new Application
+            if (prevApplication is not null)
             {
-                Id = Guid.NewGuid(),
-                OfferId = offer.Id,
-                StudentId = student.Id,
-                LastChanged = DateTime.UtcNow,
-                Status = ApplicationStatus.Submitted,
-                Message = command.Application.Message,
-                Distance = GetDistance(student.Address, offer.Address),
-                WorkTimeOverlap = GetCoverage(student.Availability, offer.WorkingHours)
-            };
+                if (prevApplication.Status != ApplicationStatus.Withdrawn)
+                {
+                    prevApplication.Status = ApplicationStatus.Submitted;
+                    await applicationRepository.SaveAsync();
+                    return prevApplication.Id;
+                }
+                else
+                {
+                    throw new PostingException($"Student {command.StudentId} already applied for {command.OfferId}");
+                }
+            }
+            else
+            {
+                var application = new Application
+                {
+                    Id = Guid.NewGuid(),
+                    OfferId = offer.Id,
+                    StudentId = student.Id,
+                    LastChanged = DateTime.UtcNow,
+                    Status = ApplicationStatus.Submitted,
+                    Message = command.Application.Message,
+                    Distance = GetDistance(student.Address, offer.Address),
+                    WorkTimeOverlap = GetCoverage(student.Availability, offer.WorkingHours)
+                };
+                await applicationRepository.AddAsync(application);
+                await applicationRepository.SaveAsync();
+                return application.Id;
+            }
 
-            await applicationRepository.AddAsync(application);
-
-            await applicationRepository.SaveAsync();
-
-            return application.Id;
         }
 
         private double GetDistance(Address addA, Address addB)
