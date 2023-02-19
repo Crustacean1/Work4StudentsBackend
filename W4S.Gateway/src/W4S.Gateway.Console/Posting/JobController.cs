@@ -173,6 +173,13 @@ namespace W4S.Gateway.Console.Posting
             return UnwrapResponse(response);
         }
 
+        [HttpGet]
+        [Route("fuck-my-shit-up")]
+        public ActionResult GetError()
+        {
+            return StatusCode(400, new { ErrorMessages = new List<string> { "Fuck my shit up" } });
+        }
+
         private ActionResult UnwrapResponse<T>(ResponseWrapper<T> wrappedResponse)
         {
             if (wrappedResponse.Messages?.Any() ?? false)

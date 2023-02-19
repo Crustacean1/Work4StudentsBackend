@@ -34,7 +34,7 @@ namespace W4S.PostingService.Domain.Queries
                 throw new PostingException($"No job offer with id: {query.OfferId}");
             }
 
-            logger.LogInformation("For student {Student} (un)real: {Fake} applied: {Applied}", query.UserId, personId, offer.Applied);
+            logger.LogInformation("For student {Student} (un)real: {Fake} applied: {Applied}", query.UserId, query.OfferId, offer.Applied);
 
             return offer;
         }

@@ -93,9 +93,9 @@ namespace W4S.PostingService.Persistence.Repositories
             }
 
             var application = await context.Set<Application>()
-                .SingleOrDefaultAsync(a => a.OfferId == id && a.StudentId == userId);
+                .SingleOrDefaultAsync(a => a.OfferId == id && (a.Status == ApplicationStatus.Submitted || a.Status == ApplicationStatus.Accepted) && a.StudentId == userId);
 
-            var applied = application is Application offerApplication && offerApplication.Status != ApplicationStatus.Submitted;
+            var applied = application is Application offerApplication;
 
 
             return mapper.Map<JobOffer, GetOfferDetailsDto>(offer, opt => opt.AfterMap((src, dst) =>
