@@ -79,6 +79,46 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             return Task.FromResult(response);
         }
 
+        [BusRequestHandler("update.student.v2")]
+        public Task<StudentProfileUpdatedResponse> UpdateStudentProfilePhotosResumesCorrected(UpdateStudentProfileDtoWithId correctedDto)
+        {
+            var response = new StudentProfileUpdatedResponse();
+
+            try
+            {
+                _profilesService.UpdateStudentProfilePhotosResumesCorrected(correctedDto);
+                _logger.LogInformation($"Updated profile with Id {correctedDto.Id}.");
+            }
+            catch (Exception ex)
+            {
+                var message = ex?.InnerException?.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
+            }
+
+            return Task.FromResult(response);
+        }
+
+        [BusRequestHandler("update.employer.v2")]
+        public Task<StudentProfileUpdatedResponse> UpdateEmployerProfilePhotosCorrected(UpdateEmployerProfileDtoWithId correctedDto)
+        {
+            var response = new StudentProfileUpdatedResponse();
+
+            try
+            {
+                _profilesService.UpdateEmployerProfilePhotosCorrected(correctedDto);
+                _logger.LogInformation($"Updated profile with Id {correctedDto.Id}.");
+            }
+            catch (Exception ex)
+            {
+                var message = ex?.InnerException?.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
+            }
+
+            return Task.FromResult(response);
+        }
+
         [BusRequestHandler("get.student")]
         [Obsolete]
         public Task GetStudentProfile(GuidPackedDto guid)

@@ -112,6 +112,56 @@ namespace W4S.Gateway.Console.Accounts
             return BadRequest(response.ExceptionMessage);
         }
 
+        [HttpPut("update/student/{id}/correctedFiles")]
+        [Authorize(Roles = "Student,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateStudentProfileWithCorrectedPhotosAndResumes([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
+        {
+            byte[]? image = null;
+            byte[]? resume = null;
+
+            if (dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+            if (dto.ResumeFile != null)
+            {
+                using var fileStream = dto.ResumeFile.OpenReadStream();
+                resume = new byte[dto.ResumeFile.Length];
+                fileStream.Read(resume, 0, (int)dto.ResumeFile.Length);
+            }
+
+            var correctedDto = new UpdateStudentProfileDtoWithId()
+            {
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
+                Id = id,
+                EmailAddress = dto.EmailAddress,
+                PhoneNumber = dto.PhoneNumber,
+                Description = dto.Description,
+                Education = dto.Education,
+                Experience = dto.Experience,
+                Country = dto.Country,
+                Region = dto.Region,
+                City = dto.City,
+                Street = dto.Street,
+                Building = dto.Building,
+                Image = image,
+                ResumeFile = resume,
+                Availability = dto.Availability
+            };
+            logger.LogInformation("Request: Update student profile");
+            var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentProfileDtoWithId>("profiles.update.student.v2", correctedDto, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
 
         [HttpPut("update/employer/{id}")]
         [Authorize(Roles = "Employer,Administrator")]
@@ -146,6 +196,47 @@ namespace W4S.Gateway.Console.Accounts
             };
             logger.LogInformation("Request: Update employer profile");
             var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateEmployerProfileDtoWithId>("profiles.update.employer", correctedDto, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+        [HttpPut("update/employer/{id}/correctedFiles")]
+        [Authorize(Roles = "Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(EmployerProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateEmployerProfileWithCorrectedPhotos([FromRoute] Guid id, [FromForm] UpdateEmployerProfileDto dto, CancellationToken cancellationToken)
+        {
+            byte[]? image = null;
+
+            if (dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+
+            var correctedDto = new UpdateEmployerProfileDtoWithId()
+            {
+                Id = id,
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
+                EmailAddress = dto.EmailAddress,
+                PhoneNumber = dto.PhoneNumber,
+                Description = dto.Description,
+                Country = dto.Country,
+                Region = dto.Region,
+                City = dto.City,
+                Street = dto.Street,
+                Building = dto.Building,
+                Image = image,
+                PositionName = dto.PositionName
+            };
+            logger.LogInformation("Request: Update employer profile");
+            var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateEmployerProfileDtoWithId>("profiles.update.employer.v2", correctedDto, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
