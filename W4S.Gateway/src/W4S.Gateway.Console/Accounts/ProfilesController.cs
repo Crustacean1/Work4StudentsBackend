@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using W4S.RegistrationMicroservice.Models;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Deleting;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Updating;
 using W4S.ServiceBus.Abstractions;
@@ -183,7 +184,7 @@ namespace W4S.Gateway.Console.Accounts
             {
                 Id = studentId,
             };
-            logger.LogInformation($"Request: Get resume with Id: {studentId}.");
+            logger.LogInformation($"Request: Get resume of a student with Id: {studentId}.");
 
             var response = await busClient.SendRequest<GetResumeResponse, GuidPackedDto>("profiles.get.resume", guid, cancellationToken);
 
@@ -194,5 +195,25 @@ namespace W4S.Gateway.Console.Accounts
             return BadRequest(response.ExceptionMessage);
         }
 
+
+        [HttpDelete("resume/{studentId:Guid}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentResumeDeletedResponse)))]
+        public async Task<IActionResult> DeleteStudentResume([FromRoute] Guid studentId, CancellationToken cancellationToken)
+        {
+            var guid = new GuidPackedDto()
+            {
+                Id = studentId
+            };
+            logger.LogInformation($"Request: Delete resume of a student with Id: {studentId}.");
+
+            var response = await busClient.SendRequest<StudentResumeDeletedResponse, GuidPackedDto>("profiles.delete.student.resume", guid, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
     }
 }

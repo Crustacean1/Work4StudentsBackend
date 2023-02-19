@@ -3,6 +3,7 @@ using W4S.PostingService.Models.Entities;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.Models;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Deleting;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Updating;
 using W4S.RegistrationMicroservice.Models.Users;
@@ -205,7 +206,32 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             return Task.FromResult(response);
         }
 
+        [BusRequestHandler("delete.student.resume")]
+        public Task DeleteStudentResume(GuidPackedDto guid)
+        {
+            var response = new StudentResumeDeletedResponse();
 
+            try
+            {
+                _profilesService.DeleteStudentResume(guid.Id);
+            }
+            catch(Exception ex)
+            {
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
+            }
+
+            return Task.FromResult(response);
+        }
 
         [BusRequestHandler("get.employer.employerId")]
         public Task GetEmployerProfileByEmployerId(GuidPackedDto guid)

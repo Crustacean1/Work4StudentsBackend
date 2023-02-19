@@ -13,6 +13,7 @@ using W4S.ServiceBus.Abstractions;
 using W4S.RegistrationMicroservice.Models.Users;
 using W4S.RegistrationMicroservice.Models;
 using W4SRegistrationMicroservice.API.Exceptions;
+using System.Text;
 
 namespace W4S.RegistrationMicroservice.API.Services
 {
@@ -373,21 +374,38 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
-        public List<StudentProfile> GetStudentProfiles(Guid[] ids) // this should return all users, but paginated
+        public void DeleteStudentResume(Guid studentId)
         {
-            _logger.LogInformation("Getting student profiles from the database.");
+            StudentProfile? studentProfile = null;
             try
             {
-                var studentProfile = _dbContext.StudentProfiles
-                    .Where(p => ids.Contains(p.Id));
-                return studentProfile.ToList();
+                studentProfile = _dbContext.StudentProfiles
+                        .Where(p => p.StudentId == studentId)
+                        .First();
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException.Message ?? ex.Message;
-                _logger.LogError(message, ex);
+                _logger.LogError("Could not find a profile with this Id.");
+                _logger.LogError(ex.Message, ex);
                 throw;
             }
+
+            _logger.LogInformation($"Found a student with Id: {studentId}.");
+
+            try
+            {
+                string empty = "";
+                studentProfile.ResumeFile = Encoding.UTF8.GetBytes(empty);
+                _dbContext.StudentProfiles.Update(studentProfile);
+                _dbContext.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Could not delete a resume on profile of a student with Id: {studentId}.");
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+
         }
 
         public byte[]? GetStudentResume(Guid studentId)

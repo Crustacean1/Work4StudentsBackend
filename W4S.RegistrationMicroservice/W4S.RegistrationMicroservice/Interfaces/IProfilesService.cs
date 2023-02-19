@@ -13,7 +13,7 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
         Guid CreateStudentProfile(Student student);
         StudentProfile GetStudentProfile(Guid id);
         StudentProfile GetStudentProfileByStudentId(Guid studentId);
-        List<StudentProfile> GetStudentProfiles(Guid[] ids);
+        void DeleteStudentResume(Guid studentId);
         byte[]? GetStudentResume(Guid profileId);
         byte[]? GetUserPhoto(Guid profileId);
         void UpdateEmployerProfile(UpdateEmployerProfileDtoWithId dto);
@@ -22,7 +22,6 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
         void UpdateStudentRating(UserRatingChangedEvent changedEvent);
         EmployerProfile GetEmployerProfile(Guid id);
         EmployerProfile GetEmployerProfileByEmployerId(Guid employerId);
-        List<EmployerProfile> GetEmployerProfiles(Guid[] ids);
         PaginatedList<UserDto> GetUsers(PaginatedQuery query);
     }
 }
