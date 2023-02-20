@@ -479,10 +479,10 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
 
-                if(dto.ResumeFile != null)
+                if (dto.ResumeFile != null)
                 {
                     if (Convert.ToBase64String(dto.ResumeFile) != "")
-                {
+                    {
                         studentProfile.ResumeFile = null;
                         _dbContext.StudentProfiles.Update(studentProfile);
                         _dbContext.SaveChanges();
@@ -493,7 +493,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                     }
 
                 }
-                if(dto.Image != null)
+                if (dto.Image != null)
                 {
                     if (Convert.ToBase64String(dto.Image) != "")
                     {
@@ -622,7 +622,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 _dbContext.StudentProfiles.Update(studentProfile);
                 _dbContext.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Could not delete a resume on profile of a student with Id: {studentId}.");
                 _logger.LogError(ex.Message, ex);
@@ -810,7 +810,7 @@ namespace W4S.RegistrationMicroservice.API.Services
 
                 _logger.LogInformation("Trying to update employer and employerProfile.");
 
-                if(dto.Image == null)
+                if (dto.Image == null)
                 {
                     _logger.LogInformation("This image is null, do something.");
                 }
@@ -1141,7 +1141,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                 .Select(ag => new UserDto
                 {
                     UserId = ag.User.Id,
-                    UserType = ag.Role.Description,
+                    UserType = ag.Role.Description == "Administrator" ? 2 : ag.Role.Description == "Employer" ? 1 : 0,
                     FirstName = ag.User.Name,
                     Surname = ag.User.Surname,
                     EmailAddress = ag.User.EmailAddress
