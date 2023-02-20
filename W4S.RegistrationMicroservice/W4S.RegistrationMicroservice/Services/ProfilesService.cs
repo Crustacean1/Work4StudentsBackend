@@ -189,13 +189,16 @@ namespace W4S.RegistrationMicroservice.API.Services
                                 throw new Exception($"Incorrect value, you can't start work before midnight and end it after midnight in the previous day.");
                             }
 
-                            if (dto.Availability.Any(x => item.StartHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration)))
+                            if(dto.Availability.Any(x => item.DayOfWeek == x.DayOfWeek))
                             {
-                                throw new Exception($"Overlapping with another avaiability.");
-                            }
-                            if (dto.Availability.Any(x => endOfWorkHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration)))
-                            {
-                                throw new Exception($"Overlapping with another avaiability.");
+                                if (dto.Availability.Any(x => item.StartHour > x.StartHour && endOfWorkHour <= (x.StartHour + x.Duration)))
+                                {
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
+                                if (dto.Availability.Any(x => endOfWorkHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration)))
+                                {
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
                             }
 
                             avaiability.Add(new StudentSchedule()
