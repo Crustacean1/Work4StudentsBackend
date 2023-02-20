@@ -184,7 +184,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                         {
                             var endOfWorkHour = item.StartHour + item.Duration;
 
-                            if (HOURS_IN_A_DAY > endOfWorkHour)
+                            if (HOURS_IN_A_DAY < endOfWorkHour)
                             {
                                 throw new Exception($"Incorrect value, you can't start work before midnight and end it after midnight in the previous day.");
                             }
