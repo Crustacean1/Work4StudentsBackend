@@ -20,18 +20,25 @@ namespace W4S.Gateway.Console.Posting
             this.busClient = busClient;
         }
 
-        [HttpGet]
+        [HttpGet("{studentId}/offers")]
         [Route("applications")]
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = "Student,Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
-        public async Task<ActionResult> GetJobOffers([FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetJobOffers([FromRoute] Guid studentId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
         {
-            var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
+            var currentUserId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
+            var currentUserRole = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? throw new InvalidOperationException("No user role claim defined");
+
+            if(Guid.Parse(currentUserId) != studentId || currentUserRole != "Administrator")
+            {
+                return Forbid();
+            }
+
             var query = new GetStudentApplicationsQuery
             {
                 Page = paginatedQuery.Page,
                 PageSize = paginatedQuery.PageSize,
-                StudentId = Guid.Parse(studentId)
+                StudentId = studentId
             };
 
             var response = await busClient.SendRequest<ResponseWrapper<PaginatedList<GetApplicationDto>>, GetStudentApplicationsQuery>("applications.getStudentApplications", query, cancellationToken);
