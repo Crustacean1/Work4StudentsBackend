@@ -33,6 +33,7 @@ namespace W4S.PostingService.Domain.Commands
             LogSchedules(offer.WorkingHours);
 
             var prevApplication = await applicationRepository.GetEntityAsync(a => a.OfferId == command.OfferId && a.StudentId == command.StudentId);
+
             if (offer.Status != OfferStatus.Active)
             {
                 throw new PostingException($"Student ({student.Id}) can only apply for active offer ({offer.Id})");
@@ -40,7 +41,7 @@ namespace W4S.PostingService.Domain.Commands
 
             if (prevApplication is not null)
             {
-                if (prevApplication.Status != ApplicationStatus.Withdrawn)
+                if (prevApplication.Status == ApplicationStatus.Withdrawn)
                 {
                     prevApplication.Status = ApplicationStatus.Submitted;
                     await applicationRepository.SaveAsync();
@@ -68,7 +69,6 @@ namespace W4S.PostingService.Domain.Commands
                 await applicationRepository.SaveAsync();
                 return application.Id;
             }
-
         }
 
         private double GetDistance(Address addA, Address addB)
