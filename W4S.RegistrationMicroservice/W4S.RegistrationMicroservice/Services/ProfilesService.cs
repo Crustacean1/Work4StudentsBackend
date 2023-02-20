@@ -179,28 +179,10 @@ namespace W4S.RegistrationMicroservice.API.Services
                         {
                             _logger.LogInformation("Avaiability is empty.");
                         }
+
                         List<StudentSchedule> availability = new List<StudentSchedule>();
                         foreach (var item in dto.Availability)
                         {
-                            var endOfWorkHour = item.StartHour + item.Duration;
-
-                            if (HOURS_IN_A_DAY < endOfWorkHour)
-                            {
-                                throw new Exception($"Incorrect value, you can't start work before midnight and end it after midnight in the previous day.");
-                            }
-
-                            if(dto.Availability.Any(x => item.DayOfWeek == x.DayOfWeek))
-                            {
-                                if (dto.Availability.Any(x => item.StartHour > x.StartHour && endOfWorkHour <= (x.StartHour + x.Duration)))
-                                {
-                                    throw new Exception($"Overlapping with another avaiability.");
-                                }
-                                if (dto.Availability.Any(x => endOfWorkHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration)))
-                                {
-                                    throw new Exception($"Overlapping with another avaiability.");
-                                }
-                            }
-
                             availability.Add(new StudentSchedule()
                             {
                                 Id = Guid.NewGuid(),
@@ -209,6 +191,31 @@ namespace W4S.RegistrationMicroservice.API.Services
                                 Duration = item.Duration,
                                 StudentProfileId = studentProfile.Id
                             });
+                        }
+
+                        foreach (var item in availability)
+                        {
+                            var endOfWorkHour = item.StartHour + item.Duration;
+
+                            if (HOURS_IN_A_DAY < endOfWorkHour)
+                            {
+                                throw new Exception($"Incorrect value, you can't start work before midnight and end it after midnight in the previous day.");
+                            }
+
+
+                            if (availability.Any(x => item.DayOfWeek == x.DayOfWeek && item.Id != x.Id))
+                            {
+                                if (availability.Any(x => item.StartHour > x.StartHour && endOfWorkHour <= (x.StartHour + x.Duration) && item.Id != x.Id))
+                                {
+                                    _logger.LogInformation($"Overlapping {item.StartHour} and {endOfWorkHour}.");
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
+                                if (availability.Any(x => endOfWorkHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration) && item.Id != x.Id))
+                                {
+                                    _logger.LogInformation($"Overlapping {item.StartHour} and {endOfWorkHour}.");
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
+                            }
                         }
 
                         var availabilityToRemove = _dbContext.StudentSchedules
@@ -417,34 +424,59 @@ namespace W4S.RegistrationMicroservice.API.Services
                         {
                             _logger.LogInformation("Avaiability is empty.");
                         }
-                        List<StudentSchedule> avaiability = new List<StudentSchedule>();
+
+                        List<StudentSchedule> availability = new List<StudentSchedule>();
                         foreach (var item in dto.Availability)
                         {
-                            var endOfWorkHour = item.StartHour + item.Duration;
-
-                            if (HOURS_IN_A_DAY > endOfWorkHour)
-                            {
-                                throw new Exception($"Incorrect value, you can't start work before midnight and end it after midnight in the previous day.");
-                            }
-
-                            if (dto.Availability.Any(x => item.StartHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration)))
-                            {
-                                throw new Exception($"Overlapping with another avaiability.");
-                            }
-                            if (dto.Availability.Any(x => endOfWorkHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration)))
-                            {
-                                throw new Exception($"Overlapping with another avaiability.");
-                            }
-
-                            avaiability.Add(new StudentSchedule()
+                            availability.Add(new StudentSchedule()
                             {
                                 Id = Guid.NewGuid(),
                                 StartHour = item.StartHour,
                                 DayOfWeek = item.DayOfWeek,
-                                Duration = item.Duration
+                                Duration = item.Duration,
+                                StudentProfileId = studentProfile.Id
                             });
                         }
-                        studentProfile.Avaiability = avaiability;
+
+                        foreach (var item in availability)
+                        {
+                            var endOfWorkHour = item.StartHour + item.Duration;
+
+                            if (HOURS_IN_A_DAY < endOfWorkHour)
+                            {
+                                throw new Exception($"Incorrect value, you can't start work before midnight and end it after midnight in the previous day.");
+                            }
+
+                            if (availability.Any(x => item.DayOfWeek == x.DayOfWeek && item.Id != x.Id))
+                            {
+                                if (availability.Any(x => item.StartHour > x.StartHour && endOfWorkHour <= (x.StartHour + x.Duration) && item.Id != x.Id))
+                                {
+                                    _logger.LogInformation($"Overlapping {item.StartHour} and {endOfWorkHour}.");
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
+                                if (availability.Any(x => endOfWorkHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration) && item.Id != x.Id))
+                                {
+                                    _logger.LogInformation($"Overlapping {item.StartHour} and {endOfWorkHour}.");
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
+                            }
+                        }
+
+                        var availabilityToRemove = _dbContext.StudentSchedules
+                            .Where(x => x.StudentProfileId == studentProfile.Id)
+                            .ToList();
+
+                        _logger.LogInformation($"Clearing {availabilityToRemove.Count()} schedules.");
+
+                        foreach (var item in availabilityToRemove)
+                        {
+                            _logger.LogInformation($"Schedule with id: {item.Id} is to be removed.");
+                            _dbContext.StudentSchedules.Remove(item);
+                        }
+
+                        _dbContext.StudentSchedules.AddRange(availability);
+                        _dbContext.SaveChanges();
+                        studentProfile.Avaiability = availability;
                     }
                     else
                     {
