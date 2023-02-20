@@ -20,8 +20,8 @@ namespace W4S.Gateway.Console.Posting
             this.busClient = busClient;
         }
 
-        [HttpGet("{studentId}/offers")]
-        [Route("applications")]
+        [HttpGet]
+        [Route("{studentId}/applications")]
         [Authorize(Roles = "Student,Administrator")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedList<GetApplicationDto>))]
         public async Task<ActionResult> GetJobOffers([FromRoute] Guid studentId, [FromQuery] PaginatedQuery paginatedQuery, CancellationToken cancellationToken)
