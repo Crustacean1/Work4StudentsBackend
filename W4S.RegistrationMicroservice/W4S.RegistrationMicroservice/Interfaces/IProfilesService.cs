@@ -1,4 +1,5 @@
 ﻿using W4S.PostingService.Domain.Commands;
+using W4S.PostingService.Models.Events;
 using W4S.RegistrationMicroservice.Data.Entities.Profiles;
 using W4S.RegistrationMicroservice.Data.Entities.Users;
 using W4S.RegistrationMicroservice.Models;

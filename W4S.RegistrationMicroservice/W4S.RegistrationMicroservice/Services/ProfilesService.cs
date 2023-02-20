@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using W4S.PostingService.Domain.Commands;
 using W4S.RegistrationMicroservice.API.Exceptions;
 using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Validations.Interfaces;
@@ -14,6 +13,7 @@ using W4S.RegistrationMicroservice.Models.Users;
 using W4S.RegistrationMicroservice.Models;
 using W4SRegistrationMicroservice.API.Exceptions;
 using System.Text;
+using W4S.PostingService.Models.Events;
 
 namespace W4S.RegistrationMicroservice.API.Services
 {
