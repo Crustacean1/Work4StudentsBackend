@@ -29,7 +29,7 @@ namespace W4S.Gateway.Console.Posting
             var currentUserId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
             var currentUserRole = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? throw new InvalidOperationException("No user role claim defined");
 
-            if(Guid.Parse(currentUserId) != studentId || currentUserRole != "Administrator")
+            if(Guid.Parse(currentUserId) != studentId && currentUserRole != "Administrator")
             {
                 return Forbid();
             }
