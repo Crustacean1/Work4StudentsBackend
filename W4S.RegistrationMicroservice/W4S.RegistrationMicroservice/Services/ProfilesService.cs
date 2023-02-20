@@ -179,7 +179,7 @@ namespace W4S.RegistrationMicroservice.API.Services
                         {
                             _logger.LogInformation("Avaiability is empty.");
                         }
-                        List<StudentSchedule> avaiability = new List<StudentSchedule>();
+                        List<StudentSchedule> availability = new List<StudentSchedule>();
                         foreach (var item in dto.Availability)
                         {
                             var endOfWorkHour = item.StartHour + item.Duration;
@@ -201,15 +201,31 @@ namespace W4S.RegistrationMicroservice.API.Services
                                 }
                             }
 
-                            avaiability.Add(new StudentSchedule()
+                            availability.Add(new StudentSchedule()
                             {
                                 Id = Guid.NewGuid(),
                                 StartHour = item.StartHour,
                                 DayOfWeek = item.DayOfWeek,
-                                Duration = item.Duration
+                                Duration = item.Duration,
+                                StudentProfileId = studentProfile.Id
                             });
                         }
-                        studentProfile.Avaiability = avaiability;
+
+                        var availabilityToRemove = _dbContext.StudentSchedules
+                            .Where(x => x.StudentProfileId == studentProfile.Id)
+                            .ToList();
+
+                        _logger.LogInformation($"Clearing {availabilityToRemove.Count()} schedules.");
+
+                        foreach (var item in availabilityToRemove)
+                        {
+                            _logger.LogInformation($"Schedule with id: {item.Id} is to be removed.");
+                            _dbContext.StudentSchedules.Remove(item);
+                        }
+
+                        _dbContext.StudentSchedules.AddRange(availability);
+                        _dbContext.SaveChanges();
+                        studentProfile.Avaiability = availability;
                     }
                     else
                     {
@@ -579,6 +595,7 @@ namespace W4S.RegistrationMicroservice.API.Services
             {
                 var studentProfile = _dbContext.StudentProfiles
                     .Where(p => p.StudentId == studentId)
+                    .Include(x => x.Avaiability)
                     .First();
 
                 _logger.LogInformation($"Found a profile with student id: {studentProfile.StudentId}");
