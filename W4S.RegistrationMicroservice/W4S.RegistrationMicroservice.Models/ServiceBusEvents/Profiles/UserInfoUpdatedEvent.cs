@@ -1,5 +1,4 @@
 ﻿using W4S.PostingService.Models.Entities;
-using W4S.RegistrationMicroservice.Models.Profiles;
 
 namespace W4S.RegistrationMicroservice.Models.ServiceBusEvents.Profiles
 {

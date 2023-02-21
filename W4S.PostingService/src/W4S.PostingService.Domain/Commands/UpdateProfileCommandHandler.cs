@@ -49,6 +49,12 @@ namespace W4S.PostingService.Domain.Commands
                 throw new PostingException($"No user with id: {request.ProfileEvent.UserId}", 400);
             }
 
+            foreach (var avail in request.ProfileEvent.Availability)
+            {
+                logger.LogInformation("HAAAAA: {avail} ", avail.Duration);
+            }
+
+
             mapper.Map(request.ProfileEvent, user);
             mapper.Map(request.ProfileEvent, user.Address);
 
