@@ -24,7 +24,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="W4S.PostingService.Models" Version="1.0.0" />
     <PackageReference Include="W4S.ServiceBus" Version="1.0.0" />
-    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="2.0.0" />
+    <PackageReference Include="W4S.RegistrationMicroservice.Models" Version="2.1.0" />
   </ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\W4S.RegistrationMicroservice.Data\W4S.RegistrationMicroservice.Data.csproj" />

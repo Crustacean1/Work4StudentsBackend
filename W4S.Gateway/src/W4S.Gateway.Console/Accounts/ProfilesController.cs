@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using W4S.PostingService.Models.Entities;
 using W4S.RegistrationMicroservice.Models;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Deleting;
@@ -178,6 +179,27 @@ namespace W4S.Gateway.Console.Accounts
             }
             return BadRequest(response.ExceptionMessage);
         }
+
+        [HttpPut("update/student/{studentId:Guid}/availability")]
+        [Authorize(Roles = "Student,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateStudentAvailability([FromRoute] Guid studentId, [FromBody] List<Schedule> availability,  CancellationToken cancellationToken)
+        {
+            var correctedDto = new UpdateStudentSchedule()
+            {
+                StudentId = studentId,
+                Schedule = availability
+            };
+
+            var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentSchedule>("profiles.update.student.availability", correctedDto, cancellationToken);
+            
+            if(response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
 
         [HttpPut("update/employer/{id}")]
         [Authorize(Roles = "Employer,Administrator")]

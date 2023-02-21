@@ -22,6 +22,7 @@ namespace W4S.RegistrationMicroservice.API.Interfaces
         void UpdateEmployerRating(UserRatingChangedEvent changedEvent);
         void UpdateStudentProfile(UpdateStudentProfileDtoWithId dto);
         void UpdateStudentProfilePhotosResumesCorrected(UpdateStudentProfileDtoWithId dto);
+        void UpdateStudentAvailability(UpdateStudentSchedule dto);
         void UpdateStudentRating(UserRatingChangedEvent changedEvent);
         EmployerProfile GetEmployerProfile(Guid id);
         EmployerProfile GetEmployerProfileByEmployerId(Guid employerId);

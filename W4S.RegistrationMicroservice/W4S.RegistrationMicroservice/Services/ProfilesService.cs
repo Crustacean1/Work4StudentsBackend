@@ -579,6 +579,116 @@ namespace W4S.RegistrationMicroservice.API.Services
             }
         }
 
+        public void UpdateStudentAvailability(UpdateStudentSchedule dto)
+        {
+            StudentProfile? studentProfile = null;
+
+            try
+            {
+                studentProfile = _dbContext.StudentProfiles
+                    .Where(p => p.StudentId == dto.StudentId)
+                    .First();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Could not find a profile with this Id.");
+                _logger.LogError(ex.Message, ex);
+                throw;
+            }
+
+            if (studentProfile != null)
+            {
+                _logger.LogInformation($"Found a profile with id: {studentProfile.Id}");
+                var student = _dbContext.Students
+                    .Where(e => e.Id == studentProfile.StudentId)
+                    .FirstOrDefault();
+
+                if (dto.Schedule != studentProfile.Avaiability)
+                {
+                    if (dto.Schedule != null)
+                    {
+                        if (!dto.Schedule.Any())
+                        {
+                            _logger.LogInformation("Avaiability is empty.");
+                        }
+
+                        List<StudentSchedule> availability = new List<StudentSchedule>();
+                        foreach (var item in dto.Schedule)
+                        {
+                            availability.Add(new StudentSchedule()
+                            {
+                                Id = Guid.NewGuid(),
+                                StartHour = item.StartHour,
+                                DayOfWeek = item.DayOfWeek,
+                                Duration = item.Duration,
+                                StudentProfileId = studentProfile.Id
+                            });
+                        }
+
+                        foreach (var item in availability)
+                        {
+                            var endOfWorkHour = item.StartHour + item.Duration;
+
+                            if (HOURS_IN_A_DAY < endOfWorkHour)
+                            {
+                                throw new Exception($"Incorrect value, you can't start work before midnight and end it after midnight in the previous day.");
+                            }
+
+                            if (availability.Any(x => item.DayOfWeek == x.DayOfWeek && item.Id != x.Id))
+                            {
+                                if (availability.Any(x => item.StartHour > x.StartHour && endOfWorkHour <= (x.StartHour + x.Duration) && item.Id != x.Id))
+                                {
+                                    _logger.LogInformation($"Overlapping {item.StartHour} and {endOfWorkHour}.");
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
+                                if (availability.Any(x => endOfWorkHour > x.StartHour && endOfWorkHour < (x.StartHour + x.Duration) && item.Id != x.Id))
+                                {
+                                    _logger.LogInformation($"Overlapping {item.StartHour} and {endOfWorkHour}.");
+                                    throw new Exception($"Overlapping with another avaiability.");
+                                }
+                            }
+                        }
+
+                        var availabilityToRemove = _dbContext.StudentSchedules
+                            .Where(x => x.StudentProfileId == studentProfile.Id)
+                            .ToList();
+
+                        _logger.LogInformation($"Clearing {availabilityToRemove.Count()} schedules.");
+
+                        foreach (var item in availabilityToRemove)
+                        {
+                            _logger.LogInformation($"Schedule with id: {item.Id} is to be removed.");
+                            _dbContext.StudentSchedules.Remove(item);
+                        }
+
+                        _dbContext.StudentSchedules.AddRange(availability);
+                        _dbContext.SaveChanges();
+                        studentProfile.Avaiability = availability;
+                    }
+                    else
+                    {
+                        studentProfile.Avaiability = null;
+                    }
+                }
+
+                var newEvent = new UserInfoUpdatedEvent()
+                {
+                    UserId = studentProfile.StudentId,
+                    EmailAddress = studentProfile.EmailAddress,
+                    PhoneNumber = studentProfile.PhoneNumber,
+                    Country = studentProfile.Country,
+                    Region = studentProfile.Region,
+                    City = studentProfile.City,
+                    Street = studentProfile.Street,
+                    Building = studentProfile.Building,
+                    Availability = dto.Schedule,
+                    FirstName = student?.Name,
+                    SecondName = student?.SecondName,
+                    Surname = student?.Surname
+                };
+                _client.SendEvent<UserInfoUpdatedEvent>("registration.user.profile.updated", newEvent);
+            }
+        }
         public void UpdateStudentRating(UserRatingChangedEvent changedEvent)
         {
             var studentProfile = _dbContext.StudentProfiles.Where(x => x.StudentId == changedEvent.UserId).FirstOrDefault();

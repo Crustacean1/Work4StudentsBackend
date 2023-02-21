@@ -99,6 +99,25 @@ namespace W4S.RegistrationMicroservice.API.Controllers
 
             return Task.FromResult(response);
         }
+        [BusRequestHandler("update.student.availability")]
+        public Task<StudentProfileUpdatedResponse> UpdateStudentAvailability(UpdateStudentSchedule correctedDto)
+        {
+            var response = new StudentProfileUpdatedResponse();
+
+            try
+            {
+                _profilesService.UpdateStudentAvailability(correctedDto);
+                _logger.LogInformation($"Updated profile of a student with Id {correctedDto.StudentId}.");
+            }
+            catch(Exception ex)
+            {
+                var message = ex?.InnerException?.Message ?? ex.Message;
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
+            }
+
+            return Task.FromResult(response);
+        }
 
         [BusRequestHandler("update.employer.v2")]
         public Task<StudentProfileUpdatedResponse> UpdateEmployerProfilePhotosCorrected(UpdateEmployerProfileDtoWithId correctedDto)
