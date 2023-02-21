@@ -94,28 +94,28 @@ namespace W4S.PostingService.Domain.Commands
 
         private double GetCoverage(IEnumerable<Schedule> availability, IEnumerable<Schedule> workTime)
         {
-            var matchingTime = workTime.Aggregate(0.0, (total, work) => total + availability.Sum(av => GetCoverage(av, work)));
-            //var totalTime = workTime.Sum(w => (w.End - w.Start).Duration().TotalHours);
+            var matchingTime = workTime.Sum(work => availability.Sum(av => GetCoverage(av, work)));
+            var totalTime = workTime.Sum(w => w.Duration);
 
-            logger.LogInformation("Matching time {MatchingTime} TotalTime: {TotalTime}", matchingTime, -1);
+            logger.LogInformation("Matching time {MatchingTime} TotalTime: {TotalTime}", matchingTime, totalTime);
 
-            var result = matchingTime / 1;
+            if (totalTime == 0)
+            {
+                return 0;
+            }
+            var result = matchingTime / totalTime;
             return double.IsFinite(result) ? result : -1;
         }
 
         private double GetCoverage(Schedule availability, Schedule workTime)
         {
-            /*var start = new[] { availability.Start, workTime.Start }.Max();
-            var end = new[] { availability.End, workTime.End }.Min();
+            int availabilityStart = (availability.DayOfWeek * 24) + availability.StartHour;
+            int availabilityEnd = (availability.DayOfWeek * 24) + availability.StartHour + availability.Duration;
 
-            logger.LogInformation("Time piece  {start} TotalTime: {end}", start, end);
+            int workStart = (availability.DayOfWeek * 24) + availability.StartHour;
+            int workEnd = (availability.DayOfWeek * 24) + availability.StartHour + availability.Duration;
 
-            if (start < end)
-            {
-                return (end - start).Duration().TotalHours;
-            }*/
-
-            return 0;
+            return Math.Max(0, Math.Min(workEnd, availabilityEnd) - Math.Max(availabilityStart, workStart));
         }
 
         private void LogSchedules(IEnumerable<Schedule> schedules)
