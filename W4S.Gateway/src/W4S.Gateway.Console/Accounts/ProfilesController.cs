@@ -117,6 +117,20 @@ namespace W4S.Gateway.Console.Accounts
         [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentProfileUpdatedResponse)))]
         public async Task<IActionResult> UpdateStudentProfileWithCorrectedPhotosAndResumes([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
         {
+            logger.LogInformation("Got a dto for update, availability is:");
+
+            if(dto.Availability != null)
+            {
+                foreach (var item in dto.Availability)
+                {
+                    logger.LogInformation($"Availability for day: {item.DayOfWeek}, startHour: {item.StartHour}, duration: {item.Duration}");
+                }
+            }
+            else
+            {
+                logger.LogInformation("Availability is null :((((");
+            }
+
             byte[]? image = null;
             byte[]? resume = null;
 

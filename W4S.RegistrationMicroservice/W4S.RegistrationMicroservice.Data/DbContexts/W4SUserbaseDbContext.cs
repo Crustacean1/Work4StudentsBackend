@@ -55,14 +55,10 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             // Administrator
             modelBuilder.Entity<Administrator>().Property(e => e.RoleId).IsRequired();
 
-            // University
-            modelBuilder.Entity<University>().Property(e => e.Name).HasMaxLength(100);
-
             // Domain
-            modelBuilder.Entity<Domain>().Property(e => e.EmailDomain).HasMaxLength(20);
+            modelBuilder.Entity<Domain>().Property(e => e.EmailDomain);
 
             // Company
-            modelBuilder.Entity<Company>().Property(e => e.Name).HasMaxLength(100);
             modelBuilder.Entity<Company>().Property(e => e.NIP).HasMaxLength(10);
 
             // Roles
@@ -76,15 +72,16 @@ namespace W4S.RegistrationMicroservice.Data.DbContexts
             modelBuilder.Entity<Profile>().Property(x => x.Street).IsRequired();
             modelBuilder.Entity<Profile>().Property(x => x.Building).IsRequired();
             modelBuilder.Entity<Profile>().Property(x => x.EmailAddress).IsRequired();
-            modelBuilder.Entity<Profile>().Property(x => x.PhotoFile);
-
-            modelBuilder.Entity<StudentProfile>().Property(x => x.ResumeFile);
 
             //Seeding values...
             modelBuilder.Entity<Role>().HasData(new List<Role>() { _seeder.StudentRole, _seeder.EmployerRole, _seeder.AdminRole });
             modelBuilder.Entity<Domain>().HasData(_seeder.EmailDomain);
+            modelBuilder.Entity<Domain>().HasData(new List<Domain>() { _seeder.Domain1, _seeder.Domain2, _seeder.Domain3, _seeder.Domain4 });
             modelBuilder.Entity<University>().HasData(_seeder.University);
+            modelBuilder.Entity<University>().HasData(new List<University>() { _seeder.University1, _seeder.University2, _seeder.University3, _seeder.University4 });
             modelBuilder.Entity<Company>().HasData(_seeder.Company);
+            modelBuilder.Entity<Company>().HasData(new List<Company>() { _seeder.Company1, _seeder.Company2, _seeder.Company3, 
+                _seeder.Company4, _seeder.Company5, _seeder.Company6, _seeder.Company7, _seeder.Company8, _seeder.Company9 });
 
             //modelBuilder.Entity<Domain>().HasData(_seeder.UniversityDomains);
             //modelBuilder.Entity<University>().HasData(_seeder.Universities);
