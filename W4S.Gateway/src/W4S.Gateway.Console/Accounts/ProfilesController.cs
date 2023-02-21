@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using W4S.RegistrationMicroservice.Models;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Deleting;
@@ -118,6 +119,8 @@ namespace W4S.Gateway.Console.Accounts
         public async Task<IActionResult> UpdateStudentProfileWithCorrectedPhotosAndResumes([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
         {
             logger.LogInformation("Got a dto for update, availability is:");
+
+            logger.LogInformation($"{JsonSerializer.Serialize(dto)}");
 
             if(dto.Availability != null)
             {
