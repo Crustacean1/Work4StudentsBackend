@@ -22,7 +22,9 @@ namespace W4S.ServiceBus.Rabbit
 
         public void Start()
         {
+            logger.LogInformation("Starting producer");
             channel = connection.Connection.CreateModel();
+            logger.LogInformation("Created channel: {Channel}", channel != null);
             declareExchange(channel);
         }
 

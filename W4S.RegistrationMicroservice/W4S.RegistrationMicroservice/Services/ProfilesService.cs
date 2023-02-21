@@ -1181,11 +1181,14 @@ namespace W4S.RegistrationMicroservice.API.Services
 
         public PaginatedList<UserDto> GetUsers(PaginatedQuery query)
         {
-            var totalCount = _dbContext.Users.Count();
+            var totalCount = _dbContext.Users
+                .Where(u => u.Name.Contains(query.Query) || u.Surname.Contains(query.Query) || u.EmailAddress.Contains(query.Query))
+                .Count();
 
             var roles = _dbContext.Roles.ToList();
 
             var items = _dbContext.Users
+                .Where(u => u.Name.Contains(query.Query) || u.Surname.Contains(query.Query) || u.EmailAddress.Contains(query.Query))
                 .Join(_dbContext.Roles, u => u.RoleId, r => r.Id, (User, Role) => new { User, Role })
                 .OrderBy(ag => ag.User.Surname + ag.User.Name)
                 .Skip((query.Page - 1) * query.PageSize)

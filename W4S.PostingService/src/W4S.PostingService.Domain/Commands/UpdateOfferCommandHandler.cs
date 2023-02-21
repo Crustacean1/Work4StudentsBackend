@@ -12,12 +12,14 @@ namespace W4S.PostingService.Domain.Commands
 {
     public class UpdateOfferCommandHandler : CommandHandlerBase, IRequestHandler<UpdateOfferCommand, Guid>
     {
+        private readonly IApplicationRepository applicationRepository;
         private readonly ILogger<UpdateOfferCommandHandler> logger;
         private readonly IMapper mapper;
         private readonly IOfferRepository offerRepository;
         private readonly IRepository<Recruiter> recruiterRepository;
+        private readonly AddressApi addressApi;
 
-        public UpdateOfferCommandHandler(IOfferRepository offerRepository, ILogger<UpdateOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository)
+        public UpdateOfferCommandHandler(IOfferRepository offerRepository, ILogger<UpdateOfferCommandHandler> logger, IRepository<Recruiter> recruiterRepository, IApplicationRepository applicationRepository, AddressApi addressApi)
         {
             MapperConfiguration conf = new(builder => builder.CreateMap<UpdateOfferDto, JobOffer>()
                     .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)));
@@ -25,6 +27,8 @@ namespace W4S.PostingService.Domain.Commands
             this.offerRepository = offerRepository;
             this.logger = logger;
             this.recruiterRepository = recruiterRepository;
+            this.applicationRepository = applicationRepository;
+            this.addressApi = addressApi;
         }
 
         public async Task<Guid> Handle(UpdateOfferCommand command, CancellationToken cancellationToken)
@@ -41,8 +45,18 @@ namespace W4S.PostingService.Domain.Commands
             }
 
             mapper.Map(newOffer, previousOffer);
+            await addressApi.UpdateAddress(previousOffer.Address);
 
             await offerRepository.SaveAsync();
+
+            var applications = await applicationRepository.GetApplicationsWithEntities(a => a.OfferId == previousOffer.Id);
+
+            foreach (var application in applications)
+            {
+                application.ComputeDistance();
+            }
+
+            await applicationRepository.SaveAsync();
             return previousOffer.Id;
         }
     }

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using W4S.PostingService.Domain.Entities;
 using W4S.PostingService.Domain.Repositories;
@@ -56,6 +57,14 @@ namespace W4S.PostingService.Persistence.Repositories
                 Items = applications,
                 TotalCount = totalCount
             };
+        }
+        public async Task<IEnumerable<Application>> GetApplicationsWithEntities(Expression<Func<Application, bool>> selector)
+        {
+            return await context.Set<Application>()
+                .Include(a => a.Offer)
+                .Include(a => a.Student)
+                .Where(selector)
+                .ToListAsync();
         }
     }
 }
