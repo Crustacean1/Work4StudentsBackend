@@ -1,47 +1,51 @@
 using AutoMapper;
-using W4S.PostingService.Domain.Abstractions;
+using MediatR;
 using W4S.PostingService.Domain.Entities;
-using W4S.RegistrationMicroservice.Models.ServiceBusEvents.Registration;
+using W4S.PostingService.Models.Commands;
+using W4S.PostingService.Models.Events;
 using W4S.ServiceBus.Attributes;
 
 namespace W4S.PostingService.Console.Handlers
 {
-    [BusService("registered")]
+    [BusService("registration")]
     public class ProfileIntegrationHandler
     {
         private readonly ILogger<ProfileIntegrationHandler> logger;
-        private readonly IProfileIntegrationService integrationService;
-        private readonly IMapper mapper;
+        private readonly ISender sender;
 
-        public ProfileIntegrationHandler(ILogger<ProfileIntegrationHandler> logger, IProfileIntegrationService integrationService)
+        public ProfileIntegrationHandler(ILogger<ProfileIntegrationHandler> logger, ISender sender)
         {
             this.logger = logger;
-            this.integrationService = integrationService;
-            logger.LogInformation("Integration handler created");
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<StudentRegisteredEvent, Applicant>();
+                cfg.CreateMap<StudentRegisteredEvent, Student>();
                 cfg.CreateMap<EmployerRegisteredEvent, Recruiter>();
             });
-            mapper = mapperConfig.CreateMapper();
+            this.sender = sender;
         }
 
-        [BusEventHandler("student")]
-        public async Task OnStudentRegistration(StudentRegisteredEvent registrationEvent)
+        [BusEventHandler("student.registered")]
+        public async Task OnStudentRegistration(StudentRegisteredEvent student)
         {
-            logger.LogInformation("Adding new applicant with id: {Id}", registrationEvent.Id);
+            logger.LogInformation("Adding new applicant with id: {Id}", student.Id);
 
-            var applicant = mapper.Map<Applicant>(registrationEvent);
-            await integrationService.UpdateApplicant(applicant);
+            await sender.Send(new RegisterStudentCommand { Student = student });
         }
 
-        [BusEventHandler("employer")]
-        public async Task OnEmployerRegistration(EmployerRegisteredEvent registrationEvent)
+        [BusEventHandler("employer.registered")]
+        public async Task OnEmployerRegistration(EmployerRegisteredEvent recruiter)
         {
-            logger.LogInformation("Adding new employer with id: {Id}", registrationEvent.Id);
-            var recruiter = mapper.Map<Recruiter>(registrationEvent);
-            await integrationService.UpdateRecruiter(recruiter);
+            logger.LogInformation("Adding new employer with id: {Id} from company {CompanyId}", recruiter.Id, recruiter.Company.Id);
+
+            await sender.Send(new RegisterRecruiterCommand { Recruiter = recruiter });
+        }
+
+        [BusEventHandler("user.profile.updated")]
+        public async Task OnProfileUpdate(UserChangedEvent updateEvent)
+        {
+            logger.LogInformation("Updating profile of user {User}", updateEvent.UserId);
+            await sender.Send(new UpdateProfileCommand { ProfileEvent = updateEvent });
         }
     }
 }

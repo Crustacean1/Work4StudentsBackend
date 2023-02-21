@@ -65,11 +65,22 @@ namespace W4S.ServiceBus.Package
                 throw new TimeoutException($"Timeout while waiting for: {topic}");
             }
 
-            logger.LogInformation("Received response: {Response}", responseBody);
+            var truncated = responseBody?.Length > 1024;
+            var redactedMessage = responseBody?.Substring(0, truncated ? 1024 : responseBody.Length) ?? "<NULL>";
 
-            dynamic? response = JsonSerializer.Deserialize(responseBody, typeof(TResponse));
+            logger.LogInformation("Received response: {Response} {IsTruncated}", redactedMessage, truncated ? "(truncated)" : "");
 
-            return response is null ? throw new InvalidOperationException("Response is empty") : (TResponse)response;
+            dynamic? rawResponse = JsonSerializer.Deserialize(responseBody, typeof(MessageWrapper<TResponse>));
+
+            if (rawResponse is MessageWrapper<TResponse> response)
+            {
+                if (string.IsNullOrEmpty(response.Error))
+                {
+                    return response.Message;
+                }
+                throw new InvalidOperationException(response.Error);
+            }
+            throw new InvalidOperationException("Response is empty");
         }
 
         private void OnResponse(object? _, MessageReceivedEventArgs args)

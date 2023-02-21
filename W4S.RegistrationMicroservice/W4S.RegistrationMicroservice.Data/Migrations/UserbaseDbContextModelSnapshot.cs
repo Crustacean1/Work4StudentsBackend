@@ -40,16 +40,42 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Building")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<byte[]>("Image")
-                        .HasMaxLength(5242880)
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("PhotoFile")
                         .HasColumnType("bytea");
+
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -58,23 +84,29 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Users.Rating", b =>
+            modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.StudentSchedule", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("RatingValue")
-                        .HasColumnType("numeric");
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("StudentId")
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StartHour")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("StudentProfileId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("StudentProfileId");
 
-                    b.ToTable("Ratings");
+                    b.ToTable("StudentSchedules");
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Company", b =>
@@ -88,17 +120,70 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.ToTable("Companies");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("da7110ab-5dea-4bdf-b43a-5ba4df109ef0"),
+                            Id = new Guid("bf38504d-b602-409e-8e46-c3d9ee5e9b59"),
                             NIP = "5283121250",
                             Name = "Empty firm in Poland"
+                        },
+                        new
+                        {
+                            Id = new Guid("8bf4d287-15f1-4582-b1ce-4c72c0412ba2"),
+                            NIP = "1070008183",
+                            Name = "1 A PHARMA GMBH SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ ODDZIAŁ W POLSCE W LIKWIDACJI"
+                        },
+                        new
+                        {
+                            Id = new Guid("33773135-6802-4846-987b-a3cc467b8403"),
+                            NIP = "1130103940",
+                            Name = "1) DIAMENT JOLANTA JAROSZEK 2) Jolanta Jaroszek wspólnik spółki cywilnej RJ CAR"
+                        },
+                        new
+                        {
+                            Id = new Guid("a380a16e-a882-4507-a03f-bf7860bcb5cf"),
+                            NIP = "759114060",
+                            Name = "Avanti Capital Leasing"
+                        },
+                        new
+                        {
+                            Id = new Guid("f3a3b1c6-0ee5-404c-ad0a-533ccb2b0345"),
+                            NIP = "951643196",
+                            Name = "Agencja Ochrony Pracy Kwiatkowska"
+                        },
+                        new
+                        {
+                            Id = new Guid("15433e9b-8a11-4fd1-a9d4-4fb821e07e88"),
+                            NIP = "1040000426",
+                            Name = "ACHIMA POLSTERMOBELFABRIK GMBH,SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ"
+                        },
+                        new
+                        {
+                            Id = new Guid("754817e1-be46-461b-93cf-137f65e794fd"),
+                            NIP = "1050000244",
+                            Name = "AUDACON SPÓŁKA AKCYJNA ODDZIAŁ W POLSCE"
+                        },
+                        new
+                        {
+                            Id = new Guid("ba393e12-c0f5-4b07-bf52-8198f85b9d5b"),
+                            NIP = "1010000108",
+                            Name = "MAAS HOLDING GMBH (SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ) ODDZIAŁ W POLSCE"
+                        },
+                        new
+                        {
+                            Id = new Guid("8fab8652-e890-4824-9c72-40931d2c87aa"),
+                            NIP = "1181816779",
+                            Name = "Medical Care24 Ewelina Dąbrowska"
+                        },
+                        new
+                        {
+                            Id = new Guid("171404f4-53a9-478e-8d66-c3ee5bba0d94"),
+                            NIP = "9690207610",
+                            Name = "Willa Avita Joanna Zięba"
                         });
                 });
 
@@ -108,16 +193,35 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
 
                     b.Property<string>("EmailDomain")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("text");
 
                     b.ToTable("UniversitiesDomains");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("28e3fba5-6950-4ea6-af77-14f214ad5ac0"),
+                            Id = new Guid("4ae80416-5942-4990-9de2-1d720ce22a77"),
                             EmailDomain = "@polsl.pl"
+                        },
+                        new
+                        {
+                            Id = new Guid("cbbaf663-103e-4bd8-a82a-b8461aa2d4d7"),
+                            EmailDomain = "@student.agh.edu.pl"
+                        },
+                        new
+                        {
+                            Id = new Guid("11a0f4e3-0952-4a57-b7cd-c008835ce6a8"),
+                            EmailDomain = "@student.polsl.pl"
+                        },
+                        new
+                        {
+                            Id = new Guid("ee29a480-6f02-4677-993d-5cfd1af7c707"),
+                            EmailDomain = "@student.uek.krakow.pl"
+                        },
+                        new
+                        {
+                            Id = new Guid("5cde1509-686c-4a20-b6b0-ce64be33187f"),
+                            EmailDomain = "@student.uj.edu.pl"
                         });
                 });
 
@@ -130,8 +234,7 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.HasIndex("EmailDomainId");
 
@@ -140,9 +243,33 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e47ff4f4-1a4c-4959-9e79-107cfd6cff50"),
-                            EmailDomainId = new Guid("28e3fba5-6950-4ea6-af77-14f214ad5ac0"),
+                            Id = new Guid("e075c623-840d-4e06-876e-e84bdc70981c"),
+                            EmailDomainId = new Guid("4ae80416-5942-4990-9de2-1d720ce22a77"),
                             Name = "Politechnika Śląska"
+                        },
+                        new
+                        {
+                            Id = new Guid("1762f694-000d-42b5-b857-cddca8557528"),
+                            EmailDomainId = new Guid("cbbaf663-103e-4bd8-a82a-b8461aa2d4d7"),
+                            Name = "AGH University of Science and Technology"
+                        },
+                        new
+                        {
+                            Id = new Guid("28fa738e-0a16-4109-9f07-0d7c4d541989"),
+                            EmailDomainId = new Guid("11a0f4e3-0952-4a57-b7cd-c008835ce6a8"),
+                            Name = "Silesian Technical University of Gliwice"
+                        },
+                        new
+                        {
+                            Id = new Guid("ae95f6f6-d8a9-4f3c-ac31-ebc9f2a995f6"),
+                            EmailDomainId = new Guid("ee29a480-6f02-4677-993d-5cfd1af7c707"),
+                            Name = "Cracow University of Economics"
+                        },
+                        new
+                        {
+                            Id = new Guid("e69d0d95-220e-4ea1-911f-49e65f212c3d"),
+                            EmailDomainId = new Guid("5cde1509-686c-4a20-b6b0-ce64be33187f"),
+                            Name = "Jagellonian University"
                         });
                 });
 
@@ -159,17 +286,17 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f0a976e5-4942-44a7-a4e5-bf1890ffda6d"),
+                            Id = new Guid("c13258e5-3f37-4e6f-a2d9-0db2a8ba7ba3"),
                             Description = "Student"
                         },
                         new
                         {
-                            Id = new Guid("a6de2522-dd2b-4e16-a5c1-6a76dd1a5ab1"),
+                            Id = new Guid("91f91245-66cd-4f18-a7d3-f65a4d5e0099"),
                             Description = "Employer"
                         },
                         new
                         {
-                            Id = new Guid("bad026f2-09aa-445d-b1bf-620ca9d48949"),
+                            Id = new Guid("6cf93dad-7116-444c-a8f1-5d44376dcd77"),
                             Description = "Administrator"
                         });
                 });
@@ -177,6 +304,18 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Users.User", b =>
                 {
                     b.HasBaseType("W4S.RegistrationMicroservice.Data.Entities.Entity");
+
+                    b.Property<string>("Building")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("EmailAddress")
                         .IsRequired()
@@ -193,8 +332,12 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
@@ -202,6 +345,10 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.Property<string>("SecondName")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -213,59 +360,37 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.CompanyProfile", b =>
-                {
-                    b.HasBaseType("W4S.RegistrationMicroservice.Data.Entities.Profiles.Profile");
-
-                    b.Property<Guid>("CompanyId")
-                        .HasColumnType("uuid");
-
-                    b.HasIndex("CompanyId");
-
-                    b.ToTable("CompanyProfiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("d3b15d3c-f906-47d5-b9d3-d14de7f9454c"),
-                            Description = "Greatest company there is.",
-                            EntityId = new Guid("da7110ab-5dea-4bdf-b43a-5ba4df109ef0"),
-                            Image = new byte[] { 0, 0, 0, 0 },
-                            CompanyId = new Guid("da7110ab-5dea-4bdf-b43a-5ba4df109ef0")
-                        });
-                });
-
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.EmployerProfile", b =>
                 {
                     b.HasBaseType("W4S.RegistrationMicroservice.Data.Entities.Profiles.Profile");
 
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("EmployerId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("PositionName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasIndex("EmployerId");
 
                     b.ToTable("EmployerProfiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("3c3ab5ea-9230-4c35-acac-dfba74865ee7"),
-                            Description = "My company is the best.",
-                            EntityId = new Guid("99a7e609-bc6e-4229-9c36-5fd413329a2d"),
-                            Image = new byte[] { 0, 0, 0, 0 },
-                            EmployerId = new Guid("99a7e609-bc6e-4229-9c36-5fd413329a2d")
-                        });
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.StudentProfile", b =>
                 {
                     b.HasBaseType("W4S.RegistrationMicroservice.Data.Entities.Profiles.Profile");
 
-                    b.Property<decimal>("Rating")
-                        .HasColumnType("numeric");
+                    b.Property<string>("Education")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Experience")
+                        .HasColumnType("text");
 
                     b.Property<byte[]>("ResumeFile")
-                        .HasMaxLength(5242880)
                         .HasColumnType("bytea");
 
                     b.Property<Guid>("StudentId")
@@ -274,17 +399,6 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("StudentProfiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b62ba221-2f57-4c58-920a-08d1e7def693"),
-                            Description = "My university is the best.",
-                            EntityId = new Guid("0a49ca2b-deca-477e-b598-e1a1ce8cfd57"),
-                            Image = new byte[] { 0, 0, 0, 0 },
-                            Rating = 0m,
-                            StudentId = new Guid("0a49ca2b-deca-477e-b598-e1a1ce8cfd57")
-                        });
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Users.Administrator", b =>
@@ -296,13 +410,18 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ac2200c2-b3e1-4ef9-bde7-6d77fa525f2b"),
+                            Id = new Guid("99ef9de8-2af7-4392-8971-106b2eb9cb83"),
+                            Building = "2a",
+                            City = "Gliwice",
+                            Country = "Poland",
                             EmailAddress = "someAdmin@gmail.com",
                             Name = "Admin",
                             PasswordHash = "61646d696e31323334",
                             PhoneNumber = "2137",
-                            RoleId = new Guid("bad026f2-09aa-445d-b1bf-620ca9d48949"),
+                            Region = "Silesia",
+                            RoleId = new Guid("6cf93dad-7116-444c-a8f1-5d44376dcd77"),
                             SecondName = "Adminsky",
+                            Street = "Akademicka",
                             Surname = "Administator"
                         });
                 });
@@ -321,21 +440,6 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Employers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("99a7e609-bc6e-4229-9c36-5fd413329a2d"),
-                            EmailAddress = "someEmployer@gmail.com",
-                            Name = "Adam",
-                            PasswordHash = "61646d696e",
-                            PhoneNumber = "2137",
-                            RoleId = new Guid("a6de2522-dd2b-4e16-a5c1-6a76dd1a5ab1"),
-                            SecondName = "Szef",
-                            Surname = "Małysz",
-                            CompanyId = new Guid("da7110ab-5dea-4bdf-b43a-5ba4df109ef0"),
-                            PositionName = "Majster HR"
-                        });
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Users.Student", b =>
@@ -348,31 +452,17 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                     b.HasIndex("UniversityId");
 
                     b.ToTable("Students");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("0a49ca2b-deca-477e-b598-e1a1ce8cfd57"),
-                            EmailAddress = "student.debil@polsl.pl",
-                            Name = "John",
-                            PasswordHash = "61646d696e",
-                            PhoneNumber = "+2137",
-                            RoleId = new Guid("f0a976e5-4942-44a7-a4e5-bf1890ffda6d"),
-                            SecondName = "Karol",
-                            Surname = "Pavulon",
-                            UniversityId = new Guid("e47ff4f4-1a4c-4959-9e79-107cfd6cff50")
-                        });
                 });
 
-            modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Users.Rating", b =>
+            modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.StudentSchedule", b =>
                 {
-                    b.HasOne("W4S.RegistrationMicroservice.Data.Entities.Users.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
+                    b.HasOne("W4S.RegistrationMicroservice.Data.Entities.Profiles.StudentProfile", "StudentProfile")
+                        .WithMany("Avaiability")
+                        .HasForeignKey("StudentProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
+                    b.Navigation("StudentProfile");
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.University", b =>
@@ -410,17 +500,6 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.CompanyProfile", b =>
-                {
-                    b.HasOne("W4S.RegistrationMicroservice.Data.Entities.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.EmployerProfile", b =>
@@ -498,6 +577,11 @@ namespace W4S.RegistrationMicroservice.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("University");
+                });
+
+            modelBuilder.Entity("W4S.RegistrationMicroservice.Data.Entities.Profiles.StudentProfile", b =>
+                {
+                    b.Navigation("Avaiability");
                 });
 #pragma warning restore 612, 618
         }

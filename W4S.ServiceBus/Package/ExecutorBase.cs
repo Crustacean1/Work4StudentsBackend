@@ -28,44 +28,49 @@ namespace W4S.ServiceBus.Package
 
         public abstract void Start();
 
-        protected async Task<object?> ExecuteMethod(dynamic arg)
+        protected async Task<MessageWrapper<object?>> ExecuteMethod(dynamic arg)
         {
-            using (var scope = provider.CreateScope())
-            {
-                var handler = scope.ServiceProvider.GetRequiredService(methodInfo.DeclaringType!);
-                logger.LogInformation("Executing handler method: {Name} with return type: {Type}", methodInfo.Name, methodInfo.ReturnType.Name);
-                return await InvokeHandler(handler, arg);
-            }
-        }
+            MessageWrapper<object?> wrapper = new();
 
-        private async Task<object?> InvokeHandler(object handler, dynamic arg)
-        {
             try
             {
-                object? result = methodInfo.Invoke(handler, new object[] { arg });
-
-                if (result is Task task)
+                using (var scope = provider.CreateScope())
                 {
-                    await task;
-                    return task.GetType().GetProperty("Result")!.GetValue(task, null);
-                }
-                else
-                {
-                    return result;
+                    logger.LogInformation("Executing handler method: {Name} with return type: {Type}", methodInfo.Name, methodInfo.ReturnType.Name);
+                    var handler = scope.ServiceProvider.GetRequiredService(methodInfo.DeclaringType!);
+                    wrapper.Message = await InvokeHandler(handler, arg);
+                    logger.LogInformation("Method executed");
                 }
             }
             catch (Exception e)
             {
-                logger.LogError("Execution error: {Error} {InnerError} {StackTrace}", e.Message, e.InnerException?.Message ?? "<None>", e.StackTrace);
-                throw new InvalidOperationException("Failed to execute handler");
+                wrapper.Error = $"{e.Message}\nInner Exception:\n{e.InnerException?.Message ?? "<No internal exception>"}\nStackTrace:\n{e.StackTrace}";
+                logger.LogInformation("Failed to execute method: {Error}", wrapper.Error ?? "No error?");
+            }
+
+            return wrapper;
+        }
+
+        private async Task<object?> InvokeHandler(object handler, dynamic arg)
+        {
+            object? result = methodInfo.Invoke(handler, new object[] { arg });
+
+            if (result is Task task)
+            {
+                await task;
+                return task.GetType().GetProperty("Result")!.GetValue(task, null);
+            }
+            else
+            {
+                return result;
             }
         }
 
-        protected dynamic ParseMessageBody(ReadOnlySpan<byte> body)
+        protected (dynamic, string) ParseMessageBody(ReadOnlySpan<byte> body)
         {
             string argBody = Encoding.UTF8.GetString(body);
             var paramType = methodInfo.GetParameters().SingleOrDefault()!.ParameterType;
-            return JsonSerializer.Deserialize(argBody, paramType) ?? throw new InvalidOperationException("OnRequest: Received invalid formatted JSON event, aborting...");
+            return (JsonSerializer.Deserialize(argBody, paramType) ?? throw new InvalidOperationException("OnRequest: Received invalid formatted JSON event, aborting..."), argBody);
         }
 
         protected abstract void OnMessage(object? _, MessageReceivedEventArgs args);

@@ -2,8 +2,13 @@
 
   <ItemGroup>
     <PackageReference Include="Automapper" Version="12.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-    <PackageReference Include="W4S.RegistrationMicroService.Models" Version="2.2.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSql" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\W4S.PostingService.Models\W4S.PostingService.Models.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

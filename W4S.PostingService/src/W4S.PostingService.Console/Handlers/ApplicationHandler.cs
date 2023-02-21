@@ -1,77 +1,73 @@
-using W4S.PostingService.Domain.Abstractions;
-using W4S.PostingService.Domain.Commands;
-using W4S.PostingService.Domain.Queries;
-using W4S.PostingService.Domain.Responses;
-using W4S.PostingService.Domain.ValueType;
+using MediatR;
+using W4S.PostingService.Models.Commands;
+using W4S.PostingService.Models.Queries;
+using W4S.PostingService.Models.Transfer;
 using W4S.ServiceBus.Attributes;
 
 namespace W4S.PostingService.Console.Handlers
 {
-    [BusService("application")]
-    public class ApplicationHandler
+    [BusService("applications")]
+    public class ApplicationHandler : HandlerBase
     {
-        private readonly ILogger<ApplicationHandler> logger;
-        private readonly IApplicationService applicationService;
 
-        public ApplicationHandler(ILogger<ApplicationHandler> logger, IApplicationService applicationService)
+        public ApplicationHandler(ILogger<ApplicationHandler> logger, ISender sender) : base(sender, logger)
         {
-            this.logger = logger;
-            this.applicationService = applicationService;
         }
 
-        [BusRequestHandler("apply")]
-        public async Task<ApplicationSubmittedDto> OnJobApplication(ApplyForJobCommand jobApplication)
+        [BusRequestHandler("submitApplication")]
+        public async Task<ResponseWrapper<Guid>> OnSubmitApplication(SubmitApplicationCommand command)
         {
-            logger.LogInformation("Applicant {Applicant} applies for {JobOffer} offer", jobApplication.ApplicantId, jobApplication.OfferId);
+            logger.LogInformation("Applicant {Applicant} applies for {JobOffer} offer", command.StudentId, command.OfferId);
 
-            Notification notification = new();
-            var newApplicationId = await applicationService.Submit(jobApplication, notification);
-
-            return new ApplicationSubmittedDto
-            {
-                Id = newApplicationId,
-                Errors = notification.ErrorMessages.ToList()
-            };
+            return await ExecuteHandler(command, 201);
         }
 
-        [BusRequestHandler("accept")]
-        public async Task<ApplicationAcceptedDto> OnApplicationAccepted(AcceptApplicationDto acceptDto)
+        [BusRequestHandler("withdrawApplication")]
+        public async Task<ResponseWrapper<Guid>> OnWithdrawApplication(WithdrawApplicationCommand command)
         {
-            logger.LogInformation("Recruiter {Recruiter} accepts application {Application}", acceptDto.RecruiterId, acceptDto.ApplicationId);
+            logger.LogInformation("Applicant {Applicant} withdraws application {Application}", command.StudentId, command.ApplicationId);
 
-            Notification notification = new();
-            applicationService.Accept(acceptDto, notification);
-            return new ApplicationAcceptedDto();
+            return await ExecuteHandler(command, 200);
         }
 
-        [BusRequestHandler("list.offer")]
-        public async Task<ApplicationListResponse> OnJobApplicationList(ListOfferApplicationsQuery listQuery)
+        [BusRequestHandler("acceptApplication")]
+        public async Task<ResponseWrapper<Guid>> OnAcceptApplication(AcceptApplicationCommand command)
         {
-            logger.LogInformation("Lising applications for job {Job}", listQuery.OfferId);
-            Notification notification = new();
+            logger.LogInformation("Recruiter {Recruiter} accepts application {Application}", command.RecruiterId, command.ApplicationId);
 
-            return new ApplicationListResponse
-            {
-                Applications = (await applicationService.GetOfferApplications(listQuery.OfferId,
-                                                                              listQuery.Page,
-                                                                              listQuery.PageSize,
-                                                                              notification)).ToList()
-            };
+            return await ExecuteHandler(command, 200);
         }
 
-        [BusRequestHandler("list.applicant")]
-        public async Task<ApplicationListResponse> OnApplicantApplicationList(ListApplicantApplicationsQuery listQuery)
+        [BusRequestHandler("rejectApplication")]
+        public async Task<ResponseWrapper<Guid>> OnRejectApplication(RejectApplicationCommand command)
         {
-            logger.LogInformation("Lising applications for job {Job}", listQuery.ApplicantId);
-            Notification notification = new();
+            logger.LogInformation("Recruiter {Recruiter} accepts application {Application}", command.RecruiterId, command.ApplicationId);
 
-            return new ApplicationListResponse
-            {
-                Applications = (await applicationService.GetApplicantApplications(listQuery.ApplicantId,
-                                                                                  listQuery.Page,
-                                                                                  listQuery.PageSize,
-                                                                                  notification)).ToList()
-            };
+            return await ExecuteHandler(command, 200);
+        }
+
+        [BusRequestHandler("getOfferApplications")]
+        public async Task<ResponseWrapper<PaginatedList<GetApplicationDto>>> OnGetOfferApplications(GetOfferApplicationsQuery query)
+        {
+            logger.LogInformation("Listing applications for offer {Offer}", query.OfferId);
+
+            return await ExecuteHandler(query, 200);
+        }
+
+        [BusRequestHandler("getStudentApplications")]
+        public async Task<ResponseWrapper<PaginatedList<GetApplicationDto>>> OnGetStudentApplications(GetStudentApplicationsQuery query)
+        {
+            logger.LogInformation("Listing applications of student: {Student}", query.StudentId);
+
+            return await ExecuteHandler(query, 200);
+        }
+
+        [BusRequestHandler("deleteApplication")]
+        public async Task<ResponseWrapper<Guid>> DeleteApplication(DeleteApplicationCommand command)
+        {
+            logger.LogInformation("Deleting application {Application}", command.ApplicationId);
+
+            return await ExecuteHandler(command, 200);
         }
     }
 }

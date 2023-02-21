@@ -28,13 +28,21 @@ namespace W4SRegistrationMicroservice.API.Controllers
 
             try
             {
-                response.JwtTokenValue = _signingInService.SignIn(credentialsDto);
-                response.UserEmail = credentialsDto.EmailAddress;
+                response = _signingInService.SignIn(credentialsDto);
             }
             catch (UserNotFoundException ex)
             {
-                _logger.LogError(ex.Message, ex);
-                response.ExceptionMessage = ex.Message;
+                string message = string.Empty;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
+                _logger.LogError(message, ex);
+                response.ExceptionMessage = message;
             }
 
             return Task.FromResult(response);

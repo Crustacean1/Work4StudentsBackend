@@ -35,7 +35,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 var registrationEvent = _registrationService.RegisterStudent(dto);
                 response.Id = registrationEvent.Id;
 
-                _busClient.SendEvent("registered.student", registrationEvent);
+                _busClient.SendEvent("registration.student.registered", registrationEvent);
 
                 _logger.LogInformation("Registered student with email {Email} and Id: {Id}",
                                        registrationEvent.EmailAddress,
@@ -43,7 +43,15 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException?.Message ?? ex.Message;
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
                 _logger.LogError("Error during student registration: {Error}, {Exception}", message, ex);
                 response.ExceptionMessage = message;
             }
@@ -61,7 +69,7 @@ namespace W4S.RegistrationMicroservice.API.Controllers
                 var registrationEvent = _registrationService.RegisterEmployer(dto);
                 response.Id = registrationEvent.Id;
 
-                _busClient.SendEvent("registered.employer", registrationEvent);
+                _busClient.SendEvent("registration.employer.registered", registrationEvent);
 
                 _logger.LogInformation("Registered employer with email {Email} and Id: {Id}",
                                        registrationEvent.EmailAddress,
@@ -69,7 +77,15 @@ namespace W4S.RegistrationMicroservice.API.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.InnerException?.Message ?? ex.Message;
+                string message;
+                if (ex.InnerException != null)
+                {
+                    message = ex.InnerException.Message;
+                }
+                else
+                {
+                    message = ex.Message;
+                }
                 _logger.LogError("Error during employer registration: {Error}, {Exception}", message, ex);
                 response.ExceptionMessage = message;
             }

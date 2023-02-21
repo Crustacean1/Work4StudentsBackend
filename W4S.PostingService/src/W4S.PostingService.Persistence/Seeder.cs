@@ -1,6 +1,6 @@
 using W4S.PostingService.Domain.Entities;
-using W4S.PostingService.Domain.Models;
 using W4S.PostingService.Domain.ValueType;
+using W4S.PostingService.Models.Entities;
 
 namespace W4S.PostingService.Persistence
 {
@@ -8,7 +8,7 @@ namespace W4S.PostingService.Persistence
     {
         public Company FakeCompany { get; set; }
         public Recruiter FakeRecruiter { get; set; }
-        public Applicant FakeApplicant { get; set; }
+        public Student FakeStudent { get; set; }
         public Application FakeApplication { get; set; }
         public JobOffer FakeJobOffer { get; set; }
         public Address FakeAddress { get; set; }
@@ -34,9 +34,8 @@ namespace W4S.PostingService.Persistence
             FakeCompany = new Company
             {
                 Id = Guid.NewGuid(),
-                Name = "Company",
+                Name = "Comarch",
                 NIP = "7821160955",
-                Description = "Hmmmmmm",
             };
 
             FakeRecruiter = new Recruiter
@@ -50,21 +49,7 @@ namespace W4S.PostingService.Persistence
                 CompanyId = FakeCompany.Id,
             };
 
-            FakeJobOffer =
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    RecruiterId = FakeRecruiter.Id,
-                    Title = "Opening for position A",
-                    Description = "Fancy job",
-                    Status = JobOffer.OfferStatus.Active,
-                    Role = "Position A",
-                    Openings = 21,
-                    WorkingHours = new List<Schedule>(),
-                    Applications = new List<Application>(),
-                };
-
-            FakeApplicant = new Applicant()
+            FakeStudent = new Student()
             {
                 FirstName = "John",
                 Surname = "Smith",
@@ -76,15 +61,39 @@ namespace W4S.PostingService.Persistence
                 Applications = new List<Application>(),
             };
 
+            var fakeJobOfferId = Guid.NewGuid();
+            FakeJobOffer =
+                new()
+                {
+                    Id = fakeJobOfferId,
+                    RecruiterId = FakeRecruiter.Id,
+                    Title = "Opening for position A",
+                    Description = "Fancy job",
+                    Status = OfferStatus.Active,
+                    Role = "Position A",
+                    WorkingHours = new List<Schedule>(),
+                    Applications = new List<Application>(),
+                    Reviews = new List<OfferReview>{
+                        new OfferReview
+                        {
+                            Title = "Recruitment process",
+                            Message = "Went great",
+                            OfferId = fakeJobOfferId,
+                            StudentId = FakeStudent.Id,
+                            Rating = 5.0m
+                        }
+                    }
+                };
+
             FakeApplication = new Application
             {
                 Id = Guid.NewGuid(),
                 OfferId = FakeJobOffer.Id,
-                ApplicantId = FakeApplicant.Id,
-                WorkTimeOverlap = 0.0M,
-                Proximity = 1.0M,
-                LastChange = DateTime.Now.ToUniversalTime(),
-                Status = Application.ApplicationStatus.Submitted,
+                StudentId = FakeStudent.Id,
+                WorkTimeOverlap = 0.0,
+                Distance = 0.0,
+                LastChanged = DateTime.Now.ToUniversalTime(),
+                Status = ApplicationStatus.Submitted,
                 Message = "I want to work pls"
             };
         }

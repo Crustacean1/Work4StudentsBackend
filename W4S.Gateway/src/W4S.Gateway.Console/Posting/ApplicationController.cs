@@ -1,92 +1,146 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using W4S.ServiceBus.Abstractions;
 using W4S.PostingService.Domain.Commands;
-using W4S.PostingService.Domain.Responses;
-using W4S.PostingService.Domain.Queries;
+using W4S.PostingService.Domain.Dto;
+using W4S.PostingService.Models.Commands;
+using W4S.ServiceBus.Abstractions;
 
 namespace W4S.Gateway.Console.Posting
 {
     [ApiController]
-    [Route("api/application")]
+    [Route("api/applications")]
     public class ApplicationController : ControllerBase
     {
-
-        private readonly ILogger<JobController> logger;
+        private readonly ILogger<ApplicationController> logger;
         private readonly IClient busClient;
 
-        public ApplicationController(ILogger<JobController> logger, IClient busClient)
+        public ApplicationController(ILogger<ApplicationController> logger, IClient busClient)
         {
             this.logger = logger;
             this.busClient = busClient;
         }
 
         [HttpPost]
-        [Route("apply")]
-        public async Task<ActionResult> SubmitApplication([FromBody] ApplyForJobCommand applicationCommand, CancellationToken cancellationToken)
+        [Authorize(Roles = "Student")]
+        [Route("apply/{offerId}")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
+        public async Task<ActionResult> SubmitApplication([FromRoute] Guid offerId, SubmitApplicationDto applicationDto, CancellationToken cancellationToken)
         {
-            var response = await busClient.SendRequest<ApplicationSubmittedDto, ApplyForJobCommand>("application.apply", applicationCommand, cancellationToken);
+            var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
 
-            if (response.Errors.Any())
+            var command = new SubmitApplicationCommand
             {
-                return StatusCode(400, response.Errors);
-            }
+                OfferId = offerId,
+                StudentId = Guid.Parse(studentId),
+                Application = applicationDto
+            };
 
-            return Ok(response.Id);
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, SubmitApplicationCommand>("applications.submitApplication", command, cancellationToken);
+            return UnwrapResponse(response);
         }
 
         [HttpPost]
-        [Route("accept")]
-        public async Task<ActionResult> AcceptApplication([FromBody] AcceptApplicationDto acceptCommand, CancellationToken cancellationToken)
+        [Authorize(Roles = "Student")]
+        [Route("{applicationId}/withdraw")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
+        public async Task<ActionResult> WithdrawApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
         {
-            var response = await busClient.SendRequest<ApplicationAcceptedDto, AcceptApplicationDto>("application.accept", acceptCommand, cancellationToken);
+            var studentId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
 
-            if (response.Errors.Any())
+            var command = new WithdrawApplicationCommand
             {
-                return StatusCode(400, response.Errors);
-            }
-            return Ok();
-        }
-
-        [HttpGet]
-        [Route("offer/{id}")]
-        public async Task<ActionResult> GetJobApplications([FromRoute] Guid id, [FromQuery] int page, [FromQuery] int pageSize, CancellationToken cancellationToken)
-        {
-            var query = new ListOfferApplicationsQuery
-            {
-                Page = page,
-                PageSize = pageSize,
-                OfferId = id
+                StudentId = Guid.Parse(studentId),
+                ApplicationId = applicationId
             };
 
-            var response = await busClient.SendRequest<ApplicationListResponse, ListOfferApplicationsQuery>("application.list.offer", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, WithdrawApplicationCommand>("applications.withdrawApplication", command, cancellationToken);
 
-            if (response.Errors.Any())
-            {
-                return StatusCode(400, response.Errors);
-            }
-
-            return Ok(response.Applications);
+            return UnwrapResponse(response);
         }
 
-        [HttpGet]
-        [Route("applicant/{id}")]
-        public async Task<ActionResult> GetApplicantApplications([FromRoute] Guid id, [FromQuery] int page, [FromQuery] int pageSize, CancellationToken cancellationToken)
+        [HttpPost]
+        [Authorize(Roles = "Employer")]
+        [Route("{applicationId}/accept")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
+        public async Task<ActionResult> AcceptApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
         {
-            var query = new ListApplicantApplicationsQuery
+            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
+
+            var command = new AcceptApplicationCommand
             {
-                Page = page,
-                PageSize = pageSize,
-                ApplicantId = id
+                RecruiterId = Guid.Parse(userId),
+                ApplicationId = applicationId
             };
 
-            var response = await busClient.SendRequest<ApplicationListResponse, ListApplicantApplicationsQuery>("offer.list.applicant", query, cancellationToken);
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, AcceptApplicationCommand>("applications.acceptApplication", command, cancellationToken);
 
-            if (response.Errors.Any())
+            return UnwrapResponse(response);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Employer")]
+        [Route("{applicationId}/reject")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid))]
+        public async Task<ActionResult> RejectApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
+        {
+            var userId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No user id claim defined");
+
+            var command = new RejectApplicationCommand
             {
-                return StatusCode(400, response.Errors);
+                RecruiterId = Guid.Parse(userId),
+                ApplicationId = applicationId
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, RejectApplicationCommand>("applications.rejectApplication", command, cancellationToken);
+
+            return UnwrapResponse(response);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("{applicationId}/reviews")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Guid))]
+        public async Task<ActionResult> PostReview([FromRoute] Guid applicationId, [FromBody] PostReviewDto review, CancellationToken cancellationToken)
+        {
+            var recruiterId = User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("No userId claim specified");
+            logger.LogInformation("Recruiter {RecruiterId} reviews offer {Application}", recruiterId, applicationId);
+
+            var command = new ReviewApplicationCommand
+            {
+                RecruiterId = Guid.Parse(recruiterId),
+                ApplicationId = applicationId,
+                Review = review
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, ReviewApplicationCommand>("reviews.reviewApplication", command, cancellationToken);
+
+            return UnwrapResponse(response);
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Administrator")]
+        [Route("{applicationId}")]
+        public async Task<ActionResult> DeleteApplication([FromRoute] Guid applicationId, CancellationToken cancellationToken)
+        {
+            var command = new DeleteApplicationCommand
+            {
+                ApplicationId = applicationId,
+            };
+
+            var response = await busClient.SendRequest<ResponseWrapper<Guid>, DeleteApplicationCommand>("applications.deleteApplication", command, cancellationToken);
+            return response.Messages.Any() ? StatusCode(400, new { ErrorMessage = response.Messages.FirstOrDefault() ?? "????" }) : StatusCode(204);
+        }
+
+        private ActionResult UnwrapResponse<T>(ResponseWrapper<T> wrappedResponse)
+        {
+            if (wrappedResponse.Messages?.Any() ?? false)
+            {
+                var aggregate = wrappedResponse.Messages.Aggregate("", (t, m) => (t + "\n" + m));
+                return StatusCode(wrappedResponse.ResponseCode, new { ErrorMessages = wrappedResponse.Messages });
             }
 
-            return Ok(response.Applications);
+            return StatusCode(wrappedResponse.ResponseCode, wrappedResponse.Response);
         }
     }
 }

@@ -19,21 +19,30 @@ namespace W4S.PostingService.Persistence.Repositories
             await context.Set<T>().AddAsync(entity);
         }
 
-        public virtual async Task DeleteAsync(Guid id)
+        public virtual void Delete(Guid id)
         {
-            await context.Set<T>().Where(o => o.Id == id).ExecuteDeleteAsync();
+            var entityToRemove = context.Set<T>().Single(e => e.Id == id);
+            context.Remove(entityToRemove);
         }
 
-        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize, Expression<Func<T, object>> comparator)
+        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize, Expression<Func<T, bool>> selector, Expression<Func<T, object>> comparator)
         {
-            var result = context.Set<T>().OrderBy(comparator).Skip(page * pageSize).Take(pageSize);
+            var result = context.Set<T>()
+                .Where(selector)
+                .OrderBy(comparator)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
             return await result.ToListAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetEntitiesAsync(int page, int pageSize)
+        public async Task<T> RequireEntityAsync(Guid id)
         {
-            var result = context.Set<T>().OrderBy(e => e.Id).Skip(page * pageSize).Take(pageSize);
-            return await result.ToListAsync();
+            var result = await context.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
+            if (result is null)
+            {
+                throw new InvalidOperationException($"No {typeof(T).Name} entity found with id: {id}");
+            }
+            return result;
         }
 
         public virtual async Task<IEnumerable<T>> GetEntitiesAsync(Expression<Func<T, bool>> selector)
@@ -44,12 +53,23 @@ namespace W4S.PostingService.Persistence.Repositories
 
         public virtual async Task<T?> GetEntityAsync(Guid id)
         {
-            return await context.Set<T>().SingleOrDefaultAsync(o => o.Id == id);
+            return await context.Set<T>()
+                                .SingleOrDefaultAsync(o => o.Id == id);
+        }
+
+        public virtual async Task<T?> GetEntityAsync(Expression<Func<T, bool>> selector)
+        {
+            return await context.Set<T>().SingleOrDefaultAsync(selector);
+        }
+
+        public virtual async Task<int> GetTotalCount(Expression<Func<T, bool>> selector)
+        {
+            return await context.Set<T>().CountAsync(selector);
         }
 
         public async Task SaveAsync()
         {
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
         }
     }
 }

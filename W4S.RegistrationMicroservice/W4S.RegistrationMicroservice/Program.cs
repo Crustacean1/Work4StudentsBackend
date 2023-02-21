@@ -16,6 +16,8 @@ using W4S.RegistrationMicroservice.API.Interfaces;
 using W4S.RegistrationMicroservice.API.Services;
 using W4S.RegistrationMicroservice.API.Controllers;
 using System.Globalization;
+using W4S.RegistrationMicroservice.API.Validations.Interfaces;
+using W4S.RegistrationMicroservice.Validations;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console(formatProvider: new CultureInfo("pl-PL"))
@@ -93,6 +95,7 @@ void ConfigureServices(IServiceCollection services)
     services.TryAddScoped<IHasher, PasswordHasher>();
     services.TryAddScoped<UserbaseSeeder>();
     services.TryAddScoped<IRegistrationService, RegistrationService>();
+    services.TryAddScoped<IDataValidator, DataValidator>();
     services.TryAddScoped<ISigningInService, SigningInService>();
     services.TryAddScoped<IProfilesService, ProfilesService>();
 }
@@ -102,6 +105,7 @@ void ConfigureControllers(IServiceCollection services)
     services.TryAddScoped<RegistrationController>();
     services.TryAddScoped<SigningInController>();
     services.TryAddScoped<ProfilesController>();
+    services.TryAddScoped<DeletingController>();
     services.AddHostedService<MigrationHost>();
     services.AddServiceBus();
 }

@@ -4,94 +4,44 @@ namespace W4S.PostingService.Domain.Entities
 {
     public class Application : Entity
     {
-        public enum ApplicationStatus
-        {
-            Created,
-            Submitted,
-            Withdrawn,
-            Accepted,
-            Rejected
-        }
-
         public Guid Id { get; set; }
 
         public Guid OfferId { get; set; }
 
         public JobOffer Offer { get; set; }
 
-        public Guid ApplicantId { get; set; }
+        public Guid StudentId { get; set; }
 
-        public Applicant Applicant { get; set; }
+        public Student Student { get; set; }
 
+        public double WorkTimeOverlap { get; set; }
 
-        public decimal WorkTimeOverlap { get; set; }
+        public double Distance { get; set; }
 
-        public decimal Proximity { get; set; }
-
-        public DateTime LastChange { get; set; }
+        public DateTime LastChanged { get; set; }
 
         public ApplicationStatus Status { get; set; }
 
         public string Message { get; set; }
 
-        public void Submit(Notification notification)
+        public ApplicationReview? Review { get; set; }
+
+        public void ComputeDistance()
         {
-            if (Status != ApplicationStatus.Created)
-            {
-                notification.AddError("Submit application: only newly created application can be submitted");
-            }
-            if (Applicant is null)
-            {
-                notification.AddError("Submit application: applicant is not defined");
-            }
-            if (Offer is null)
-            {
-                notification.AddError("Submit application: offer is not defined");
-            }
+            if (Student.Address.Latitude is null || Student.Address.Longitude is null) { return; }
+            if (Offer.Address.Latitude is null || Offer.Address.Longitude is null) { return; }
 
-            if (!notification.HasErrors)
-            {
-                Status = ApplicationStatus.Submitted;
-                LastChange = DateTime.Now.ToUniversalTime();
-                WorkTimeOverlap = 0.2137M;
-                Proximity = 1234;
-            }
-        }
+            var lonDelta = (Math.PI * (Student.Address.Longitude - Offer.Address.Longitude) / 180) ?? 0;
+            var latDelta = (Math.PI * (Student.Address.Latitude - Offer.Address.Latitude) / 180) ?? 0;
 
-        public void Accept(Notification notification)
-        {
-            if (Status != ApplicationStatus.Submitted)
-            {
-                notification.AddError("Could not accept application, only pending application can be accepted");
-                return;
-            }
+            var latA = (Math.PI * (Student.Address.Latitude / 180.0)) ?? 0;
+            var latB = (Math.PI * (Offer.Address.Latitude / 180.0)) ?? 0;
 
-            Status = ApplicationStatus.Accepted;
-            LastChange = DateTime.Now;
-        }
 
-        public void Reject(Notification notification)
-        {
-            if (Status != ApplicationStatus.Submitted)
-            {
-                notification.AddError("Could not reject application, only pending application can be rejected");
-                return;
-            }
-
-            Status = ApplicationStatus.Rejected;
-            LastChange = DateTime.Now;
-        }
-
-        public void Withdraw(Notification notification)
-        {
-            if (Status != ApplicationStatus.Submitted)
-            {
-                notification.AddError("Could not withdraw application, only pending application can be withdrawn");
-                return;
-            }
-
-            Status = ApplicationStatus.Withdrawn;
-            LastChange = DateTime.Now;
+            var a = Math.Pow(Math.Sin(latDelta / 2), 2) + (Math.Cos(latA) * Math.Cos(latB) * Math.Pow(Math.Sin(lonDelta / 2), 2));
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            var d = 6371 * c;
+            Distance = d;
         }
     }
 }

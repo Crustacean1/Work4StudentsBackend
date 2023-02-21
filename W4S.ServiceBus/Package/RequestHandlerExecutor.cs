@@ -3,7 +3,6 @@ using W4S.ServiceBus.Abstractions;
 using W4S.ServiceBus.Events;
 using System.Reflection;
 using System.Text.Json;
-using System.Text;
 
 namespace W4S.ServiceBus.Package
 {
@@ -48,27 +47,22 @@ namespace W4S.ServiceBus.Package
                 busProducer.Start();
             }
 
-            logger.LogInformation("Received request: {Topic} reply address: {ReplyAddress} id: {Id} ", args.Topic, args.ReplyTopic, args.RequestId);
-
             try
             {
-                dynamic arg = ParseMessageBody(args.RequestBody);
+                var (param, paramBody) = ParseMessageBody(args.RequestBody);
 
-                object? response = await ExecuteMethod(arg);
+                var truncated = paramBody?.Length > 1024;
+                var redactedMessage = paramBody?.Substring(0, truncated ? 1024 : paramBody.Length) ?? "<NULL>";
 
-                if (response is not null)
-                {
-                    byte[] responseBody = JsonSerializer.SerializeToUtf8Bytes(response);
-                    busProducer?.Reply(args.ReplyTopic, responseBody, args.RequestId);
-                }
-                else
-                {
-                    logger.LogError("Invalid return type: method handling {Request} should return non-null type", args.Topic);
-                }
+                logger.LogInformation("Received request: {Request} {IsTrimmed} at address: {Topic} with reply address: {ReplyAddress} id: {Id}", redactedMessage, truncated ? "(truncated)" : "", args.Topic, args.ReplyTopic, args.RequestId);
+
+                MessageWrapper<object?> response = await ExecuteMethod(param);
+                byte[] responseBody = JsonSerializer.SerializeToUtf8Bytes(response);
+                busProducer?.Reply(args.ReplyTopic, responseBody, args.RequestId);
             }
             catch (Exception e)
             {
-                logger.LogError("Error during request execution {Name}: {Error}", args.Topic, e.Message);
+                logger.LogError("Error while sending response to request {Name}: {Error}\nInternal Exception:\n{InternalException}", args.Topic, e.Message, e.InnerException?.Message ?? "<No Internal Exception>");
             }
             finally
             {

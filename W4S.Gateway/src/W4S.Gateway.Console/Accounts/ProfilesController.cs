@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using W4S.RegistrationMicroservice.Models.Profiles.Create;
+using System.Text.Json;
+using W4S.PostingService.Models.Entities;
+using W4S.RegistrationMicroservice.Models;
 using W4S.RegistrationMicroservice.Models.Profiles.Update;
-using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Creation;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Deleting;
+using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Getting;
 using W4S.RegistrationMicroservice.Models.ServiceBusResponses.Profiles.Updating;
 using W4S.ServiceBus.Abstractions;
 
@@ -22,44 +24,178 @@ namespace W4S.Gateway.Console.Accounts
             this.busClient = busClient;
         }
 
-        [HttpPost("create/student")]
-        [Authorize(Roles = "Student,Administrator")]
-        public async Task<IActionResult> CreateStudentProfile([FromForm] CreateStudentProfileDto dto)
+        [HttpGet("get/studentByStudentId/{studentId}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetStudentProfileResponse)))]
+        public async Task<IActionResult> GetStudentProfileByStudentId([FromRoute] Guid studentId, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Request: Create student profile");
-            var response = await busClient.SendRequest<StudentProfileCreatedResponse, CreateStudentProfileDto>("profiles.create.student", dto);
+            var guid = new GuidPackedDto()
+            {
+                Id = studentId
+            };
+            logger.LogInformation($"Request: Get student profile with Id: {studentId}.");
+            var response = await busClient.SendRequest<GetStudentProfileResponse, GuidPackedDto>("profiles.get.student.studentId", guid, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
-                return CreatedAtAction(nameof(CreateEmployerProfile), response);
+                return Ok(response);
             }
             return BadRequest(response.ExceptionMessage);
         }
 
-        [HttpPost("create/employer")]
-        [Authorize(Roles = "Employer,Administrator")]
-        public async Task<IActionResult> CreateEmployerProfile([FromForm] CreateProfileDto dto)
+        [HttpGet("get/employerByEmployerId/{employerId}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetEmployerProfileResponse)))]
+        public async Task<IActionResult> GetEmployerProfileByEmployerId([FromRoute] Guid employerId, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Request: Create employer profile");
-            var response = await busClient.SendRequest<EmployerProfileCreatedResponse, CreateProfileDto>("profiles.create.employer", dto);
+            var guid = new GuidPackedDto()
+            {
+                Id = employerId
+            };
+            logger.LogInformation($"Request: Get employer profile with Id: {employerId}.");
+            var response = await busClient.SendRequest<GetEmployerProfileResponse, GuidPackedDto>("profiles.get.employer.employerId", guid, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
-                return CreatedAtAction(nameof(CreateEmployerProfile), response);
+                return Ok(response);
             }
             return BadRequest(response.ExceptionMessage);
         }
+
 
         [HttpPut("update/student/{id}")]
-        [Authorize(Roles ="Student,Administrator")]
-        public async Task<IActionResult> UpdateStudentProfile([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto)
+        [Authorize(Roles = "Student,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateStudentProfile([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
         {
+            byte[]? image = null;
+            byte[]? resume = null;
+
+            if (dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+            if (dto.ResumeFile != null)
+            {
+                using var fileStream = dto.ResumeFile.OpenReadStream();
+                resume = new byte[dto.ResumeFile.Length];
+                fileStream.Read(resume, 0, (int)dto.ResumeFile.Length);
+            }
+
+            var correctedDto = new UpdateStudentProfileDtoWithId()
+            {
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
+                Id = id,
+                EmailAddress = dto.EmailAddress,
+                PhoneNumber = dto.PhoneNumber,
+                Description = dto.Description,
+                Education = dto.Education,
+                Experience = dto.Experience,
+                Country = dto.Country,
+                Region = dto.Region,
+                City = dto.City,
+                Street = dto.Street,
+                Building = dto.Building,
+                Image = image,
+                ResumeFile = resume,
+                Availability = dto.Availability
+            };
             logger.LogInformation("Request: Update student profile");
-            var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentProfileDto>("profiles.update.student", dto);
+            var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentProfileDtoWithId>("profiles.update.student", correctedDto, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
-                return Ok(response.WasUpdated);
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+        [HttpPut("update/student/{id}/correctedFiles")]
+        [Authorize(Roles = "Student,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateStudentProfileWithCorrectedPhotosAndResumes([FromRoute] Guid id, [FromForm] UpdateStudentProfileDto dto, CancellationToken cancellationToken)
+        {
+            logger.LogInformation("{Date} Got a dto for update, availability is:", DateTime.Now);
+            logger.LogInformation($"Data: {JsonSerializer.Serialize(dto)}");
+
+            if (dto.Availability != null)
+            {
+                foreach (var item in dto.Availability)
+                {
+                    logger.LogInformation($"Availability for day: {item.DayOfWeek}, startHour: {item.StartHour}, duration: {item.Duration}");
+                }
+            }
+            else
+            {
+                logger.LogInformation("Availability is null :((((");
+            }
+
+            byte[]? image = null;
+            byte[]? resume = null;
+
+            if (dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+            if (dto.ResumeFile != null)
+            {
+                using var fileStream = dto.ResumeFile.OpenReadStream();
+                resume = new byte[dto.ResumeFile.Length];
+                fileStream.Read(resume, 0, (int)dto.ResumeFile.Length);
+            }
+
+            var correctedDto = new UpdateStudentProfileDtoWithId()
+            {
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
+                Id = id,
+                EmailAddress = dto.EmailAddress,
+                PhoneNumber = dto.PhoneNumber,
+                Description = dto.Description,
+                Education = dto.Education,
+                Experience = dto.Experience,
+                Country = dto.Country,
+                Region = dto.Region,
+                City = dto.City,
+                Street = dto.Street,
+                Building = dto.Building,
+                Image = image,
+                ResumeFile = resume,
+                Availability = dto.Availability
+            };
+            logger.LogInformation("Request: Update student profile");
+            var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentProfileDtoWithId>("profiles.update.student.v2", correctedDto, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+        [HttpPut("update/student/{studentId:Guid}/availability")]
+        [Authorize(Roles = "Student,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateStudentAvailability([FromRoute] Guid studentId, [FromBody] List<Schedule> availability,  CancellationToken cancellationToken)
+        {
+            var correctedDto = new UpdateStudentSchedule()
+            {
+                StudentId = studentId,
+                Schedule = availability
+            };
+
+            var response = await busClient.SendRequest<StudentProfileUpdatedResponse, UpdateStudentSchedule>("profiles.update.student.availability", correctedDto, cancellationToken);
+            
+            if(response.ExceptionMessage is null)
+            {
+                return Ok(response);
             }
             return BadRequest(response.ExceptionMessage);
         }
@@ -67,14 +203,144 @@ namespace W4S.Gateway.Console.Accounts
 
         [HttpPut("update/employer/{id}")]
         [Authorize(Roles = "Employer,Administrator")]
-        public async Task<IActionResult> UpdateEmployerProfile([FromRoute] Guid id, [FromForm] UpdateProfileDto dto)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(EmployerProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateEmployerProfile([FromRoute] Guid id, [FromForm] UpdateEmployerProfileDto dto, CancellationToken cancellationToken)
         {
+            byte[]? image = null;
+
+            if (dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+
+            var correctedDto = new UpdateEmployerProfileDtoWithId()
+            {
+                Id = id,
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
+                EmailAddress = dto.EmailAddress,
+                PhoneNumber = dto.PhoneNumber,
+                Description = dto.Description,
+                Country = dto.Country,
+                Region = dto.Region,
+                City = dto.City,
+                Street = dto.Street,
+                Building = dto.Building,
+                Image = image,
+                PositionName = dto.PositionName
+            };
             logger.LogInformation("Request: Update employer profile");
-            var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateProfileDto>("profiles.update.employer", dto);
+            var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateEmployerProfileDtoWithId>("profiles.update.employer", correctedDto, cancellationToken);
 
             if (response.ExceptionMessage is null)
             {
-                return Ok(response.WasUpdated);
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+        [HttpPut("update/employer/{id}/correctedFiles")]
+        [Authorize(Roles = "Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(EmployerProfileUpdatedResponse)))]
+        public async Task<IActionResult> UpdateEmployerProfileWithCorrectedPhotos([FromRoute] Guid id, [FromForm] UpdateEmployerProfileDto dto, CancellationToken cancellationToken)
+        {
+            byte[]? image = null;
+
+            if (dto.Image != null)
+            {
+                using var fileStream = dto.Image.OpenReadStream();
+                image = new byte[dto.Image.Length];
+                fileStream.Read(image, 0, (int)dto.Image.Length);
+            }
+
+            var correctedDto = new UpdateEmployerProfileDtoWithId()
+            {
+                Id = id,
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                Surname = dto.Surname,
+                EmailAddress = dto.EmailAddress,
+                PhoneNumber = dto.PhoneNumber,
+                Description = dto.Description,
+                Country = dto.Country,
+                Region = dto.Region,
+                City = dto.City,
+                Street = dto.Street,
+                Building = dto.Building,
+                Image = image,
+                PositionName = dto.PositionName
+            };
+            logger.LogInformation("Request: Update employer profile");
+            var response = await busClient.SendRequest<EmployerProfileUpdatedResponse, UpdateEmployerProfileDtoWithId>("profiles.update.employer.v2", correctedDto, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+        [HttpGet("get/photo/{profileId:Guid}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetProfilePhotoResponse)))]
+        public async Task<IActionResult> GetPhotoByProfileId([FromRoute] Guid profileId, CancellationToken cancellationToken)
+        {
+            var guid = new GuidPackedDto()
+            {
+                Id = profileId,
+            };
+            logger.LogInformation($"Request: Get photo with Id: {profileId}.");
+
+            var response = await busClient.SendRequest<GetProfilePhotoResponse, GuidPackedDto>("profiles.get.photo", guid, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+
+        [HttpGet("get/resume/{studentId:Guid}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(GetResumeResponse)))]
+        public async Task<IActionResult> GetResumeByStudentId([FromRoute] Guid studentId, CancellationToken cancellationToken)
+        {
+            var guid = new GuidPackedDto()
+            {
+                Id = studentId,
+            };
+            logger.LogInformation($"Request: Get resume of a student with Id: {studentId}.");
+
+            var response = await busClient.SendRequest<GetResumeResponse, GuidPackedDto>("profiles.get.resume", guid, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.ExceptionMessage);
+        }
+
+
+        [HttpDelete("resume/{studentId:Guid}")]
+        [Authorize(Roles = "Student,Employer,Administrator")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = (typeof(StudentResumeDeletedResponse)))]
+        public async Task<IActionResult> DeleteStudentResume([FromRoute] Guid studentId, CancellationToken cancellationToken)
+        {
+            var guid = new GuidPackedDto()
+            {
+                Id = studentId
+            };
+            logger.LogInformation($"Request: Delete resume of a student with Id: {studentId}.");
+
+            var response = await busClient.SendRequest<StudentResumeDeletedResponse, GuidPackedDto>("profiles.delete.student.resume", guid, cancellationToken);
+
+            if (response.ExceptionMessage is null)
+            {
+                return Ok(response);
             }
             return BadRequest(response.ExceptionMessage);
         }
